@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Step_Category__c</fullName>
+    <label>Step Category</label>
+    <type>Picklist</type>
+    <required>false</required>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>Safety_Critical</fullName><default>false</default><label>Safety Critical</label></value>
+            <value><fullName>Safety_Site</fullName><default>false</default><label>Safety Site</label></value>
+            <value><fullName>Safety_Admin</fullName><default>false</default><label>Safety Admin</label></value>
+            <value><fullName>Work_DeEnergize</fullName><default>false</default><label>Work De-Energize</label></value>
+            <value><fullName>Work_Execute</fullName><default>false</default><label>Work Execute</label></value>
+            <value><fullName>Work_ReEnergize</fullName><default>false</default><label>Work Re-Energize</label></value>
+            <value><fullName>Hazard</fullName><default>false</default><label>Hazard</label></value>
+        </valueSetDefinition>
+    </valueSet>
+    <description>Mirrors WorkStep.Step_Category__c so the value propagates from WorkStepTemplate to WorkStep at WO instantiation. Picklist API names are domain-neutral and inherited from telco for code compatibility; user-facing labels are swapped to pest vocabulary via Custom Labels in P2.1 (e.g., Work_DeEnergize -> "Pre-Treatment Setup", Work_ReEnergize -> "Post-Treatment Verification"). See ARCHITECTURE_PROPOSAL.md decision #20.</description>
+</CustomField>

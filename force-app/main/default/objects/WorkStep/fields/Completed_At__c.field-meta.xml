@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Completed_At__c</fullName>
+    <label>Completed At</label>
+    <type>DateTime</type>
+    <required>false</required>
+    <description>Mirrors WorkStep.Completed_At__c. Timestamp when this checklist item was marked complete. On the template this is unused at design time; the field exists so values propagate cleanly to WorkStep instances.</description>
+</CustomField>

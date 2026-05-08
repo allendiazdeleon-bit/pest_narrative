@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Critical__c</fullName>
+    <label>Is Critical</label>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <description>Mirrors WorkStep.Is_Critical__c. Steps with Is_Critical__c = true block the safety gate until checked. For pest, every Safety_Critical step (PPE, RUP attestation, SDS review, REI confirmation) is marked critical.</description>
+</CustomField>
