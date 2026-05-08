@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>MasseyFlow_PreCheck_Phase_Title</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Pre-check / safety gate phase title</shortDescription>
+        <value>Pre-Visit Safety &amp; Site Check</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_PreCheck_Lock_Message</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Locked-overlay message: complete safety / site check first</shortDescription>
+        <value>Complete Pre-Visit Safety &amp; Site Check first</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_Execute_Phase_Title</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Treatment execute phase title</shortDescription>
+        <value>Treatment Execution</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_Execute_Lock_Message</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Locked-overlay message: complete treatment first</shortDescription>
+        <value>Complete Treatment Execution first</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_Verify_Phase_Title</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Verify / customer sign-off phase title</shortDescription>
+        <value>Verify &amp; Close Service Visit</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_Verify_Lock_Message</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Locked-overlay message: complete verify / close first</shortDescription>
+        <value>Complete Verify &amp; Close first</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_Step_PreEnergize_Label</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Display label for Work_DeEnergize step category (API name preserved per Decision #20)</shortDescription>
+        <value>Pre-Treatment Setup</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_Step_ReEnergize_Label</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Display label for Work_ReEnergize step category (API name preserved per Decision #20)</shortDescription>
+        <value>Post-Treatment Verification</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_ServiceImpact_PageTitle</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Service Impact step title (replaces telco outage correlator label)</shortDescription>
+        <value>Service Impact</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_ServiceImpact_History_Heading</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Service impact history section heading on the Service Impact step</shortDescription>
+        <value>Recent Cluster Events in This Route</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_ServiceImpact_Active</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Active cluster events summary card label</shortDescription>
+        <value>Active Cluster Events</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_Empty_NoIncidents</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Empty-state copy for the Service Impact step when no clusters are active</shortDescription>
+        <value>No active cluster events for this route</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_Cluster_Identifier_Label</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Display label for the cluster / route group identifier on Incident (API name preserved per Decision #20) — e.g., ZIP-32828-Mosquito</shortDescription>
+        <value>Cluster Identifier</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_Affected_Properties_Label</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Display label for Incident.Affected_Customers__c (API name preserved per Decision #20) — property count for this cluster</shortDescription>
+        <value>Affected Properties</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_Cluster_Latitude_Label</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Display label for Incident.Outage_Latitude__c (API name preserved per Decision #20)</shortDescription>
+        <value>Cluster Latitude</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_Cluster_Longitude_Label</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Display label for Incident.Outage_Longitude__c (API name preserved per Decision #20)</shortDescription>
+        <value>Cluster Longitude</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_AnomalySignal</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Anomaly signal language for elevated pest pressure on a route</shortDescription>
+        <value>Elevated Pest Pressure Pattern</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_IsolationAction</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Action label for cordoning off a treatment area / setting work zone perimeter</shortDescription>
+        <value>Set Treatment Perimeter</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_RestoreAction</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Action label for releasing the property after Re-Entry Interval</shortDescription>
+        <value>Release Property after Re-Entry Interval</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_ReadingPrompt</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Field reading prompt (site telemetry capture)</shortDescription>
+        <value>Note bait station activity, soil temp, and conducive conditions</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_RegulatoryDriver</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Compliance driver — EPA / state applicator licensing for restricted-use pesticide application</shortDescription>
+        <value>EPA Reg # + Applicator License Logging</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_SafetyGate_Header</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Header for the safety gate (PPE + Restricted-Use Pesticide attestation)</shortDescription>
+        <value>Safety Gate — PPE &amp; Restricted-Use Pesticide Attestation</value>
+    </labels>
+</CustomLabels>
