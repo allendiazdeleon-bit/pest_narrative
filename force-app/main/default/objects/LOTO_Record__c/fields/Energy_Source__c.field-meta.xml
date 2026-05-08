@@ -9,44 +9,54 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>AC Mains</fullName>
+                <fullName>Termidor_SC</fullName>
                 <default>false</default>
-                <label>AC Mains</label>
+                <label>Termidor SC (fipronil — termite, soil)</label>
             </value>
             <value>
-                <fullName>DC Plant</fullName>
+                <fullName>BifenIT</fullName>
                 <default>false</default>
-                <label>DC Plant (-48V)</label>
+                <label>BifenIT (bifenthrin — perimeter, lawn)</label>
             </value>
             <value>
-                <fullName>Backup Battery</fullName>
+                <fullName>Talstar_P</fullName>
                 <default>false</default>
-                <label>Backup Battery String</label>
+                <label>Talstar P (bifenthrin — perimeter, broad spectrum)</label>
             </value>
             <value>
-                <fullName>Optical Source</fullName>
+                <fullName>Demand_CS</fullName>
                 <default>false</default>
-                <label>Optical Source (Laser)</label>
+                <label>Demand CS (lambda-cyhalothrin — quarterly pest)</label>
             </value>
             <value>
-                <fullName>RF Source</fullName>
+                <fullName>Suspend_SC</fullName>
                 <default>false</default>
-                <label>RF Source</label>
+                <label>Suspend SC (deltamethrin — interior, void)</label>
             </value>
             <value>
-                <fullName>Aerial Bond</fullName>
+                <fullName>Tempo_SC</fullName>
                 <default>false</default>
-                <label>Aerial Bond / Strand</label>
+                <label>Tempo SC (beta-cyfluthrin — wasp, stinging insect)</label>
             </value>
             <value>
-                <fullName>Mechanical</fullName>
+                <fullName>Altosid</fullName>
                 <default>false</default>
-                <label>Mechanical</label>
+                <label>Altosid (methoprene — mosquito larvicide)</label>
+            </value>
+            <value>
+                <fullName>Aqua_Reslin</fullName>
+                <default>false</default>
+                <label>Aqua-Reslin (permethrin — ULV mosquito adulticide)</label>
+            </value>
+            <value>
+                <fullName>Sentricon_AlwaysActive</fullName>
+                <default>false</default>
+                <label>Sentricon AlwaysActive (noviflumuron — termite bait)</label>
             </value>
             <value>
                 <fullName>Other</fullName>
                 <default>false</default>
-                <label>Other</label>
+                <label>Other (specify in Notes)</label>
             </value>
         </valueSetDefinition>
     </valueSet>

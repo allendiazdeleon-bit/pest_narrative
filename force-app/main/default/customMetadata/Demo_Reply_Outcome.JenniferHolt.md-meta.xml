@@ -3,5 +3,5 @@
     <label>Jennifer Holt — NotNow</label>
     <protected>false</protected>
     <values><field>Person_Account_Name__c</field><value xsi:type="xsd:string">Jennifer Holt</value></values>
-    <values><field>Outcome__c</field><value xsi:type="xsd:string">NO_REPLY</value></values>
+    <values><field>Outcome__c</field><value xsi:type="xsd:string">NOT_NOW</value></values>
 </CustomMetadata>
