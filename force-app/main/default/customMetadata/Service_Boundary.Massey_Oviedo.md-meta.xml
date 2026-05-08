@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Massey Oviedo</label>
+    <protected>false</protected>
+    <values><field>Address_Pattern__c</field><value xsi:type="xsd:string">oviedo</value></values>
+    <values><field>Canonical_Address__c</field><value xsi:type="xsd:string">Oviedo FL 32765 (Seminole County)</value></values>
+    <values><field>Latitude__c</field><value xsi:type="xsd:double">28.6700000</value></values>
+    <values><field>Longitude__c</field><value xsi:type="xsd:double">-81.2080000</value></values>
+    <values><field>In_Service_Area__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>
