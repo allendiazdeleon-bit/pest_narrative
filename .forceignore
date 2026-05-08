@@ -1,0 +1,23 @@
+# List files or directories below to ignore them when running force:source:push, force:source:pull, and force:source:status
+# More information: https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_exclude_source.htm
+#
+
+package.xml
+
+# LWC configuration files
+**/jsconfig.json
+**/.eslintrc.json
+
+# LWC Jest
+**/__tests__/**
+
+# Custom Metadata records — known UNKNOWN_EXCEPTION on demo orgs with
+# xsi:type="xsd:double" / xsd:boolean. Insert via Setup UI or Apex
+# anonymous.
+force-app/main/default/customMetadata/
+
+# Reports + Dashboards — folder deploy ordering issue surfaces as
+# "Cannot find folder" on first deploy. Deploy these separately
+# after the rest of the metadata lands, or via Setup UI.
+force-app/main/default/reports/
+force-app/main/default/dashboards/
