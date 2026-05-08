@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Work_Order__c</fullName>
+    <label>Work Order</label>
+    <type>MasterDetail</type>
+    <referenceTo>WorkOrder</referenceTo>
+    <relationshipName>Hazards</relationshipName>
+    <relationshipLabel>Hazards</relationshipLabel>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <writeRequiresMasterRead>true</writeRequiresMasterRead>
+    <description>Parent Work Order for this hazard report.</description>
+</CustomField>
