@@ -42,9 +42,9 @@ These must be completed by a human admin; Claude Code will hand them back when e
 
 - [ ] **Massey brand-use legal sign-off** — confirm before any external presentation (`CLAUDE.md`).
 - [ ] **Scheduling Policies + Work Rules + Service Objectives** — Field Service Setup admin UI. Two policies: Massey Standard (default) + Cluster Response.
-- [ ] **P4.1 — Service Cloud Voice number procurement** — external, ~5–10 business days. **Kick off in P0** so it doesn't block P4.
-- [ ] **P4.2 — Voice IVR routing + 8 Agentforce topics** — Voice Setup + Agentforce admin UI.
-- [ ] **P4.3 — "Upsell Recommendation" Agentforce topic + Sidekick library entry** — Agentforce admin UI.
+- [x] **P4.1 — Service Cloud Voice number + IVR routing** — already provisioned in target demo org (2026-05-08). Owner: Allen.
+- [ ] **P4.2 — 8 Agentforce topics + Sidekick library** — Agentforce admin UI. **Owner: Allen** (Claude hands the topic specs back; admin-UI work is manual).
+- [ ] **P4.3 — "Upsell Recommendation" Agentforce topic + Sidekick library entry** — Agentforce admin UI. **Owner: Allen** (manual).
 - [ ] **P2.5 — Author + publish 12 Knowledge articles** — content authoring.
 - [ ] **P5.8 — Build LWR Experience Cloud site for `massey-portal`** — Experience Cloud admin UI.
 
