@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Removed_By__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Re-Entry Cleared By</label>
+    <referenceTo>User</referenceTo>
+    <relationshipLabel>Chemical Application Logs (Re-Entry Cleared By)</relationshipLabel>
+    <relationshipName>LOTO_Records_Removed</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+</CustomField>

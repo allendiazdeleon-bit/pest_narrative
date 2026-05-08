@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Dose_Unit__c</fullName>
+    <label>Dose Unit</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>oz</fullName>
+                <default>false</default>
+                <label>oz (ounces, weight)</label>
+            </value>
+            <value>
+                <fullName>fl_oz</fullName>
+                <default>false</default>
+                <label>fl oz (fluid ounces)</label>
+            </value>
+            <value>
+                <fullName>gal</fullName>
+                <default>false</default>
+                <label>gal (gallons)</label>
+            </value>
+            <value>
+                <fullName>lb</fullName>
+                <default>false</default>
+                <label>lb (pounds)</label>
+            </value>
+            <value>
+                <fullName>gram</fullName>
+                <default>false</default>
+                <label>g (grams)</label>
+            </value>
+            <value>
+                <fullName>ml</fullName>
+                <default>false</default>
+                <label>mL (milliliters)</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

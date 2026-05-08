@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Isolated_By__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Applied By</label>
+    <referenceTo>User</referenceTo>
+    <relationshipLabel>Chemical Application Logs (Applied By)</relationshipLabel>
+    <relationshipName>LOTO_Records_Isolated</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+</CustomField>

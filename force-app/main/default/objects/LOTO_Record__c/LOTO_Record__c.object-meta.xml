@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Tracks each chemical application event for a Work Order, including EPA registration data, target pest, dose, applicator license, photo evidence, and dual sign-off (applicator + verifier) per Restricted-Use Pesticide (RUP) attestation policy. Drives the Chemical Application Log step of the masseyFlow orchestrator. (API name LOTO_Record__c is preserved from the inherited domain-neutral architecture per SOLUTION_DESIGN Path A; user-facing label is "Chemical Application Log".)</description>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <label>Chemical Application Log</label>
+    <nameField>
+        <displayFormat>CAL-{0000}</displayFormat>
+        <label>Application Log #</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Chemical Application Logs</pluralLabel>
+    <sharingModel>ControlledByParent</sharingModel>
+</CustomObject>
