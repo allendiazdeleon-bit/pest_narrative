@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Pest_Pressure_Candidate__c</fullName>
+    <label>Is Pest Pressure Candidate (Demo)</label>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <description>Demo-only flag. Set true on candidate Assets so PestPressureAnalyzer can return deterministic pressure diagnoses without time-series telemetry. Renamed from Is_Degraded_Candidate__c.</description>
+</CustomField>

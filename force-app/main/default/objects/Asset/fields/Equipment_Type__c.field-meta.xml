@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Equipment_Type__c</fullName>
+    <label>Equipment Type</label>
+    <type>Picklist</type>
+    <required>false</required>
+    <description>Physical equipment classification for pest service assets. Combined with Service_Line__c, drives variant rendering and operational handling.</description>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>Property</fullName><default>true</default><label>Property</label></value>
+            <value><fullName>Sentricon_Station</fullName><default>false</default><label>Sentricon Station</label></value>
+            <value><fullName>Mosquito_System</fullName><default>false</default><label>Mosquito System</label></value>
+            <value><fullName>Mosquito_Nozzle</fullName><default>false</default><label>Mosquito Nozzle</label></value>
+            <value><fullName>Trap</fullName><default>false</default><label>Trap</label></value>
+            <value><fullName>Treatment_Perimeter</fullName><default>false</default><label>Treatment Perimeter</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

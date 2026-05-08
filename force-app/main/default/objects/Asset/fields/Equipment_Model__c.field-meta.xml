@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Equipment_Model__c</fullName>
+    <label>Equipment Model</label>
+    <type>Text</type>
+    <length>80</length>
+    <required>false</required>
+    <description>Vendor + model identifier (e.g., "Sentricon AlwaysActive", "Mosquito Hunter MH-2400").</description>
+</CustomField>

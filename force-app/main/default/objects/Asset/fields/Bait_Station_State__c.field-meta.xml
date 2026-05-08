@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Bait_Station_State__c</fullName>
+    <label>Bait Station State</label>
+    <type>Picklist</type>
+    <required>false</required>
+    <description>Current termite-activity state of a Sentricon bait station, captured at last quarterly check.</description>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>Untouched</fullName><default>true</default><label>Untouched</label></value>
+            <value><fullName>Activity</fullName><default>false</default><label>Activity</label></value>
+            <value><fullName>Heavy_Activity</fullName><default>false</default><label>Heavy Activity</label></value>
+            <value><fullName>Replaced</fullName><default>false</default><label>Replaced</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

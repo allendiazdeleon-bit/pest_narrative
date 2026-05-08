@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Conducive_Notes__c</fullName>
+    <label>Conducive Notes</label>
+    <length>2000</length>
+    <type>LongTextArea</type>
+    <visibleLines>4</visibleLines>
+    <description>Tech-captured free-form notes describing conducive conditions observed at the property.</description>
+</CustomField>

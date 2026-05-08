@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NFC_Tag_Id__c</fullName>
+    <label>NFC Tag ID</label>
+    <type>Text</type>
+    <length>100</length>
+    <required>false</required>
+    <externalId>true</externalId>
+    <unique>true</unique>
+    <description>NFC tag identifier matching the physical bait station / mosquito system tag for field scanning. External ID for matching.</description>
+</CustomField>

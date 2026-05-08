@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Property_Type__c</fullName>
+    <label>Property Type</label>
+    <type>Picklist</type>
+    <required>false</required>
+    <description>Residential property classification used for treatment-volume estimation and pricing.</description>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>Single_Family</fullName><default>true</default><label>Single Family</label></value>
+            <value><fullName>Townhome</fullName><default>false</default><label>Townhome</label></value>
+            <value><fullName>Condo</fullName><default>false</default><label>Condo</label></value>
+            <value><fullName>Multi_Family</fullName><default>false</default><label>Multi Family</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

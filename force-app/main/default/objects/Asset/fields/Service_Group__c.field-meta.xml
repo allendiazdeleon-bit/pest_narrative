@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Service_Group__c</fullName>
+    <label>Service Group</label>
+    <type>Text</type>
+    <length>40</length>
+    <required>false</required>
+    <description>Route group / cluster identifier used by ClusterDetector to group co-located properties for cluster-response scheduling.</description>
+</CustomField>

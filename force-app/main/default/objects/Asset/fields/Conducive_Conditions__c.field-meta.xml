@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Conducive_Conditions__c</fullName>
+    <label>Conducive Conditions</label>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <description>Set true when wood-soil contact, moisture intrusion, or other termite-conducive conditions are observed at the property.</description>
+</CustomField>
