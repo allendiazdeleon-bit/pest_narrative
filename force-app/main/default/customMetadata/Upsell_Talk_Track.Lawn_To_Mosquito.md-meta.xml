@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Lawn - Add Mosquito</label>
+    <protected>false</protected>
+    <values><field>Service_Line__c</field><value xsi:type="xsd:string">Mosquito</value></values>
+    <values><field>Reason_Code__c</field><value xsi:type="xsd:string">OUTDOOR_FOCUSED_PROFILE</value></values>
+    <values><field>Talk_Track__c</field><value xsi:type="xsd:string">While I'm here — since you've already invested in Lawn Service, a lot of our customers add Mosquito Hunter so the yard's actually usable when they're out there. Perimeter system plus monthly fogging, ten percent off bundled with what you already have. Want me to text you a quote? No pressure — sleep on it.</value></values>
+    <values><field>Estimated_Annual_Value__c</field><value xsi:type="xsd:double">540.00</value></values>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>

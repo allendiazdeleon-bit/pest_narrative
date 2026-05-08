@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Estimated_Annual_Value__c</fullName>
+    <label>Estimated Annual Value</label>
+    <type>Number</type>
+    <precision>8</precision>
+    <scale>2</scale>
+    <required>false</required>
+    <description>Reasonable USD figure for the annual revenue this attach is expected to produce if the customer says Yes. Used by Manager Coaching dashboard to roll up revenue-from-route.</description>
+</CustomField>

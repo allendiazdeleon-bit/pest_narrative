@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Pest - Quarterly Bundle to Mosquito</label>
+    <protected>false</protected>
+    <values><field>Service_Line__c</field><value xsi:type="xsd:string">Mosquito</value></values>
+    <values><field>Reason_Code__c</field><value xsi:type="xsd:string">EXISTING_PEST_CUSTOMER</value></values>
+    <values><field>Talk_Track__c</field><value xsi:type="xsd:string">Quick thought before I go — since you're already on our quarterly pest plan, adding Mosquito Hunter is a popular bundle around here. It's a perimeter system plus monthly fogging, ten percent off when bundled, and it keeps the back yard usable through the summer. Happy to text you a quote — no commitment, just so you have the number.</value></values>
+    <values><field>Estimated_Annual_Value__c</field><value xsi:type="xsd:double">540.00</value></values>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>

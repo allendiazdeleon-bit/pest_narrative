@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Pest - Large Lot Bifen Opportunity</label>
+    <protected>false</protected>
+    <values><field>Service_Line__c</field><value xsi:type="xsd:string">Pest</value></values>
+    <values><field>Reason_Code__c</field><value xsi:type="xsd:string">LARGE_LOT_BIFEN_OPPORTUNITY</value></values>
+    <values><field>Talk_Track__c</field><value xsi:type="xsd:string">Heads up — you've got a larger lot than most homes on the route, which means our standard perimeter spray covers the structure but not the back of the property. A lot of customers with similar lot sizes add a bifenthrin yard treatment a few times a year for fire ants and outdoor roaches. Small add to your existing plan. Want me to text you the price? No commitment.</value></values>
+    <values><field>Estimated_Annual_Value__c</field><value xsi:type="xsd:double">180.00</value></values>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>

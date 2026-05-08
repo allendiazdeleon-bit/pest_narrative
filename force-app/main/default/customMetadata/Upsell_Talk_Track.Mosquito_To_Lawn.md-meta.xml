@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Mosquito - Add Lawn</label>
+    <protected>false</protected>
+    <values><field>Service_Line__c</field><value xsi:type="xsd:string">Lawn</value></values>
+    <values><field>Reason_Code__c</field><value xsi:type="xsd:string">OUTDOOR_FOCUSED_PROFILE</value></values>
+    <values><field>Talk_Track__c</field><value xsi:type="xsd:string">Hey, while I'm finishing up — folks who invest in Mosquito Hunter usually care a lot about the yard itself, and we also do Lawn Service: fertilization, weed control, fungicide rotations on a six-week cycle. If you ever wanted to bundle, it's about ten percent off. Want me to text you a quote tonight? No commitment.</value></values>
+    <values><field>Estimated_Annual_Value__c</field><value xsi:type="xsd:double">720.00</value></values>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Lawn - Disease Seen</label>
+    <protected>false</protected>
+    <values><field>Service_Line__c</field><value xsi:type="xsd:string">Lawn</value></values>
+    <values><field>Reason_Code__c</field><value xsi:type="xsd:string">LAWN_DISEASE_SEEN</value></values>
+    <values><field>Talk_Track__c</field><value xsi:type="xsd:string">Hey, while I was walking the perimeter I noticed a few patches in the front yard that look like early gray-leaf spot — pretty common in St. Augustine here in central Florida this time of year. Untreated it can spread fast in a wet season. Our Lawn Service plan covers fungicide rotations, fertilization, and weed control on a six-week cycle. Want me to grab a quote before I leave? I can flag it for our lawn agronomist — no pressure.</value></values>
+    <values><field>Estimated_Annual_Value__c</field><value xsi:type="xsd:double">720.00</value></values>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Termite-Only - Add Pest</label>
+    <protected>false</protected>
+    <values><field>Service_Line__c</field><value xsi:type="xsd:string">Pest</value></values>
+    <values><field>Reason_Code__c</field><value xsi:type="xsd:string">TERMITE_ONLY_NO_PEST</value></values>
+    <values><field>Talk_Track__c</field><value xsi:type="xsd:string">While I'm here — I noticed you're on Termite Protection but not on a quarterly pest plan yet. A lot of our termite customers add GoGreen Pest because it's the same truck on the same route, we already know the property, and bundled it's about ten percent off. Especially with ant and roach pressure this time of year. Want me to grab a quote? I'll keep it simple.</value></values>
+    <values><field>Estimated_Annual_Value__c</field><value xsi:type="xsd:double">480.00</value></values>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>

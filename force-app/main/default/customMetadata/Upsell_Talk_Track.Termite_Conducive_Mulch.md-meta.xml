@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Termite - Conducive Conditions</label>
+    <protected>false</protected>
+    <values><field>Service_Line__c</field><value xsi:type="xsd:string">Termite</value></values>
+    <values><field>Reason_Code__c</field><value xsi:type="xsd:string">CONDUCIVE_CONDITIONS_FLAGGED</value></values>
+    <values><field>Talk_Track__c</field><value xsi:type="xsd:string">One thing I want to flag before I go — I noticed wood-soil contact on the south side of the house, near the mulch bed. That's a textbook termite-conducive condition: moisture plus a direct path from soil to wood framing. We don't see active activity yet, which is good — but if you ever wanted to get ahead of it, our Termite Protection plan installs Sentricon bait stations around the perimeter. I can have an inspector come look for free, no commitment. Want me to set that up?</value></values>
+    <values><field>Estimated_Annual_Value__c</field><value xsi:type="xsd:double">395.00</value></values>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>

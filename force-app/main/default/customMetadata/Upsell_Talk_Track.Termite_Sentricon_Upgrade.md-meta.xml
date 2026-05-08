@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Termite - Sentricon Upgrade from Termidor</label>
+    <protected>false</protected>
+    <values><field>Service_Line__c</field><value xsi:type="xsd:string">Termite</value></values>
+    <values><field>Reason_Code__c</field><value xsi:type="xsd:string">SENTRICON_UPGRADE_FROM_TERMIDOR</value></values>
+    <values><field>Talk_Track__c</field><value xsi:type="xsd:string">One option I want to mention while I'm here — you're currently on Termidor liquid only. Some customers in your situation upgrade to a Sentricon-plus-Termidor combination for layered protection: bait stations catch foraging colonies before they ever reach the structure, and the liquid barrier backs it up. Florida soils break down liquid faster than people expect. Want me to set up a free inspection so we can show you the difference? No commitment.</value></values>
+    <values><field>Estimated_Annual_Value__c</field><value xsi:type="xsd:double">220.00</value></values>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Mosquito - High Trap Catch</label>
+    <protected>false</protected>
+    <values><field>Service_Line__c</field><value xsi:type="xsd:string">Mosquito</value></values>
+    <values><field>Reason_Code__c</field><value xsi:type="xsd:string">MOSQUITO_TRAP_HIGH_CATCH</value></values>
+    <values><field>Talk_Track__c</field><value xsi:type="xsd:string">Quick heads-up before I go — the trap I checked in the back yard pulled a higher catch count than we'd typically see this time of year, so mosquito pressure on this property is real. Our Mosquito Hunter perimeter system runs automatically on a timer, plus monthly fogging. A lot of folks in this neighborhood already have it. Want me to text you a quote tonight? No commitment.</value></values>
+    <values><field>Estimated_Annual_Value__c</field><value xsi:type="xsd:double">540.00</value></values>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>
