@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Eligible_Upsells__c</fullName>
+    <label>Eligible Upsells</label>
+    <type>MultiselectPicklist</type>
+    <required>false</required>
+    <visibleLines>4</visibleLines>
+    <description>Service lines this Account is eligible to be pitched. Drives UpsellCoachService.recommend() candidate filtering. Authored in P1.7.</description>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>Pest</fullName><default>false</default><label>Pest</label></value>
+            <value><fullName>Termite</fullName><default>false</default><label>Termite</label></value>
+            <value><fullName>Mosquito</fullName><default>false</default><label>Mosquito</label></value>
+            <value><fullName>Lawn</fullName><default>false</default><label>Lawn</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
