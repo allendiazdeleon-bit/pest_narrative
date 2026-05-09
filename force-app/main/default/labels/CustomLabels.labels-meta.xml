@@ -176,4 +176,156 @@
         <shortDescription>Header for the safety gate (PPE + Restricted-Use Pesticide attestation)</shortDescription>
         <value>Safety Gate — PPE &amp; Restricted-Use Pesticide Attestation</value>
     </labels>
+    <labels>
+        <fullName>MasseyUpsell_Heading</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Heading for the masseyUpsellCoach card (Site / Summary / Account Quick Action)</shortDescription>
+        <value>Upsell Coach</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Empty_AllLines</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Empty-state copy when the customer is on every Massey service line</shortDescription>
+        <value>This customer is on every Massey service line — nice work, no upsell opportunity right now.</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Loading</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Loading state copy while UpsellCoachService.recommend wire is in flight</shortDescription>
+        <value>Loading recommendations…</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Error</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Error state copy when recommend wire fails</shortDescription>
+        <value>Could not load recommendations — try again or escalate to Jordan.</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_TalkTrack_Heading</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Heading above the talk-track card</shortDescription>
+        <value>Suggested Talk-Track</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_TalkTrack_Fallback</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Fallback talk-track copy when Upsell_Talk_Track__mdt has no matching row</shortDescription>
+        <value>Hey, while I'm here — want me to grab a quote? No commitment.</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Action_Yes</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Capture-outcome button: customer is interested</shortDescription>
+        <value>Yes</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Action_NotNow</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Capture-outcome button: customer says not now</shortDescription>
+        <value>Not Now</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Action_NotInterested</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Capture-outcome button: customer says not interested</shortDescription>
+        <value>Not Interested</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Action_NoResponse</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Capture-outcome button: customer didn't respond / not pitched</shortDescription>
+        <value>No Response</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Action_Copy</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Copy-to-clipboard button label on talk-track card</shortDescription>
+        <value>Copy</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Copied_Confirmation</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Transient confirmation after copy-to-clipboard</shortDescription>
+        <value>Copied</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Captured_Yes</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Confirmation copy after capturing a Yes outcome (Lead spawned)</shortDescription>
+        <value>Captured: Yes — Lead created. Jordan will follow up tomorrow.</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Captured_Generic</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Confirmation copy after capturing a non-Yes outcome</shortDescription>
+        <value>Outcome captured.</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Reasons_Heading</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Heading above the reason-codes list on a recommendation card</shortDescription>
+        <value>Why this matters</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_AnnualValue_Label</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Label for the estimated annual value figure</shortDescription>
+        <value>Est. annual value</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Score_Label</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Label for the score badge</shortDescription>
+        <value>Score</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Expand_TalkTrack</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Toggle button to expand the collapsed talk-track in compact variant</shortDescription>
+        <value>Show talk-track</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Collapse_TalkTrack</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Toggle button to collapse the expanded talk-track in compact variant</shortDescription>
+        <value>Hide talk-track</value>
+    </labels>
 </CustomLabels>

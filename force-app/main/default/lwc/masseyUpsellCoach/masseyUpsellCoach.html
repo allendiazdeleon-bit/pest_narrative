@@ -1,0 +1,164 @@
+<template>
+    <article class="upsell-card" data-variant={variant}>
+        <header class="upsell-header">
+            <span class="upsell-badge" title={label.HEADING}>
+                <lightning-icon
+                    icon-name="utility:einstein"
+                    size="xx-small"
+                    alternative-text={label.HEADING}
+                    class="badge-icon"
+                ></lightning-icon>
+                <span class="badge-text">{label.HEADING}</span>
+            </span>
+        </header>
+
+        <!-- Loading -->
+        <template lwc:if={isLoading}>
+            <div class="state-row state-loading" role="status">
+                <lightning-spinner alternative-text={label.LOADING} size="small"></lightning-spinner>
+                <p class="state-text">{label.LOADING}</p>
+            </div>
+        </template>
+
+        <!-- Error -->
+        <template lwc:elseif={hasError}>
+            <div class="state-row state-error" role="alert">
+                <lightning-icon icon-name="utility:warning" size="x-small" alternative-text="error" class="state-icon"></lightning-icon>
+                <p class="state-text">{label.ERROR_LOAD}</p>
+            </div>
+        </template>
+
+        <!-- Empty -->
+        <template lwc:elseif={showEmpty}>
+            <div class="state-row state-empty">
+                <lightning-icon icon-name="utility:success" size="x-small" alternative-text="ok" class="state-icon state-icon-success"></lightning-icon>
+                <p class="state-text">{label.EMPTY_ALL_LINES}</p>
+            </div>
+        </template>
+
+        <!-- Recommendations -->
+        <template lwc:else>
+            <ul class="rec-list">
+                <template for:each={decoratedRecommendations} for:item="r">
+                    <li key={r.key} class="rec-card" data-line={r.serviceLine}>
+                        <div class="rec-top">
+                            <h3 class="rec-line">{r.serviceLine}</h3>
+                            <span class={r.scoreBandClass} title={label.SCORE_LABEL}>
+                                <span class="score-label">{label.SCORE_LABEL}</span>
+                                <span class="score-value">{r.score}</span>
+                            </span>
+                        </div>
+
+                        <template lwc:if={r.hasAnnualValue}>
+                            <p class="rec-value">
+                                <span class="rec-value-label">{label.ANNUAL_VALUE_LABEL}:</span>
+                                <span class="rec-value-amount">{r.annualValueDisplay}</span>
+                            </p>
+                        </template>
+
+                        <template lwc:if={r.hasReasons}>
+                            <div class="rec-reasons">
+                                <span class="rec-reasons-heading">{label.REASONS_HEADING}</span>
+                                <ul class="rec-chip-row">
+                                    <template for:each={r.reasonChips} for:item="c">
+                                        <li key={c.key} class="rec-chip">{c.label}</li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </template>
+
+                        <!-- Talk-track: collapsed by default in compact mode, always visible in full -->
+                        <template lwc:if={r.showToggle}>
+                            <button
+                                type="button"
+                                class="talk-toggle"
+                                data-line={r.serviceLine}
+                                onclick={handleToggleTalkTrack}
+                                aria-expanded={r.expanded}
+                            >
+                                {r.toggleLabel}
+                            </button>
+                        </template>
+
+                        <template lwc:if={r.expanded}>
+                            <section class="talk-track">
+                                <div class="talk-track-head">
+                                    <span class="talk-track-heading">{label.TALK_TRACK_HEADING}</span>
+                                    <button
+                                        type="button"
+                                        class="copy-btn"
+                                        data-line={r.serviceLine}
+                                        data-text={r.talkTrack}
+                                        onclick={handleCopyTalkTrack}
+                                        aria-label={label.ACTION_COPY}
+                                    >
+                                        <lightning-icon
+                                            icon-name="utility:copy_to_clipboard"
+                                            size="xx-small"
+                                            alternative-text={label.ACTION_COPY}
+                                            class="copy-icon"
+                                        ></lightning-icon>
+                                        <template lwc:if={r.copied}>
+                                            <span class="copy-flash">{label.COPIED_CONFIRMATION}</span>
+                                        </template>
+                                        <template lwc:else>
+                                            <span class="copy-label">{label.ACTION_COPY}</span>
+                                        </template>
+                                    </button>
+                                </div>
+                                <p class="talk-track-text">{r.talkTrack}</p>
+                            </section>
+                        </template>
+
+                        <!-- Capture-outcome buttons -->
+                        <template lwc:if={r.captured}>
+                            <div class="captured-pill" role="status">
+                                <lightning-icon icon-name="utility:check" size="xx-small" alternative-text="captured" class="captured-icon"></lightning-icon>
+                                <span class="captured-text">{r.capturedMessage}</span>
+                            </div>
+                        </template>
+                        <template lwc:else>
+                            <div class="action-row" data-variant={variant}>
+                                <button
+                                    type="button"
+                                    class="action-btn action-yes"
+                                    data-line={r.serviceLine}
+                                    onclick={handleCaptureYes}
+                                >
+                                    {label.ACTION_YES}
+                                </button>
+                                <button
+                                    type="button"
+                                    class="action-btn action-notnow"
+                                    data-line={r.serviceLine}
+                                    onclick={handleCaptureNotNow}
+                                >
+                                    {label.ACTION_NOT_NOW}
+                                </button>
+                                <button
+                                    type="button"
+                                    class="action-btn action-notint"
+                                    data-line={r.serviceLine}
+                                    onclick={handleCaptureNotInterested}
+                                >
+                                    {label.ACTION_NOT_INTERESTED}
+                                </button>
+                                <!-- "No Response" only in full variant — compact stays minimal -->
+                                <template lwc:if={isFull}>
+                                    <button
+                                        type="button"
+                                        class="action-btn action-noresp"
+                                        data-line={r.serviceLine}
+                                        onclick={handleCaptureNoResponse}
+                                    >
+                                        {label.ACTION_NO_RESPONSE}
+                                    </button>
+                                </template>
+                            </div>
+                        </template>
+                    </li>
+                </template>
+            </ul>
+        </template>
+    </article>
+</template>

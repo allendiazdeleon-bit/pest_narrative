@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Massey Upsell Coach</masterLabel>
+    <description>Net-new pest-lifecycle LWC. Surfaces ranked upsell recommendations + empathetic talk-tracks from UpsellCoachService. Embeds in Site / Summary steps of the orchestrator and as a standalone Quick Action on Account. Offline-capable via draft Lead.</description>
+    <targets>
+        <target>lightning__RecordAction</target>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordAction">
+            <actionType>ScreenAction</actionType>
+        </targetConfig>
+        <targetConfig targets="lightning__RecordPage">
+            <objects>
+                <object>Account</object>
+            </objects>
+            <property name="variant" type="String" label="Variant" description="compact | full" default="full"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
