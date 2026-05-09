@@ -1,0 +1,60 @@
+.drawer-container {
+  background: #1f2937;
+  color: #f3f4f6;
+  padding: 1rem 1.25rem;
+  border-radius: 8px 8px 0 0;
+}
+.drawer-header {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  color: #9ca3af;
+}
+.drawer-row {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+.incident-card {
+  flex: 0 0 240px;
+  background: #374151;
+  border-radius: 6px;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.incident-card:hover { background: #4b5563; }
+.incident-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.incident-affected {
+  font-size: 0.75rem;
+  color: #fbbf24;
+}
+.incident-subject {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+.incident-meta {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+.pill {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.pill-critical { background: #dc2626; color: #fff; }
+.pill-major { background: #ea580c; color: #fff; }
+.pill-normal { background: #4b5563; color: #fff; }
+.empty { color: #9ca3af; font-style: italic; padding: 0.5rem 0; }

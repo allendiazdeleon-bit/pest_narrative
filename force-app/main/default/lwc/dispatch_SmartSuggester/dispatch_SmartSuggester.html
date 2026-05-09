@@ -1,0 +1,60 @@
+<template>
+  <div class="suggester-card">
+    <header class="suggester-header">
+      <div class="header-left">
+        <span class="ai-badge" title="AI generated">
+          <span class="ai-badge-dot"></span>
+          <span class="ai-badge-text">AI</span>
+        </span>
+        <h3 class="header-title">AI Dispatch Order</h3>
+      </div>
+      <span class="header-meta">Today + tomorrow</span>
+    </header>
+
+    <template lwc:if={showLowConfidenceDisclaimer}>
+      <div class="disclaimer">
+        AI suggestions &mdash; verify before committing.
+      </div>
+    </template>
+
+    <template lwc:if={hasError}>
+      <div class="error-row">{error}</div>
+    </template>
+
+    <template lwc:if={isLoading}>
+      <div class="empty-row">Loading AI suggestions&hellip;</div>
+    </template>
+
+    <template lwc:if={hasSuggestions}>
+      <ul class="suggestion-list" role="list">
+        <template for:each={suggestions} for:item="s">
+          <li
+            key={s.id}
+            class="suggestion-row"
+            data-id={s.id}
+            tabindex="0"
+            role="button"
+            onclick={handleRowClick}
+            onkeydown={handleRowKey}
+          >
+            <div class="rank">{s.rank}</div>
+            <div class="body">
+              <div class="row-top">
+                <span class="subject">{s.subject}</span>
+                <span class={s.badgeClass}>{s.badge}</span>
+              </div>
+              <div class="rationale">{s.rationale}</div>
+            </div>
+            <div class={s.confidenceClass} title="AI confidence">
+              {s.confidence}
+            </div>
+          </li>
+        </template>
+      </ul>
+    </template>
+
+    <template lwc:if={showEmpty}>
+      <div class="empty-row">No open Service Appointments to rank.</div>
+    </template>
+  </div>
+</template>

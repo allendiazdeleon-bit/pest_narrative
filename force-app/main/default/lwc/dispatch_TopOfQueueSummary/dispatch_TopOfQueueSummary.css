@@ -1,0 +1,34 @@
+.summary-bar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  background: #ffffff;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.summary-cell { text-align: left; }
+.cell-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+.cell-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+}
+.cell-value-orange { color: #ea580c; }
+.margin-pill {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.margin-green { background: #d1fae5; color: #065f46; }
+.margin-yellow { background: #fef3c7; color: #92400e; }
+.margin-red { background: #fee2e2; color: #991b1b; }

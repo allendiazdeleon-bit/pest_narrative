@@ -1,0 +1,22 @@
+<template>
+  <div class="drawer-container">
+    <div class="drawer-header">{labelDrawerHeader}</div>
+    <template lwc:if={hasIncidents}>
+      <div class="drawer-row">
+        <template for:each={incidents} for:item="i">
+          <div key={i.id} class="incident-card" data-id={i.id} onclick={handleIncidentClick}>
+            <div class="incident-top">
+              <span class={i.priorityClass}>{i.priority}</span>
+              <span class="incident-affected">{i.affectedDisplay}</span>
+            </div>
+            <div class="incident-subject">{i.subject}</div>
+            <div class="incident-meta">{i.circuit} &middot; {i.createdDateFmt}</div>
+          </div>
+        </template>
+      </div>
+    </template>
+    <template lwc:else>
+      <div class="empty">{labelEmpty}</div>
+    </template>
+  </div>
+</template>

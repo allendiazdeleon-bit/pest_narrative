@@ -1,0 +1,24 @@
+<template>
+  <div class="summary-bar">
+    <div class="summary-cell">
+      <div class="cell-label">Open SAs</div>
+      <div class="cell-value">{openSaCount}</div>
+    </div>
+    <div class="summary-cell">
+      <div class="cell-label">{labelActiveClusters}</div>
+      <div class="cell-value">{activeIncidents}</div>
+    </div>
+    <div class="summary-cell">
+      <div class="cell-label">{labelAffectedProperties}</div>
+      <div class="cell-value cell-value-orange">{affected}</div>
+    </div>
+    <div class="summary-cell">
+      <div class="cell-label">Capacity %</div>
+      <div class="cell-value">{capacityPct}%</div>
+    </div>
+    <div class="summary-cell">
+      <div class="cell-label">Margin</div>
+      <div class={marginClass}>{summary.marginIndicator}</div>
+    </div>
+  </div>
+</template>
