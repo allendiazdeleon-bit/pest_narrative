@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <chart>
+        <chartSummaries>
+            <axisBinding>y</axisBinding>
+            <column>RowCount</column>
+        </chartSummaries>
+        <backgroundColor1>#FFFFFF</backgroundColor1>
+        <backgroundColor2>#FFFFFF</backgroundColor2>
+        <backgroundFadeDir>Diagonal</backgroundFadeDir>
+        <chartType>HorizontalBar</chartType>
+        <enableHoverLabels>true</enableHoverLabels>
+        <groupingColumn>WorkOrder$OwnerId</groupingColumn>
+        <location>CHART_BOTTOM</location>
+        <showAxisLabels>true</showAxisLabels>
+        <showValues>true</showValues>
+        <size>Medium</size>
+        <sortBy>RowValueDescending</sortBy>
+        <summaryAxisRange>Auto</summaryAxisRange>
+        <textColor>#000000</textColor>
+        <textSize>12</textSize>
+        <title>Completed Visits MTD by Tech (pair with Attach Rate)</title>
+        <titleColor>#000000</titleColor>
+        <titleSize>18</titleSize>
+    </chart>
+    <columns>
+        <field>WorkOrder$WorkOrderNumber</field>
+    </columns>
+    <columns>
+        <field>WorkOrder$Subject</field>
+    </columns>
+    <columns>
+        <field>WorkOrder$WorkType</field>
+    </columns>
+    <columns>
+        <field>WorkOrder$Status</field>
+    </columns>
+    <columns>
+        <field>WorkOrder$LastModifiedDate</field>
+    </columns>
+    <description>High route-quality, low-attach-rate techs surface here. WO completion volume MTD grouped by Owner (tech). Read alongside Attach Rate by Tech (MTD): high WO count + low lead count = coaching candidate. Threshold guidance: techs at &lt;5% attach rate are flagged in dashboard text.</description>
+    <filter>
+        <criteriaItems>
+            <column>WorkOrder$Status</column>
+            <operator>equals</operator>
+            <value>Completed,Closed</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>WorkOrder$LastModifiedDate</column>
+            <operator>equals</operator>
+            <value>THIS_MONTH</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>WorkOrder$OwnerId</field>
+        <sortOrder>Desc</sortOrder>
+    </groupingsDown>
+    <name>Coaching Opportunities</name>
+    <reportType>FSL_Work_Orders__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+</Report>
