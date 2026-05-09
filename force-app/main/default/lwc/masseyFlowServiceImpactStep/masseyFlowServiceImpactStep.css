@@ -195,7 +195,7 @@
 .impact-flags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
 .impact-flag { background: rgba(245, 158, 11, 0.15); color: #B45309; font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600; }
 
-.impact-subscribers { margin-bottom: 12px; }
+.impact-properties { margin-bottom: 12px; }
 
 .subs-row {
     display: flex;

@@ -240,7 +240,7 @@ for (Integer i = 0; i < 42; i++) {
 }
 
 // ---- 32827 Lake Nona — Sandra Reyes (anchor) + 24 fillers ----
-// Sandra is a 4-year GoGreen subscriber, no termite, kitchen-ant call ready.
+// Sandra is a 4-year GoGreen customer, no termite, kitchen-ant call ready.
 // Lake Nona puts her OUTSIDE the 32828 cluster so Scene 1 stays clean of the
 // surge backdrop.
 ZipSpec ln = zipSpecs[1];

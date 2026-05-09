@@ -7,7 +7,7 @@ import WO_ASSET_ID from '@salesforce/schema/WorkOrder.AssetId';
 import ASSET_SERVICE_LINE from '@salesforce/schema/Asset.Service_Line__c';
 import suggestForStep from '@salesforce/apex/NextBestActionService.suggestForStep';
 
-// Pest treatment phase labels — three-phase model from telcoFlow re-skinned:
+// Pest treatment phase labels — three-phase model:
 //   Phase 1: Pre-Treatment Setup (PPE on, mix tank, calibrate spray equipment,
 //            verify EPA reg # + applicator license, post re-entry signage)
 //   Phase 2: Treatment Execution (apply product per label, document amount,
