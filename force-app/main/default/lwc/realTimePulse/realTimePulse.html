@@ -1,0 +1,12 @@
+<template>
+	<span class={rootClass} title="Live data — auto-refreshes">
+		<span class={dotClass}></span>
+		<template lwc:if={compact}>
+			<!-- compact: dot only -->
+		</template>
+		<template lwc:else>
+			<span class="pulse-label">{statusLabel}</span>
+			<span class="pulse-meta">• updated {relativeTime}</span>
+		</template>
+	</span>
+</template>

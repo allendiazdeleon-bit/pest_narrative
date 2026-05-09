@@ -1,0 +1,213 @@
+:host {
+	display: block;
+	--ai-info: #0070d2;
+	--ai-warning: #ffb75d;
+	--ai-critical: #c23934;
+	--ai-success: #2e844a;
+	--ai-card-bg: var(--lwc-colorBackgroundAlt, #ffffff);
+	--ai-card-border: var(--lwc-colorBorder, #dddbda);
+	--ai-text-strong: var(--lwc-colorTextDefault, #080707);
+	--ai-text-weak: var(--lwc-colorTextWeak, #706e6b);
+}
+
+.ai-card {
+	position: relative;
+	background: var(--ai-card-bg);
+	border: 1px solid var(--ai-card-border);
+	border-left: 4px solid var(--ai-info);
+	border-radius: 0.25rem;
+	padding: 0.75rem 0.875rem 1.25rem 0.875rem;
+	margin: 0.25rem 0;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	overflow: hidden;
+}
+
+.ai-card.severity-info {
+	border-left-color: var(--ai-info);
+}
+.ai-card.severity-warning {
+	border-left-color: var(--ai-warning);
+}
+.ai-card.severity-critical {
+	border-left-color: var(--ai-critical);
+}
+.ai-card.severity-success {
+	border-left-color: var(--ai-success);
+}
+
+.ai-header {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.375rem;
+}
+
+.ai-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	background: linear-gradient(135deg, #7f56d9 0%, #2e90fa 100%);
+	color: #ffffff;
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	padding: 0.125rem 0.5rem;
+	border-radius: 999px;
+	text-transform: uppercase;
+	animation: ai-pulse 2s ease-in-out infinite;
+	flex-shrink: 0;
+}
+
+.ai-badge .severity-icon {
+	--sds-c-icon-color-foreground-default: #ffffff;
+	width: 0.75rem;
+	height: 0.75rem;
+}
+
+@keyframes ai-pulse {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 rgba(127, 86, 217, 0.6);
+	}
+	50% {
+		box-shadow: 0 0 0 4px rgba(127, 86, 217, 0);
+	}
+}
+
+.ai-title {
+	flex: 1;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--ai-text-strong);
+	margin: 0;
+	line-height: 1.25;
+}
+
+.timestamp {
+	font-size: 0.6875rem;
+	color: var(--ai-text-weak);
+	white-space: nowrap;
+}
+
+.summary {
+	font-size: 0.8125rem;
+	color: var(--ai-text-strong);
+	line-height: 1.4;
+	margin: 0 0 0.375rem 0;
+}
+
+.source {
+	display: inline-block;
+	font-size: 0.6875rem;
+	color: var(--ai-text-weak);
+	background: var(--lwc-colorBackgroundRowHover, #f3f3f3);
+	padding: 0.125rem 0.5rem;
+	border-radius: 0.25rem;
+	margin-bottom: 0.5rem;
+}
+
+.details {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+	margin: 0.375rem 0 0.5rem 0;
+	padding: 0.375rem 0;
+	border-top: 1px dashed var(--ai-card-border);
+	border-bottom: 1px dashed var(--ai-card-border);
+}
+
+.detail-item {
+	display: flex;
+	flex-direction: column;
+	min-width: 4rem;
+}
+
+.detail-label {
+	font-size: 0.625rem;
+	color: var(--ai-text-weak);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.detail-value {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	color: var(--ai-text-strong);
+}
+
+.actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.375rem;
+	margin-top: 0.5rem;
+}
+
+.ai-action-btn {
+	font-size: 0.75rem;
+	font-weight: 600;
+	padding: 0.25rem 0.625rem;
+	border-radius: 0.25rem;
+	border: 1px solid var(--ai-card-border);
+	background: #ffffff;
+	color: var(--ai-info);
+	cursor: pointer;
+	transition: background 0.15s ease;
+}
+
+.ai-action-btn:hover {
+	background: var(--lwc-colorBackgroundRowHover, #f3f3f3);
+}
+
+.ai-action-btn[data-variant="brand"] {
+	background: var(--ai-info);
+	border-color: var(--ai-info);
+	color: #ffffff;
+}
+
+.ai-action-btn[data-variant="destructive"] {
+	background: var(--ai-critical);
+	border-color: var(--ai-critical);
+	color: #ffffff;
+}
+
+.ai-action-btn[data-variant="success"] {
+	background: var(--ai-success);
+	border-color: var(--ai-success);
+	color: #ffffff;
+}
+
+.confidence-bar {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 3px;
+	background: var(--lwc-colorBackgroundRowHover, #f3f3f3);
+}
+
+.confidence-fill {
+	display: block;
+	height: 100%;
+	background: var(--ai-info);
+	transition: width 0.4s ease;
+}
+
+.severity-warning .confidence-fill {
+	background: var(--ai-warning);
+}
+.severity-critical .confidence-fill {
+	background: var(--ai-critical);
+}
+.severity-success .confidence-fill {
+	background: var(--ai-success);
+}
+
+.confidence-label {
+	position: absolute;
+	right: 0.5rem;
+	bottom: 0.375rem;
+	font-size: 0.625rem;
+	color: var(--ai-text-weak);
+	background: var(--ai-card-bg);
+	padding: 0 0.25rem;
+}

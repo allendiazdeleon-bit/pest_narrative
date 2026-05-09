@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Property Treatment Hierarchy Visualizer</masterLabel>
+    <description>Pure-SVG horizontal tree of the treatment area around a Property Asset (Property to Sentricon stations / mosquito-system nozzles / treatment perimeters / interior traps). Color and icon coded by Service_Line__c; Bait_Station_State__c = Heavy_Activity nodes render red. Click a node to fire a nodeselect event.</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage,lightning__AppPage">
+            <property name="compact" type="Boolean" default="false" label="Compact" description="Smaller node sizes for embedded use."/>
+            <property name="showLegend" type="Boolean" default="true" label="Show Legend"/>
+            <property name="highlightAffectedProperties" type="Boolean" default="false" label="Highlight Affected Properties" description="Ring downstream properties in a highlight color (used during cluster events)."/>
+            <property name="serviceLine" type="String" label="Service Line override" description="Pest / Termite / Mosquito / Lawn — falls back to topology if blank."/>
+        </targetConfig>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="recordId" type="String" label="Asset Id"/>
+            <property name="compact" type="Boolean" default="true" label="Compact"/>
+            <property name="showLegend" type="Boolean" default="false" label="Show Legend"/>
+            <property name="highlightAffectedProperties" type="Boolean" default="false" label="Highlight Affected Properties"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

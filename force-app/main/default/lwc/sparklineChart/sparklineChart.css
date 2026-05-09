@@ -1,0 +1,30 @@
+:host {
+	display: inline-block;
+	line-height: 0;
+}
+
+.sparkline {
+	display: inline-block;
+	position: relative;
+	vertical-align: middle;
+}
+
+.sparkline-svg {
+	display: block;
+	overflow: visible;
+}
+
+.last-value {
+	font-size: 9px;
+	font-family: var(
+		--lwc-fontFamily,
+		"Salesforce Sans",
+		Arial,
+		sans-serif
+	);
+	font-weight: 600;
+}
+
+.reference-line {
+	opacity: 0.6;
+}

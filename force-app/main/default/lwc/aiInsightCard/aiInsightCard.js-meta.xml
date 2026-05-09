@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>AI Insight Card</masterLabel>
+    <description>Reusable card surfacing an AI-generated insight: title, summary, confidence, source, and optional action buttons. Used across masseyFlow for pest-pressure scoring, cluster detection, upsell coaching prompts, and conducive-condition warnings.</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <property name="title" type="String" label="Title" required="true"/>
+            <property name="summary" type="String" label="Summary" required="true"/>
+            <property name="confidence" type="Integer" label="Confidence (0-100)" default="80"/>
+            <property name="severity" type="String" label="Severity" default="info"/>
+            <property name="source" type="String" label="Source attribution"/>
+            <property name="timestamp" type="String" label="Timestamp (ISO)"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

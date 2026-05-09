@@ -1,0 +1,58 @@
+<template>
+	<article class={cardClass}>
+		<header class="ai-header">
+			<span class="ai-badge" title="AI generated">
+				<lightning-icon
+					icon-name={severityIcon}
+					size="xx-small"
+					alternative-text={severity}
+					class="severity-icon"
+				></lightning-icon>
+				<span class="ai-badge-text">AI</span>
+			</span>
+			<h3 class="ai-title">{title}</h3>
+			<template lwc:if={hasTimestamp}>
+				<span class="timestamp">{relativeTime}</span>
+			</template>
+		</header>
+
+		<p class="summary">{summary}</p>
+
+		<template lwc:if={hasSource}>
+			<span class="source">{source}</span>
+		</template>
+
+		<template lwc:if={hasDetails}>
+			<div class="details">
+				<template for:each={details} for:item="d" for:index="i">
+					<div key={d.label} class="detail-item">
+						<span class="detail-label">{d.label}</span>
+						<span class="detail-value">{d.value}</span>
+					</div>
+				</template>
+			</div>
+		</template>
+
+		<template lwc:if={hasActions}>
+			<div class="actions">
+				<template for:each={decoratedActions} for:item="a">
+					<button
+						key={a.key}
+						class="ai-action-btn"
+						data-variant={a.variant}
+						data-name={a.name}
+						onclick={handleActionClick}
+						type="button"
+					>
+						{a.label}
+					</button>
+				</template>
+			</div>
+		</template>
+
+		<div class="confidence-bar" aria-label={confidenceLabel}>
+			<span class="confidence-fill" style={confidenceStyle}></span>
+			<label class="confidence-label">{confidenceLabel}</label>
+		</div>
+	</article>
+</template>

@@ -1,0 +1,133 @@
+<template>
+	<article class={rootClass}>
+		<template lwc:if={hasTopology}>
+			<header class="tree-header">
+				<h3 class="slds-text-heading_small">Property Treatment Hierarchy</h3>
+				<p class="slds-text-body_small slds-text-color_weak">{summaryText}</p>
+			</header>
+
+			<div class="tree-zoom-row">
+				<button class="tree-zoom-btn" type="button" onclick={handleZoomOut}>−</button>
+				<span class="tree-zoom-level">{zoomLabel}</span>
+				<button class="tree-zoom-btn" type="button" onclick={handleZoomIn}>+</button>
+				<button class="tree-zoom-reset" type="button" onclick={handleZoomReset}>Reset</button>
+			</div>
+
+			<div class="tree-scroller" style={scrollerStyle}>
+				<svg
+					class="tree-svg"
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox={svgViewBox}
+					width={scaledSvgWidth}
+					height={scaledSvgHeight}
+					role="img"
+					aria-label="Property treatment hierarchy tree"
+				>
+					<g class="edges">
+						<template for:each={edges} for:item="e">
+							<g key={e.key}>
+								<line
+									x1={e.x1}
+									y1={e.y1}
+									x2={e.x2}
+									y2={e.y2}
+									stroke={e.stroke}
+									stroke-width={e.strokeWidth}
+									stroke-dasharray={e.dasharray}
+								></line>
+								<template lwc:if={e.hasSpec}>
+									<text x={e.midX} y={e.midY} class="edge-label">{e.spec}</text>
+								</template>
+							</g>
+						</template>
+					</g>
+
+					<g class="nodes">
+						<template for:each={nodes} for:item="n">
+							<g
+								key={n.id}
+								class={n.boxClass}
+								data-id={n.id}
+								data-type={n.nodeType}
+								data-assetid={n.assetId}
+								onclick={handleNodeClick}
+								onkeydown={handleNodeKey}
+								tabindex="0"
+								role="button"
+								aria-label={n.primaryLabel}
+							>
+								<template lwc:if={n.ringColor}>
+									<rect
+										x={n.x}
+										y={n.y}
+										width={nodeWidth}
+										height={nodeHeight}
+										rx="10"
+										ry="10"
+										fill="none"
+										stroke={n.ringColor}
+										stroke-width="3"
+										class="node-ring"
+									></rect>
+								</template>
+								<rect
+									x={n.x}
+									y={n.y}
+									width={nodeWidth}
+									height={nodeHeight}
+									rx="6"
+									ry="6"
+									fill="#ffffff"
+									stroke={n.color}
+									stroke-width="2"
+								></rect>
+								<rect
+									x={n.x}
+									y={n.y}
+									width="6"
+									height={nodeHeight}
+									rx="2"
+									ry="2"
+									fill={n.color}
+								></rect>
+								<text x={n.iconX} y={n.iconY} class="node-icon-text" dominant-baseline="hanging">{n.iconHref}</text>
+								<text x={n.labelX} y={n.labelY} class="node-label">{n.primaryLabel}</text>
+								<text x={n.typeX} y={n.typeY} class="node-type">{n.typeLabel}</text>
+							</g>
+						</template>
+					</g>
+				</svg>
+			</div>
+
+			<template lwc:if={hasLegend}>
+				<footer class="tree-legend">
+					<template for:each={legendItems} for:item="li">
+						<span key={li.key} class="legend-item">
+							<span class="legend-swatch">
+								<svg width="12" height="12">
+									<rect width="12" height="12" rx="2" ry="2" fill={li.color}></rect>
+								</svg>
+							</span>
+							<span class="legend-text">{li.label}</span>
+						</span>
+					</template>
+					<span class="legend-item">
+						<span class="legend-text legend-text--meta">Solid = perimeter · Dashed = interior zone</span>
+					</span>
+				</footer>
+			</template>
+		</template>
+
+		<template lwc:elseif={hasError}>
+			<div class="slds-text-color_error slds-p-around_small">
+				<lightning-icon icon-name="utility:error" size="x-small" alternative-text="Error" class="slds-m-right_x-small"></lightning-icon>
+				<span>{error}</span>
+			</div>
+		</template>
+		<template lwc:else>
+			<div class="slds-p-around_medium slds-text-color_weak">
+				<lightning-spinner alternative-text="Loading property hierarchy" size="small"></lightning-spinner>
+			</div>
+		</template>
+	</article>
+</template>

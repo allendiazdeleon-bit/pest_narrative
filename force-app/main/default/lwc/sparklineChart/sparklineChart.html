@@ -1,0 +1,70 @@
+<template>
+	<div class="sparkline" style={rootStyle}>
+		<svg
+			class="sparkline-svg"
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox={viewBox}
+			width={width}
+			height={height}
+			preserveAspectRatio="none"
+			role="img"
+		>
+			<template lwc:if={hasReferenceLine}>
+				<line
+					class="reference-line"
+					x1="0"
+					x2={width}
+					y1={referenceLineY}
+					y2={referenceLineY}
+					stroke="#999999"
+					stroke-width="1"
+					stroke-dasharray="2,2"
+				></line>
+			</template>
+
+			<template lwc:if={hasData}>
+				<path
+					class="area"
+					d={areaPath}
+					fill={effectiveFillColor}
+					stroke="none"
+				></path>
+				<path
+					class="line"
+					d={linePath}
+					fill="none"
+					stroke={color}
+					stroke-width="1.5"
+					stroke-linejoin="round"
+					stroke-linecap="round"
+				></path>
+			</template>
+
+			<template lwc:if={hasPrediction}>
+				<path
+					class="prediction"
+					d={predictionPath}
+					fill="none"
+					stroke={predictionColor}
+					stroke-width="1.5"
+					stroke-dasharray="3,3"
+					stroke-linecap="round"
+				></path>
+			</template>
+
+			<template lwc:if={showLastValue}>
+				<template lwc:if={hasData}>
+					<text
+						class="last-value"
+						x={lastValueX}
+						y={lastValueY}
+						dy="0.35em"
+						fill={color}
+					>
+						{lastValueDisplay}
+					</text>
+				</template>
+			</template>
+		</svg>
+	</div>
+</template>
