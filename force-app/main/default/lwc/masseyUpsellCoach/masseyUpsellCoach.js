@@ -368,7 +368,7 @@ export default class MasseyUpsellCoach extends LightningElement {
                 LastName: 'Massey Customer',
                 Company: 'Massey Customer',
                 Status: 'Open - Not Contacted',
-                LeadSource: 'Upsell from Tech Visit',
+                LeadSource: 'Tech Route Pitch',
                 Description:
                     'Upsell pitch captured offline. Service line: ' + serviceLine
                     + '. Source Account: ' + this.accountId
