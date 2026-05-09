@@ -1,0 +1,136 @@
+<template>
+  <div class="panel">
+    <div class="header">
+      <h1>masseyFlow Demo Control Panel</h1>
+      <p>One-click triggers for everything that needs server-side seeding before / during / after a Massey demo run.</p>
+    </div>
+
+    <!-- BOOTSTRAP -->
+    <div class="card card-bootstrap">
+      <h2>0 - Bootstrap foundation <span class="tag-once">one-time per org</span></h2>
+      <p class="hint">Run this <strong>once</strong> on a fresh org (after FSL managed package is installed). Creates the Orlando branch Service Territory, 7am-5pm operating hours, pest Work Types (GoGreen Pest, Termite Inspection, Sentricon Install, Mosquito Hunter Install, Mosquito Surge Area Treatment, Lawn Service, Booster Inspection), assigns the Massey technician permset, and applies the FSL Work Rule fix that lets non-Emergency scheduling policies return candidates. Idempotent - re-running is safe.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick={runBootstrap} disabled={isAnyBusy}>
+          <template lwc:if={isBootstrapBusy}>Bootstrapping...</template>
+          <template lwc:else>Bootstrap Foundation</template>
+        </button>
+      </div>
+      <template lwc:if={statusBootstrap}>
+        <div class="status">{statusBootstrap}</div>
+      </template>
+    </div>
+
+    <!-- BASELINE -->
+    <div class="card">
+      <h2>1 - Baseline demo data</h2>
+      <p class="hint">Personas (Sandra, David, Lisa, Maria, Tom, Ray, Jordan), Property Assets, Sentricon bait stations, dispatch queue, proactive pest-pressure WOs, work plans, mosquito surge cluster Cases. Use <strong>Reload Fresh</strong> for a clean, end-to-end demo prep.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick={reloadFreshGoGreen} disabled={isAnyBusy}>
+          <template lwc:if={isReloadGoGreenBusy}>Reloading...</template>
+          <template lwc:else>Reload Fresh - GoGreen Pest</template>
+        </button>
+        <button class="btn btn-primary" onclick={reloadFreshTermite} disabled={isAnyBusy}>
+          <template lwc:if={isReloadTermiteBusy}>Reloading...</template>
+          <template lwc:else>Reload Fresh - Termite</template>
+        </button>
+        <button class="btn btn-primary" onclick={reloadFreshMosquito} disabled={isAnyBusy}>
+          <template lwc:if={isReloadMosquitoBusy}>Reloading...</template>
+          <template lwc:else>Reload Fresh - Mosquito</template>
+        </button>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick={loadGoGreen} disabled={isAnyBusy}>
+          <template lwc:if={isBaselineGoGreenBusy}>Loading...</template>
+          <template lwc:else>Load GoGreen (skip reset)</template>
+        </button>
+        <button class="btn btn-secondary" onclick={loadTermite} disabled={isAnyBusy}>
+          <template lwc:if={isBaselineTermiteBusy}>Loading...</template>
+          <template lwc:else>Load Termite (skip reset)</template>
+        </button>
+        <button class="btn btn-secondary" onclick={loadMosquito} disabled={isAnyBusy}>
+          <template lwc:if={isBaselineMosquitoBusy}>Loading...</template>
+          <template lwc:else>Load Mosquito (skip reset)</template>
+        </button>
+        <button class="btn btn-danger" onclick={resetAll} disabled={isAnyBusy}>
+          <template lwc:if={isBaselineResetBusy}>Resetting...</template>
+          <template lwc:else>Reset All Demo Data</template>
+        </button>
+      </div>
+      <template lwc:if={statusBaseline}>
+        <div class="status">{statusBaseline}</div>
+      </template>
+    </div>
+
+    <!-- DISPATCHER -->
+    <div class="card">
+      <h2>2 - Dispatcher Gantt - Orlando branch board</h2>
+      <p class="hint">17 WOs / SAs across 4 techs (Maria, Tom, plus 2 more), deliberately badly scheduled. Run optimization in the Field Service Dispatcher Console to clean it up.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick={loadDispatcher} disabled={isAnyBusy}>
+          <template lwc:if={isDispatcherLoadBusy}>Loading...</template>
+          <template lwc:else>Load Inefficient Schedule</template>
+        </button>
+        <button class="btn btn-secondary" onclick={resetDispatcher} disabled={isAnyBusy}>
+          <template lwc:if={isDispatcherResetBusy}>Clearing...</template>
+          <template lwc:else>Reset Schedule</template>
+        </button>
+      </div>
+      <template lwc:if={statusDispatcher}>
+        <div class="status">{statusDispatcher}</div>
+      </template>
+    </div>
+
+    <!-- PROACTIVE -->
+    <div class="card">
+      <h2>3 - Proactive pest-pressure run</h2>
+      <p class="hint">Scans pest pressure monitors (rising bait station hits + soil temp + conducive conditions) and creates Booster Inspection WOs (skips the hero account so you can demo the live click-to-create separately).</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick={runProactive} disabled={isAnyBusy}>
+          <template lwc:if={isProactiveBusy}>Running...</template>
+          <template lwc:else>Run Proactive Sweep</template>
+        </button>
+      </div>
+      <template lwc:if={statusProactive}>
+        <div class="status">{statusProactive}</div>
+      </template>
+    </div>
+
+    <!-- CLUSTER -->
+    <div class="card">
+      <h2>4 - Mosquito surge cluster activation (legacy fallback)</h2>
+      <p class="hint">The new flow opens Incidents from the Case-level "Detect Cluster" Quick Action. This button is only here as a backup if you cannot run the Case-driven path.</p>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick={activateCluster} disabled={isAnyBusy}>
+          <template lwc:if={isClusterBusy}>Activating...</template>
+          <template lwc:else>Activate Mock Mosquito Surge</template>
+        </button>
+      </div>
+      <template lwc:if={statusCluster}>
+        <div class="status">{statusCluster}</div>
+      </template>
+    </div>
+
+    <!-- TIME SHIFT -->
+    <div class="card">
+      <h2>5 - Time-shift pest readings</h2>
+      <p class="hint">Set Asset.Last_Bait_Station_Hit_Date__c and pressure-monitor timestamps to N days ago. Useful when a saved demo org has stale timestamps and you want recent pest pressure to feel "live".</p>
+      <div class="form-row">
+        <lightning-input
+          type="number"
+          label="Days ago"
+          value="0"
+          onchange={handleDaysAgoChange}
+          variant="label-inline"
+          class="days-input">
+        </lightning-input>
+        <button class="btn btn-primary" onclick={applyTimeShift} disabled={isAnyBusy}>
+          <template lwc:if={isTimeBusy}>Shifting...</template>
+          <template lwc:else>Apply</template>
+        </button>
+      </div>
+      <template lwc:if={statusTime}>
+        <div class="status">{statusTime}</div>
+      </template>
+    </div>
+  </div>
+</template>

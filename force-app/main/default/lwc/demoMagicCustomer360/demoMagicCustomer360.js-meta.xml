@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Customer 360</masterLabel>
+    <description>Unified Massey customer view: pest service history, Property Asset states (bait stations, soil temp, conducive conditions), recent Cases, recent Work Orders by service line, and upsell history (Last_Upsell_Service_Line__c, Last_Upsell_Outcome__c, Upsell_Score__c). Used on the Service Console (Account) and embedded in the massey-portal Experience Cloud site.</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightningCommunity__Page</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <objects>
+                <object>Account</object>
+            </objects>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

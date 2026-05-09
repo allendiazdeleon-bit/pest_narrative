@@ -1,0 +1,38 @@
+<template>
+  <div class="modal">
+    <h2>Activate Mosquito Surge Cluster</h2>
+    <p>Inbound switchboard is reporting a spike in mosquito-system service calls from a single Orlando neighborhood after overnight storms. Open the channel to receive them and let geographic correlation group them into one Mosquito Surge Incident.</p>
+
+    <template lwc:if={isRunning}>
+      <div class="status-bar">
+        <template lwc:if={isStreaming}>Receiving inbound calls from Orlando branch switchboard...</template>
+        <template lwc:if={isCorrelating}>Geographic correlation - clustering by ZIP 32828 / Avalon Park...</template>
+        <template lwc:if={isLinking}>Opening parent Mosquito Surge Incident, linking 8 Cases...</template>
+        <template lwc:if={isNotifying}>Sending mass-notification text to affected customers...</template>
+      </div>
+
+      <template lwc:if={hasVisibleCalls}>
+        <div class="call-list">
+          <template for:each={visibleCalls} for:item="c">
+            <div key={c.caseNumber} class="call-row">
+              <span class="call-icon">CALL</span>
+              <span class="call-meta">
+                <strong>{c.caller}</strong>
+                <span class="call-addr">{c.address}</span>
+              </span>
+              <span class="call-time">just now</span>
+            </div>
+          </template>
+        </div>
+      </template>
+    </template>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick={handleActivate} disabled={isRunning}>
+        <template lwc:if={isRunning}>Receiving...</template>
+        <template lwc:else>Open Channel &amp; Receive Calls</template>
+      </button>
+      <button class="btn btn-secondary" onclick={handleClose} disabled={isRunning}>Cancel</button>
+    </div>
+  </div>
+</template>

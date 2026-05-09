@@ -1,0 +1,32 @@
+<template>
+  <div class="modal">
+    <h2>Run Pest Pressure Analysis</h2>
+    <p>Send this property's recent Sentricon bait station activity, soil temperature, and conducive-condition flags to the pest pressure model. If a rising-pressure signature is detected and the customer accepts the proactive outreach, a Booster Inspection Work Order will be generated automatically.</p>
+
+    <template lwc:if={isRunning}>
+      <div class="progress">
+        <div class="progress-step">Reading Sentricon bait station hits...</div>
+        <div class="progress-step">Analyzing 30-day pressure trend + soil temp...</div>
+        <div class="progress-step">Initiating customer outreach...</div>
+        <div class="progress-step">Generating Booster Inspection Work Order...</div>
+      </div>
+    </template>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick={handleRun} disabled={isRunning}>
+        <template lwc:if={isRunning}>Processing...</template>
+        <template lwc:else>Run Analysis &amp; Generate WO</template>
+      </button>
+      <button class="btn btn-secondary" onclick={handleClose} disabled={isRunning}>Cancel</button>
+    </div>
+
+    <template lwc:if={result}>
+      <div class="result">
+        <strong>{result.proactiveWosCreated}</strong> Booster Inspection generated<br/>
+        <strong>{result.declinedCasesCreated}</strong> declined Case<br/>
+        <strong>{result.noReplyCasesCreated}</strong> no-reply Case<br/>
+        <strong>{result.skippedExisting}</strong> already-handled
+      </div>
+    </template>
+  </div>
+</template>

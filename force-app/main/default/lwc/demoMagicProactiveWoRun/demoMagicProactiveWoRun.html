@@ -1,0 +1,27 @@
+<template>
+  <div class="modal">
+    <h2>Generate Booster Inspection WOs</h2>
+    <p>Mocks the overnight pest-pressure scan: for every property currently breaching this monitor (rising bait station hits, soil temp climbing, conducive conditions flagged), simulate the customer-reply outcome and create either:</p>
+    <ul>
+      <li><strong>YES</strong> -&gt; a proactive Booster Inspection Work Order (lands in Ray's dispatch queue)</li>
+      <li><strong>NO</strong> -&gt; a Case noting the customer declined</li>
+      <li><strong>NO_REPLY</strong> -&gt; a Case for follow-up</li>
+    </ul>
+    <p class="hint">Idempotent: properties that already have a proactive Booster Inspection or Case are skipped.</p>
+    <div class="actions">
+      <button class="btn btn-primary" onclick={handleRun} disabled={isRunning}>
+        <template lwc:if={isRunning}>Generating WOs...</template>
+        <template lwc:else>Run Proactive Outreach</template>
+      </button>
+      <button class="btn btn-secondary" onclick={handleClose}>Cancel</button>
+    </div>
+    <template lwc:if={result}>
+      <div class="result">
+        <div><strong>{result.proactiveWosCreated}</strong> Booster Inspections (customers said YES)</div>
+        <div><strong>{result.declinedCasesCreated}</strong> declined Cases (NO)</div>
+        <div><strong>{result.noReplyCasesCreated}</strong> no-reply Cases</div>
+        <div class="hint">Scanned {result.breachesScanned} pressure breaches; skipped {result.skippedExisting} already-handled.</div>
+      </div>
+    </template>
+  </div>
+</template>

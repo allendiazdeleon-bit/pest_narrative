@@ -1,0 +1,180 @@
+<template>
+  <div class="customer-container">
+
+    <!-- HEADER STRIP: identity + service tiers + KPI tiles -->
+    <header class="header-strip">
+      <div class="header-identity">
+        <div class="header-name-row">
+          <span class="header-name">{account.name}</span>
+        </div>
+        <div class="header-meta">
+          <template lwc:if={account.email}><span>{account.email}</span></template>
+          <template lwc:if={account.phone}><span> &middot; {account.phone}</span></template>
+          <template lwc:if={account.city}><span> &middot; {account.city}</span></template>
+        </div>
+      </div>
+
+      <div class="kpi-strip">
+        <div class="kpi-tile">
+          <div class="kpi-label">Tenure</div>
+          <div class="kpi-value">{tenureLabel}</div>
+          <div class="kpi-sub">since signup</div>
+        </div>
+
+        <div class="kpi-tile">
+          <div class="kpi-label">Service Lines</div>
+          <div class="kpi-value">{serviceLineCount}</div>
+          <div class="kpi-sub">{serviceTierSummary}</div>
+        </div>
+
+        <div class="kpi-tile">
+          <div class="kpi-label">Upsell Score</div>
+          <div class="kpi-gauge">
+            <span class={upsellScoreClass}>{upsellScoreDisplay}</span>
+            <span class="kpi-tier">{upsellScoreTier}</span>
+          </div>
+          <template lwc:if={upsellHistory.scoredAt}>
+            <div class="kpi-sub">scored {upsellHistory.scoredAt}</div>
+          </template>
+        </div>
+      </div>
+    </header>
+
+    <!-- BANNER: rising pest pressure -->
+    <template lwc:if={hasPressureAlert}>
+      <div class="banner banner-alert">
+        {pressureAlertCopy}
+      </div>
+    </template>
+
+    <!-- BODY: 2-column main area -->
+    <div class="two-col">
+
+      <!-- LEFT COLUMN: pest history + upsell history -->
+      <section class="col col-left">
+
+        <!-- Upsell history card -->
+        <template lwc:if={hasUpsellHistory}>
+          <div class="card upsell-card">
+            <div class="card-header">
+              <span class="card-title">Upsell History</span>
+              <span class="card-subtitle">last pitch on file</span>
+            </div>
+            <div class="upsell-row">
+              <div class="upsell-cell">
+                <div class="upsell-cell-label">Last line pitched</div>
+                <div class="upsell-cell-value">{upsellHistory.lastLine}</div>
+              </div>
+              <div class="upsell-cell">
+                <div class="upsell-cell-label">Outcome</div>
+                <span class={upsellOutcomeClass}>{upsellOutcomeLabel}</span>
+              </div>
+              <div class="upsell-cell">
+                <div class="upsell-cell-label">Score</div>
+                <span class={upsellScoreClass}>{upsellScoreDisplay}</span>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- Properties / pest health -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Properties &amp; Pest Health</span>
+            <span class="card-subtitle">{serviceLineCount} service line(s)</span>
+          </div>
+          <template lwc:if={hasAssets}>
+            <template for:each={assets} for:item="a">
+              <div key={a.id} class="asset-row">
+                <div class="asset-row-top">
+                  <span class="asset-name">{a.name}</span>
+                  <span class={a.tierClass}>{a.tierName}</span>
+                </div>
+                <div class="asset-meta">
+                  <template lwc:if={a.lastQuarterly}>
+                    <span class="asset-meta-item">
+                      <span class="asset-meta-label">Last quarterly:</span>
+                      <span class="asset-meta-value">{a.lastQuarterly}</span>
+                    </span>
+                  </template>
+                  <template lwc:if={a.lastBaitHit}>
+                    <span class="asset-meta-item">
+                      <span class="asset-meta-label">Last Sentricon hit:</span>
+                      <span class="asset-meta-value">{a.lastBaitHit}</span>
+                    </span>
+                  </template>
+                  <template lwc:if={a.baitState}>
+                    <span class="asset-meta-item">
+                      <span class="asset-meta-label">Bait state:</span>
+                      <span class="asset-meta-value">{a.baitState}</span>
+                    </span>
+                  </template>
+                  <template lwc:if={a.soilTempF}>
+                    <span class="asset-meta-item">
+                      <span class="asset-meta-label">Soil temp:</span>
+                      <span class="asset-meta-value">{a.soilTempF} F</span>
+                    </span>
+                  </template>
+                </div>
+                <template lwc:if={a.conducive}>
+                  <div class="conducive-flag">
+                    <span class="conducive-pill">Conducive Conditions</span>
+                    <template lwc:if={a.conduciveNotes}>
+                      <span class="conducive-notes">{a.conduciveNotes}</span>
+                    </template>
+                  </div>
+                </template>
+              </div>
+            </template>
+          </template>
+          <template lwc:else>
+            <div class="empty">No properties on file.</div>
+          </template>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: cases + visit history -->
+      <aside class="col col-right">
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Cases</span>
+            <span class="card-subtitle">Top 3</span>
+          </div>
+          <template lwc:if={hasCases}>
+            <template for:each={cases} for:item="c">
+              <div key={c.id} class="case-row">
+                <div class="case-number">{c.caseNumber}</div>
+                <div class="case-subject">{c.subject}</div>
+                <div class="case-meta">{c.status} &middot; {c.priority} &middot; {c.createdDate}</div>
+              </div>
+            </template>
+          </template>
+          <template lwc:else>
+            <div class="empty">No recent cases.</div>
+          </template>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Service Visits</span>
+            <span class="card-subtitle">Top 5 by service line</span>
+          </div>
+          <template lwc:if={hasWorkOrders}>
+            <template for:each={workOrders} for:item="w">
+              <div key={w.id} class="wo-row">
+                <div class="wo-number">{w.woNumber}</div>
+                <div class="wo-subject">{w.subject}</div>
+                <div class="wo-meta">{w.workType} &middot; {w.status} &middot; {w.startDate}</div>
+              </div>
+            </template>
+          </template>
+          <template lwc:else>
+            <div class="empty">No recent service visits.</div>
+          </template>
+        </div>
+      </aside>
+    </div>
+
+  </div>
+</template>

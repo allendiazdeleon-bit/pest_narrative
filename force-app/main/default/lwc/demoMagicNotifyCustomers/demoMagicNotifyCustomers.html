@@ -1,0 +1,64 @@
+<template>
+  <div class="modal">
+    <h2>Notify Cluster Customers</h2>
+    <p>Send a mass notification to every customer linked to this Incident. Choose the channel and message template - the audience is auto-built from the linked Cases.</p>
+
+    <div class="audience-summary">{audienceCountText}</div>
+
+    <template lwc:if={audienceCount}>
+      <div class="audience-list">
+        <template for:each={audience} for:item="a">
+          <div key={a.assetId} class="audience-row">
+            <span class="audience-icon">SMS</span>
+            <span class="audience-meta">
+              <strong>{a.accountName}</strong>
+              <span class="audience-addr">{a.address}</span>
+            </span>
+          </div>
+        </template>
+      </div>
+    </template>
+
+    <div class="field-row">
+      <lightning-radio-group
+        label="Channel"
+        options={channelOptions}
+        value={channel}
+        onchange={handleChannel}
+        type="radio"
+        variant="standard">
+      </lightning-radio-group>
+    </div>
+
+    <div class="field-row">
+      <lightning-combobox
+        label="Message template"
+        value={templateValue}
+        options={templateOptions}
+        onchange={handleTemplate}
+        variant="standard">
+      </lightning-combobox>
+    </div>
+
+    <div class="preview-box">
+      <div class="preview-label">MESSAGE PREVIEW</div>
+      <div class="preview-body">{messageBody}</div>
+    </div>
+
+    <template lwc:if={isSending}>
+      <div class="status-bar">
+        <template lwc:if={isPreparing}>Preparing campaign payload...</template>
+        <template lwc:if={isTargeting}>Resolving target audience &amp; per-property items...</template>
+        <template lwc:if={isSending2}>Queueing notifications via {channel}...</template>
+      </div>
+    </template>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick={handleSend} disabled={isSending}>
+        <template lwc:if={isSending}>Sending...</template>
+        <template lwc:else>Send Notifications</template>
+      </button>
+      <button class="btn btn-secondary" onclick={handleClose} disabled={isSending}>Cancel</button>
+    </div>
+  </div>
+</template>

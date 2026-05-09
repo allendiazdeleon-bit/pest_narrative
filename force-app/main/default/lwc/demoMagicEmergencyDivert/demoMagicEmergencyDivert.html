@@ -1,0 +1,43 @@
+<template>
+  <div class="modal">
+    <h2>Emergency Reassign Tom's Team</h2>
+    <p>Pull a Service Resource off their current assignments and reassign to an active emergency Incident. Walks the resource's open Service Appointments, defers them, then assigns the resource to the emergency Incident's Work Order. Useful when Tom's termite team needs to pivot to a Mosquito Surge Area Treatment. All in one transaction.</p>
+
+    <div class="row">
+      <lightning-combobox
+        label="Service Resource"
+        value={selectedResourceId}
+        options={resourceOptions}
+        disabled={isResourceLocked}
+        onchange={handleResourceChange}
+        required
+      ></lightning-combobox>
+    </div>
+    <div class="row">
+      <lightning-combobox
+        label="Active Incident"
+        value={selectedIncidentId}
+        options={incidentOptions}
+        disabled={isIncidentLocked}
+        onchange={handleIncidentChange}
+        required
+      ></lightning-combobox>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-danger" onclick={handleDivert} disabled={isRunning}>
+        <template lwc:if={isRunning}>Reassigning...</template>
+        <template lwc:else>Reassign Resource</template>
+      </button>
+      <button class="btn btn-secondary" onclick={handleClose}>Cancel</button>
+    </div>
+
+    <template lwc:if={result}>
+      <div class="result">
+        <div><strong>{result.assignmentsCleared}</strong> assignments cleared</div>
+        <div><strong>{result.woDeferred}</strong> SAs deferred</div>
+        <div><strong>{result.parentWosPaused}</strong> parent WOs paused</div>
+      </div>
+    </template>
+  </div>
+</template>

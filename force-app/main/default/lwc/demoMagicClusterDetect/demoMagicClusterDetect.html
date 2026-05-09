@@ -1,0 +1,39 @@
+<template>
+  <div class="modal">
+    <h2>Detect Cluster</h2>
+    <p>Scan the recent Case queue for matching pest-pressure signals near this customer's property. If the model finds enough similar Cases within the same ZIP / route, a parent Incident will be opened automatically and all matching Cases will be linked.</p>
+
+    <template lwc:if={isRunning}>
+      <div class="status-bar">
+        <template lwc:if={isScanning}>Scanning recent inbound Cases for matching pattern...</template>
+        <template lwc:if={isFound}>{foundCountText}</template>
+        <template lwc:if={isCorrelating}>Geographic correlation - confirming ZIP / route radius...</template>
+        <template lwc:if={isCreating}>Creating parent Incident...</template>
+        <template lwc:if={isLinking}>Linking matched Cases to the new Incident...</template>
+      </div>
+
+      <template lwc:if={hasVisibleSiblings}>
+        <div class="call-list">
+          <template for:each={visibleSiblings} for:item="c">
+            <div key={c.caseNumber} class="call-row">
+              <span class="call-icon">CASE</span>
+              <span class="call-meta">
+                <strong>{c.caller}</strong>
+                <span class="call-addr">{c.address}</span>
+              </span>
+              <span class="call-time">match</span>
+            </div>
+          </template>
+        </div>
+      </template>
+    </template>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick={handleDetect} disabled={isRunning}>
+        <template lwc:if={isRunning}>Detecting...</template>
+        <template lwc:else>Run Cluster Detection</template>
+      </button>
+      <button class="btn btn-secondary" onclick={handleClose} disabled={isRunning}>Cancel</button>
+    </div>
+  </div>
+</template>

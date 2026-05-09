@@ -1,0 +1,59 @@
+<template>
+  <div class="modal">
+    <h2>Dispatch Field Action</h2>
+    <p>Decide how to deploy crews against this Incident. The right strategy depends on whether you suspect a single source (clogged storm drain) or need eyes on every property.</p>
+
+    <div class="audience-summary">
+      Affected: <strong>{affectedCount}</strong> properties across <strong>{segmentCount}</strong> street(s).
+    </div>
+
+    <div class="field-row">
+      <lightning-radio-group
+        label="Dispatch strategy"
+        options={strategyOptions}
+        value={strategy}
+        onchange={handleStrategy}
+        type="radio"
+        variant="standard">
+      </lightning-radio-group>
+      <div class="hint">{strategyHint}</div>
+    </div>
+
+    <div class="field-row two-col">
+      <lightning-combobox
+        label="Work Type"
+        value={workTypeId}
+        options={workTypeOptions}
+        onchange={handleWorkType}
+        variant="standard">
+      </lightning-combobox>
+      <lightning-combobox
+        label="Priority"
+        value={priority}
+        options={priorityOptions}
+        onchange={handlePriority}
+        variant="standard">
+      </lightning-combobox>
+    </div>
+
+    <div class="preview-box">
+      <div class="preview-label">DISPATCH PLAN</div>
+      <div class="preview-body">{woCountPreviewText}</div>
+    </div>
+
+    <template lwc:if={isDispatching}>
+      <div class="status-bar">
+        <template lwc:if={isPlanning}>Building dispatch plan...</template>
+        <template lwc:if={isScheduling}>Creating Work Orders &amp; scheduling appointments...</template>
+      </div>
+    </template>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick={handleDispatch} disabled={isDispatching}>
+        <template lwc:if={isDispatching}>Dispatching...</template>
+        <template lwc:else>Dispatch</template>
+      </button>
+      <button class="btn btn-secondary" onclick={handleClose} disabled={isDispatching}>Cancel</button>
+    </div>
+  </div>
+</template>

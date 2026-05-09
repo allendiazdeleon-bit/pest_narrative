@@ -1,0 +1,116 @@
+.panel {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.25rem;
+}
+.header p {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 1.5rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1.25rem 1.25rem 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.card-bootstrap {
+  background: #fefce8;
+  border-color: #fde047;
+}
+.tag-once {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #854d0e;
+  background: #fde68a;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+.card h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.25rem;
+}
+.card .hint {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0 0 0.875rem;
+  line-height: 1.5;
+}
+
+.btn-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.form-row {
+  display: flex;
+  align-items: end;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.days-input { max-width: 200px; }
+
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: background 0.15s;
+}
+.btn:disabled { cursor: not-allowed; opacity: 0.6; }
+
+.btn-primary {
+  background: #2f7a3a;
+  color: white;
+  border-color: #2f7a3a;
+}
+.btn-primary:hover:not(:disabled) { background: #225828; }
+
+.btn-secondary {
+  background: #fff;
+  color: #374151;
+}
+.btn-secondary:hover:not(:disabled) { background: #f3f4f6; }
+
+.btn-danger {
+  background: #fff;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+.btn-danger:hover:not(:disabled) { background: #fef2f2; }
+
+.status {
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: #f9fafb;
+  border-left: 3px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  color: #374151;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
