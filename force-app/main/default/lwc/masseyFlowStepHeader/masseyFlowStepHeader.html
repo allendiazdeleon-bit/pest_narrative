@@ -1,0 +1,28 @@
+<template>
+    <div class="header-container">
+        <div class="header-gradient">
+            <div class="header-top">
+                <div class="header-info">
+                    <span class="step-icon">{iconEmoji}</span>
+                    <div class="header-text">
+                        <div class="step-label">{stepLabel}</div>
+                        <div class="work-order-info">{workOrderNumber} &mdash; {workOrderSubject}</div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn" onclick={handleToggleContext} aria-label="Context Panel">&#x2139;&#xFE0F;</button>
+                    <button class="icon-btn" onclick={handleToggleStepMenu} aria-label="Step Menu">&#x2630;</button>
+                </div>
+            </div>
+            <div class="progress-section">
+                <div class="progress-labels">
+                    <span class="progress-text">{progressText}</span>
+                    <span class="progress-percent">{percentText}</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" style={progressStyle}></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

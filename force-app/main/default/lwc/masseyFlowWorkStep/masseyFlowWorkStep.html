@@ -1,0 +1,140 @@
+<template>
+    <!-- Restricted-Use Pesticide attestation panel — runs alongside Pre-Treatment Setup.
+         The chemical panel is the gate — work cannot proceed without RUP attestation. -->
+    <c-massey-flow-chemical-panel record-id={recordId}></c-massey-flow-chemical-panel>
+
+    <!-- AI Next Best Actions for the active phase -->
+    <template lwc:if={hasNbaSuggestions}>
+        <div class="nba-strip">
+            <div class="nba-strip-label">
+                Suggested Actions &mdash; {activeNbaCategoryLabel}
+            </div>
+            <div class="nba-strip-cards">
+                <template for:each={nbaSuggestions} for:item="nba">
+                    <c-ai-insight-card
+                        key={nba.key}
+                        title={nba.title}
+                        summary={nba.summary}
+                        severity={nba.severity}
+                        confidence={nba.confidence}
+                        source={nba.source}
+                        timestamp={nbaTimestamp}
+                        details={nba.details}
+                    ></c-ai-insight-card>
+                </template>
+            </div>
+        </div>
+    </template>
+
+    <!-- Phase 1: Pre-Treatment Setup -->
+    <div class="phase-card phase-precheck">
+        <div class="phase-title">🟠 {phase1Title}</div>
+        <div class="phase-progress">
+            {preCheckCount} of {preCheckTotal} complete
+        </div>
+
+        <template lwc:if={preCheckTotal}>
+            <div class="checklist-container">
+                <template for:each={preCheckSteps} for:item="step">
+                    <div key={step.id} class="checklist-item">
+                        <template lwc:if={step.isNA}>
+                            <button class="na-badge-btn" data-id={step.id} onclick={handleUndoNA}>N/A</button>
+                        </template>
+                        <template lwc:else>
+                            <lightning-input
+                                type="toggle"
+                                data-id={step.id}
+                                checked={step.isChecked}
+                                onchange={handleCheckToggle}
+                            ></lightning-input>
+                        </template>
+                        <div class={step.textClass}>{step.name}</div>
+                        <template lwc:if={step.showSkipBtn}>
+                            <button class="skip-btn" data-id={step.id} onclick={handleMarkNA}>Skip</button>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
+
+    <!-- Phase 2: Treatment Execution -->
+    <div class="phase-card phase-execute">
+        <div class="phase-title">🟢 {phase2Title}</div>
+        <div class="phase-progress">
+            {workExecuteCount} of {workExecuteTotal} complete
+        </div>
+
+        <template lwc:if={isWorkExecuteLocked}>
+            <div class="phase-locked-overlay">
+                <div class="lock-icon">🔒</div>
+                <div class="lock-text">{phase1LockMessage}</div>
+            </div>
+        </template>
+
+        <template lwc:if={workExecuteTotal}>
+            <div class="checklist-container">
+                <template for:each={workExecuteSteps} for:item="step">
+                    <div key={step.id} class="checklist-item">
+                        <template lwc:if={step.isNA}>
+                            <button class="na-badge-btn" data-id={step.id} onclick={handleUndoNA}>N/A</button>
+                        </template>
+                        <template lwc:else>
+                            <lightning-input
+                                type="toggle"
+                                data-id={step.id}
+                                checked={step.isChecked}
+                                onchange={handleCheckToggle}
+                                disabled={isWorkExecuteLocked}
+                            ></lightning-input>
+                        </template>
+                        <div class={step.textClass}>{step.name}</div>
+                        <template lwc:if={step.showSkipBtn}>
+                            <button class="skip-btn" data-id={step.id} onclick={handleMarkNA}>Skip</button>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
+
+    <!-- Phase 3: Post-Treatment Verification -->
+    <div class="phase-card phase-verify">
+        <div class="phase-title">🔵 {phase3Title}</div>
+        <div class="phase-progress">
+            {verifyCount} of {verifyTotal} complete
+        </div>
+
+        <template lwc:if={isVerifyLocked}>
+            <div class="phase-locked-overlay">
+                <div class="lock-icon">🔒</div>
+                <div class="lock-text">{phase2LockMessage}</div>
+            </div>
+        </template>
+
+        <template lwc:if={verifyTotal}>
+            <div class="checklist-container">
+                <template for:each={verifySteps} for:item="step">
+                    <div key={step.id} class="checklist-item">
+                        <template lwc:if={step.isNA}>
+                            <button class="na-badge-btn" data-id={step.id} onclick={handleUndoNA}>N/A</button>
+                        </template>
+                        <template lwc:else>
+                            <lightning-input
+                                type="toggle"
+                                data-id={step.id}
+                                checked={step.isChecked}
+                                onchange={handleCheckToggle}
+                                disabled={isVerifyLocked}
+                            ></lightning-input>
+                        </template>
+                        <div class={step.textClass}>{step.name}</div>
+                        <template lwc:if={step.showSkipBtn}>
+                            <button class="skip-btn" data-id={step.id} onclick={handleMarkNA}>Skip</button>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
+</template>

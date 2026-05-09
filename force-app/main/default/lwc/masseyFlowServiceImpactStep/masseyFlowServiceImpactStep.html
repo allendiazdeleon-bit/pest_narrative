@@ -1,0 +1,162 @@
+<template>
+  <div class="outage-container">
+    <div class="step-page-title">{label.stepTitle}</div>
+
+    <!-- Cluster Event Summary Card -->
+    <div class="outage-summary">
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="summary-label">{label.activeLabel}</div>
+          <div class="summary-value summary-value-red">{activeIncidentCount}</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">{label.affectedProperties}</div>
+          <div class="summary-value summary-value-orange">{totalPropertiesAffected}</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Duration</div>
+          <div class="summary-value summary-value-dark">{longestDuration}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Anomaly Signal Banner -->
+    <div class="anomaly-banner">
+      <span class="anomaly-icon">📡</span>
+      <span>{label.anomalySignal}</span>
+    </div>
+
+    <div class="section-title">{label.historyHeading}</div>
+
+    <!-- Cluster Event Cards -->
+    <template lwc:if={hasIncidents}>
+      <template for:each={incidentList} for:item="incident">
+        <div
+          key={incident.id}
+          class="incident-card"
+          data-id={incident.id}
+          onclick={handleIncidentClick}
+        >
+          <div class="incident-header">
+            <div class="incident-id">{incident.subject}</div>
+            <div class={incident.priorityClass}>{incident.priority}</div>
+            <div class={incident.statusClass}>{incident.status}</div>
+          </div>
+
+          <div class="incident-detail-row">
+            <div class="incident-created">{incident.createdDate}</div>
+            <div class="incident-affected">{incident.propertiesAffected} properties</div>
+          </div>
+
+          <template lwc:if={incident.isSelected}>
+            <div class="incident-expanded">
+              <div class="expanded-field">
+                <div class="expanded-label">{label.clusterIdentifier}</div>
+                <div class="expanded-value">{incident.clusterId}</div>
+              </div>
+              <div class="expanded-field">
+                <div class="expanded-label">Description</div>
+                <div class="expanded-value">{incident.description}</div>
+              </div>
+
+              <template lwc:if={incident.isLinked}>
+                <div class="badge badge-linked">&#x2713; Linked to this Service Visit</div>
+              </template>
+              <template lwc:else>
+                <button
+                  class="link-btn"
+                  type="button"
+                  data-id={incident.id}
+                  onclick={handleLinkIncident}
+                >
+                  Link to This Service Visit
+                </button>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
+    </template>
+
+    <template lwc:else>
+      <div class="empty-state">
+        <div class="empty-icon">&#x1F50D;</div>
+        <div class="empty-message">{label.emptyMessage}</div>
+      </div>
+    </template>
+
+    <!-- Pest Finding picker — what the tech observed at the property -->
+    <div class="cause-card">
+      <div class="cause-title">Pest Finding at This Property</div>
+      <div class="cause-grid">
+        <template for:each={findingOptions} for:item="finding">
+          <button
+            key={finding.label}
+            type="button"
+            class={finding.buttonClass}
+            data-cause={finding.label}
+            onclick={handleFindingSelect}
+          >
+            <span class="cause-label">{finding.label}</span>
+          </button>
+        </template>
+      </div>
+    </div>
+
+    <!-- Impact Preview / Property Notification -->
+    <div class="impact-card">
+      <div class="impact-head">
+        <div class="impact-title">⚡ Cluster Response Preview</div>
+        <span class="impact-sub">Before any service-affecting action</span>
+      </div>
+
+      <div class="impact-action-row">
+        <template for:each={impactActionOptions} for:item="opt">
+          <button key={opt.value} type="button" class={opt.buttonClass}
+                  data-value={opt.value} onclick={handlePickImpactAction}>
+            {opt.value}
+          </button>
+        </template>
+      </div>
+
+      <template lwc:if={impactSummaryLoading}>
+        <div class="impact-loading">Calculating impact…</div>
+      </template>
+      <template lwc:elseif={hasImpactSummary}>
+        <div class="impact-headline">
+          <strong>{impactSummary.affectedCount}</strong> properties affected · est. duration {impactSummary.durationDisplay} ·
+          recommended channel <strong>{impactSummary.recommendedNotificationChannel}</strong>
+          (lead time {impactSummary.notificationLeadTimeMinutes} min)
+        </div>
+        <div class="impact-summary-text">{impactSummary.summary}</div>
+
+        <template lwc:if={impactCriticalFlagsList.length}>
+          <div class="impact-flags">
+            <template for:each={impactCriticalFlagsList} for:item="flag">
+              <span key={flag} class="impact-flag">{flag}</span>
+            </template>
+          </div>
+        </template>
+
+        <div class="impact-subscribers">
+          <template for:each={impactSummary.propertiesAffected} for:item="s">
+            <div key={s.assetId} class="subs-row">
+              <div class="subs-meta">
+                <div class="subs-name">{s.accountName}</div>
+                <div class="subs-addr">{s.address}</div>
+                <template lwc:if={s.priorityReason}>
+                  <div class="subs-reason">{s.priorityReason}</div>
+                </template>
+              </div>
+              <span class={s.priorityClass}>{s.priority}</span>
+            </div>
+          </template>
+        </div>
+
+        <button class="notify-btn" onclick={handleGenerateNotification} disabled={notifyDisabled}>
+          {notifyButtonLabel}
+        </button>
+      </template>
+    </div>
+  </div>
+</template>

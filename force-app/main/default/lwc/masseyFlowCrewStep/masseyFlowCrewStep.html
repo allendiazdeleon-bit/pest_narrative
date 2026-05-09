@@ -1,0 +1,92 @@
+<template>
+    <!-- Summary Card -->
+    <div class="summary-card">
+        <div class="summary-grid">
+            <div class="summary-col">
+                <div class="summary-value summary-value-green">{crewSize}</div>
+                <div class="summary-label">Techs on Route</div>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-col">
+                <div class="summary-value summary-value-blue">{onRouteCount}</div>
+                <div class="summary-label">Active</div>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-col">
+                <div class="summary-value summary-value-teal">{totalHours}h</div>
+                <div class="summary-label">Total Hours</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Crew Member Panel -->
+    <template lwc:if={showAddPanel}>
+        <div class="add-panel">
+            <div class="add-panel-header">
+                <span class="add-panel-title">Add Tech to Route</span>
+                <button class="panel-close-btn" onclick={handleCloseAddPanel}>&#x2715;</button>
+            </div>
+            <div class="search-container">
+                <input
+                    type="text"
+                    class="search-input"
+                    placeholder="Search by name..."
+                    oninput={handleSearchInput}
+                />
+            </div>
+            <template lwc:if={hasAvailableResources}>
+                <div class="resource-list">
+                    <template for:each={availableResources} for:item="resource">
+                        <div key={resource.id} class="resource-item" data-id={resource.id} onclick={handleSelectResource}>
+                            <div class="avatar avatar-sm">{resource.initials}</div>
+                            <div class="resource-info">
+                                <div class="resource-name">{resource.name}</div>
+                                <div class="resource-type">{resource.type}</div>
+                            </div>
+                            <span class="add-icon">+</span>
+                        </div>
+                    </template>
+                </div>
+            </template>
+            <template lwc:if={noAvailableResources}>
+                <div class="resource-empty">No available techs found</div>
+            </template>
+        </div>
+    </template>
+
+    <!-- Crew Cards -->
+    <template lwc:if={hasMembers}>
+        <template for:each={allCrewMembers} for:item="member">
+            <div key={member.id} class="crew-card">
+                <div class="crew-row">
+                    <div class="avatar">{member.initials}</div>
+                    <div class="crew-info">
+                        <div class="crew-name-row">
+                            <span class="crew-name">{member.name}</span>
+                            <span class={member.statusClass}>{member.statusLabel}</span>
+                        </div>
+                        <div class="crew-detail">{member.role}</div>
+                    </div>
+                    <div class="crew-hours">
+                        <div class="hours-value">{member.hours}h</div>
+                        <div class="hours-label">Today</div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </template>
+
+    <!-- Empty State -->
+    <template lwc:if={noMembers}>
+        <div class="empty-state">
+            <div class="empty-icon">&#x1F465;</div>
+            <div class="empty-text">No techs assigned to this service visit</div>
+        </div>
+    </template>
+
+    <!-- Action Buttons -->
+    <div class="action-row">
+        <button class="action-btn action-btn-primary" onclick={handleAddCrewMember}>+ Add Tech to Route</button>
+        <button class="action-btn action-btn-secondary" onclick={handleLogTime}>Log Time for All</button>
+    </div>
+</template>

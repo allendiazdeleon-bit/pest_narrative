@@ -1,0 +1,165 @@
+<template>
+    <!-- AI Pre-Visit Risk Briefing -->
+    <template lwc:if={hasRiskBriefing}>
+        <c-ai-insight-card
+            title="Pre-Visit Risk Briefing"
+            summary={riskBriefingSummary}
+            severity={riskBriefingSeverity}
+            confidence={riskBriefingConfidence}
+            source={riskBriefingSource}
+            timestamp={riskBriefingTimestamp}
+            details={riskBriefingDetails}
+        ></c-ai-insight-card>
+    </template>
+
+    <!-- Safety Gate Header — PPE + Restricted-Use Pesticide attestation -->
+    <div class="safety-gate-header">{label.safetyGateHeader}</div>
+
+    <!-- Gate Status Card -->
+    <div class={gateStatusClass}>
+        <div class="gate-icon">{gateIcon}</div>
+        <div class={gateLabelClass}>{gateLabel}</div>
+        <div class="gate-count">{completedCount} of {totalCount} items verified</div>
+        <div class="gate-progress-track">
+            <div class={progressBarClass} style={progressBarStyle}></div>
+        </div>
+    </div>
+
+    <!-- Warning Banner -->
+    <template lwc:if={lockButtonDisabled}>
+        <div class="warning-banner">
+            <span>&#9888;&#65039;</span>
+            <span>All life-critical items must be verified before proceeding.</span>
+        </div>
+    </template>
+
+    <!-- Life-Critical Section: PPE, license, EPA reg #, RUP attestation -->
+    <template lwc:if={hasCriticalSteps}>
+        <div class={criticalSectionClass}>
+            <div class={criticalTitleClass}>Life-Critical Items</div>
+            <div>
+                <template for:each={criticalSteps} for:item="item">
+                    <div key={item.id} class={item.itemClass}>
+                        <lightning-input
+                            type="toggle"
+                            name={item.id}
+                            data-id={item.id}
+                            checked={item.isChecked}
+                            onchange={handleCheckToggle}
+                            class="checklist-toggle"
+                        ></lightning-input>
+                        <div class={item.textClass}>
+                            <div>{item.name}</div>
+                            <template lwc:if={item.showBlocksGate}>
+                                <div class="critical-label">REQUIRED &mdash; blocks gate</div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
+
+    <!-- Site Safety Section: pets, kids on property, treatment perimeter -->
+    <template lwc:if={hasSiteSteps}>
+        <div class={siteSectionClass}>
+            <div class={siteTitleClass}>Site Safety</div>
+            <div>
+                <template for:each={siteSteps} for:item="item">
+                    <div key={item.id} class={item.itemClass}>
+                        <template lwc:if={item.isNA}>
+                            <button class="na-badge-btn" data-id={item.id} onclick={handleUndoNA}>N/A</button>
+                        </template>
+                        <template lwc:else>
+                            <lightning-input
+                                type="toggle"
+                                name={item.id}
+                                data-id={item.id}
+                                checked={item.isChecked}
+                                onchange={handleCheckToggle}
+                                class="checklist-toggle"
+                            ></lightning-input>
+                        </template>
+                        <div class={item.textClass}>
+                            <div>{item.name}</div>
+                        </div>
+                        <template lwc:if={item.showSkipBtn}>
+                            <button class="skip-btn" data-id={item.id} onclick={handleMarkNA}>Skip</button>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
+
+    <!-- Administrative Section: applicator license check, EPA reg # logged -->
+    <template lwc:if={hasAdminSteps}>
+        <div class={adminSectionClass}>
+            <div class={adminTitleClass}>Administrative</div>
+            <div>
+                <template for:each={adminSteps} for:item="item">
+                    <div key={item.id} class={item.itemClass}>
+                        <template lwc:if={item.isNA}>
+                            <button class="na-badge-btn" data-id={item.id} onclick={handleUndoNA}>N/A</button>
+                        </template>
+                        <template lwc:else>
+                            <lightning-input
+                                type="toggle"
+                                name={item.id}
+                                data-id={item.id}
+                                checked={item.isChecked}
+                                onchange={handleCheckToggle}
+                                class="checklist-toggle"
+                            ></lightning-input>
+                        </template>
+                        <div class={item.textClass}>
+                            <div>{item.name}</div>
+                        </div>
+                        <template lwc:if={item.showSkipBtn}>
+                            <button class="skip-btn" data-id={item.id} onclick={handleMarkNA}>Skip</button>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
+
+    <!-- Hazard Reporting Card -->
+    <div class="hazard-card">
+        <div class="hazard-header">
+            <div class="hazard-title">&#9888;&#65039; Report Hazard</div>
+            <button class="hazard-add-btn" onclick={handleAddHazard}>Add</button>
+        </div>
+        <input
+            type="text"
+            class="hazard-input"
+            placeholder="Describe the hazard or pest pressure concern..."
+            value={hazardText}
+            onchange={handleHazardTextChange}
+        />
+        <lightning-combobox
+            name="severity"
+            label="Severity"
+            value={hazardSeverity}
+            placeholder="Select severity..."
+            options={severityOptions}
+            onchange={handleSeverityChange}
+            variant="label-hidden"
+            class="severity-picker"
+        ></lightning-combobox>
+        <template lwc:if={hasHazards}>
+            <div>
+                <template for:each={hazardSteps} for:item="hazard">
+                    <div key={hazard.id} class="hazard-item">
+                        <span>&#9888;&#65039;</span>
+                        <span class="hazard-item-text">{hazard.description}</span>
+                        <span class={hazard.severityClass}>{hazard.severityLabel}</span>
+                    </div>
+                </template>
+            </div>
+        </template>
+        <template lwc:if={noHazards}>
+            <div class="hazard-empty">No hazards reported</div>
+        </template>
+    </div>
+</template>

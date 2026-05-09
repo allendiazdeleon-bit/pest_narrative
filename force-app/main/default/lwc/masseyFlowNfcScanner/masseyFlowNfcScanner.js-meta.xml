@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>false</isExposed>
+    <description>Internal NFC scanner — reads Sentricon bait-station tags and Mosquito Hunter system-controller tags via the Nimbus plugin on FSL Mobile.</description>
+    <masterLabel>Massey Flow NFC Scanner</masterLabel>
+</LightningComponentBundle>

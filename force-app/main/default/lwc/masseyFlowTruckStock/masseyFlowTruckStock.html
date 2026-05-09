@@ -1,0 +1,112 @@
+<template>
+    <article class="truck-stock">
+        <template lwc:if={hasSummary}>
+            <header class="ts-header">
+                <div class="ts-id">
+                    <lightning-icon icon-name="utility:truck" size="small" alternative-text="Truck"></lightning-icon>
+                    <div class="ts-id-text">
+                        <h2 class="ts-tech">{techName}</h2>
+                        <p class="ts-truck">Truck {truckNumber} &middot; {woCountText}</p>
+                    </div>
+                </div>
+                <div class="ts-meta">
+                    <span class="ts-meta-label">Last inventory check</span>
+                    <span class="ts-meta-value">{lastInventoryCheck}</span>
+                </div>
+            </header>
+
+            <!-- Today's Service Visits strip -->
+            <section class="ts-wos">
+                <h3 class="ts-section-title">Today's Service Visits</h3>
+                <template lwc:if={hasTodaysWos}>
+                    <div class="ts-wos-row">
+                        <template for:each={todaysWos} for:item="w">
+                            <div key={w.key} class="ts-wo-card">
+                                <div class="ts-wo-top">
+                                    <span class="ts-wo-num">{w.workOrderNumber}</span>
+                                    <span class="ts-wo-time">{w.scheduledStart}</span>
+                                </div>
+                                <div class="ts-wo-subject">{w.subject}</div>
+                                <template lwc:if={w.hasChemicals}>
+                                    <ul class="ts-wo-parts">
+                                        <template for:each={w.chemicalsRequired} for:item="p">
+                                            <li key={p.key}>{p.label}</li>
+                                        </template>
+                                    </ul>
+                                </template>
+                                <template lwc:else>
+                                    <p class="ts-wo-no-parts">No chemicals required.</p>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <p class="ts-empty">No service visits scheduled for today.</p>
+                </template>
+            </section>
+
+            <!-- Truck stock table — pest chemical inventory -->
+            <section class="ts-stock">
+                <h3 class="ts-section-title">Truck Stock</h3>
+                <template lwc:if={hasStock}>
+                    <table class="stock-table">
+                        <thead>
+                            <tr>
+                                <th class="col-part">Chemical / Item</th>
+                                <th class="col-code">Code</th>
+                                <th class="col-num">On Truck</th>
+                                <th class="col-num">Required Today</th>
+                                <th class="col-status">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={stockRows} for:item="s">
+                                <tr key={s.key} class={s.rowClass}>
+                                    <td class="col-part">{s.partName}</td>
+                                    <td class="col-code">{s.partCode}</td>
+                                    <td class="col-num">{s.onTruck}</td>
+                                    <td class="col-num">{s.requiredToday}</td>
+                                    <td class="col-status">
+                                        <span class={s.badgeClass}>
+                                            <lightning-icon icon-name={s.icon} size="xx-small" alternative-text={s.status}></lightning-icon>
+                                            <span class="status-text">{s.status}</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </template>
+                <template lwc:else>
+                    <p class="ts-empty">No chemicals required on today's visits — stock check skipped.</p>
+                </template>
+            </section>
+
+            <!-- AI Insight card -->
+            <section class="ts-ai">
+                <c-ai-insight-card
+                    title={aiTitle}
+                    summary={aiSummary}
+                    severity={aiSeverity}
+                    confidence={aiConfidence}
+                    source={aiSource}
+                    actions={aiActions}
+                    onaiaction={handleAiAction}
+                ></c-ai-insight-card>
+            </section>
+        </template>
+
+        <template lwc:elseif={hasError}>
+            <div class="error-strip">
+                <lightning-icon icon-name="utility:error" size="x-small" alternative-text="Error"></lightning-icon>
+                <span>{error}</span>
+            </div>
+        </template>
+        <template lwc:else>
+            <div class="loading-wrap">
+                <lightning-spinner alternative-text="Loading truck stock" size="small"></lightning-spinner>
+            </div>
+        </template>
+    </article>
+</template>

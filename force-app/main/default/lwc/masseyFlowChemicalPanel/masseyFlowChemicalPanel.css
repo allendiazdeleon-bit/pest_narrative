@@ -1,0 +1,177 @@
+:host {
+    --c-primary: #2E7D32;
+    --c-text: #1f2937;
+    --c-text-mute: #6b7280;
+    --c-bg: #ffffff;
+    --c-border: #e5e7eb;
+    --r: 8px;
+}
+
+.chem-panel {
+    margin: 12px 16px;
+    padding: 12px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+}
+
+.chem-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chem-title {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.chem-icon { font-size: 18px; }
+
+.chem-add-toggle {
+    background: var(--c-primary);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 32px;
+}
+
+.chem-driver {
+    font-size: 11px;
+    color: var(--c-text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.chem-banner {
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.chem-banner-go { background: rgba(46, 132, 74, 0.15); color: #2E844A; }
+.chem-banner-stop { background: rgba(220, 38, 38, 0.15); color: #B91C1C; }
+.chem-banner-info { background: rgba(46, 125, 50, 0.1); color: var(--c-primary); }
+
+.chem-progress-track {
+    height: 4px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.chem-progress-fill { height: 100%; background: var(--c-primary); transition: width 0.3s ease; }
+
+.chem-add {
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.chem-suggestions-label { font-size: 11px; font-weight: 600; color: var(--c-text-mute); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.chem-suggestions { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+
+.chem-suggestion {
+    background: #fff;
+    border: 1px solid var(--c-border);
+    color: var(--c-text);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.rup-attest-block {
+    margin: 12px 0;
+    padding: 10px;
+    background: rgba(220, 38, 38, 0.08);
+    border-left: 4px solid #B91C1C;
+    border-radius: 4px;
+}
+
+.chem-save {
+    margin-top: 8px;
+    width: 100%;
+    background: var(--c-primary);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 40px;
+}
+
+.chem-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.chem-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+
+.chem-row {
+    padding: 10px;
+    background: #f9fafb;
+    border-radius: 6px;
+    border: 1px solid var(--c-border);
+}
+
+.chem-row-head {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+
+.chem-status {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.chem-status-pending { background: rgba(245, 158, 11, 0.15); color: #B45309; }
+.chem-status-mixed { background: rgba(2, 132, 199, 0.15); color: #075985; }
+.chem-status-verified { background: rgba(46, 132, 74, 0.15); color: #2E844A; }
+.chem-status-finalized { background: rgba(107, 114, 128, 0.15); color: #4b5563; }
+
+.chem-product { font-weight: 700; font-size: 13px; }
+.chem-name { font-size: 12px; color: var(--c-text-mute); }
+
+.chem-point { font-size: 13px; margin-bottom: 4px; }
+.chem-tag { font-size: 12px; color: var(--c-text-mute); margin-bottom: 6px; }
+.chem-meta { font-size: 12px; color: var(--c-text-mute); margin-bottom: 6px; }
+
+.chem-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.chem-act {
+    background: #fff;
+    border: 1px solid var(--c-border);
+    color: var(--c-text);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 36px;
+}
+
+.chem-act-mix { border-color: var(--c-primary); color: var(--c-primary); }
+.chem-act-verify { background: var(--c-primary); color: #fff; border-color: var(--c-primary); }
+.chem-act-finalize { background: #4b5563; color: #fff; border-color: #4b5563; }
+
+.chem-photo-input { display: none; }

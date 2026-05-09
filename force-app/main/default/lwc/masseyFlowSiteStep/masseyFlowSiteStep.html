@@ -1,0 +1,274 @@
+<template>
+    <div class="site-step-container">
+        <!-- Property Identification Section -->
+        <div class="card-section">
+            <h2 class="section-title">Property Identification</h2>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label class="info-label">{nameLabel}</label>
+                    <span class="info-value">{displayName}</span>
+                </div>
+                <div class="info-item">
+                    <label class="info-label">Account ID</label>
+                    <span class="info-value">{displaySerialNumber}</span>
+                </div>
+                <div class="info-item">
+                    <label class="info-label">Service Line</label>
+                    <span class="info-value">{serviceLine}</span>
+                </div>
+                <div class="info-item">
+                    <label class="info-label">Latitude</label>
+                    <span class="info-value">{displayLatitude}</span>
+                </div>
+                <div class="info-item">
+                    <label class="info-label">Longitude</label>
+                    <span class="info-value">{displayLongitude}</span>
+                </div>
+                <div class="info-item">
+                    <label class="info-label">NFC Tag ID</label>
+                    <span class="info-value">{displayNfcTagId}</span>
+                </div>
+                <div class="info-item">
+                    <label class="info-label">Last Service Visit</label>
+                    <span class="info-value">{displayLastTreatment}</span>
+                </div>
+
+                <!-- Pest variant: treatment perimeter -->
+                <template lwc:if={isPest}>
+                    <div class="info-item">
+                        <label class="info-label">Treatment Perimeter</label>
+                        <span class="info-value">{displayPerimeter}</span>
+                    </div>
+                </template>
+
+                <!-- Termite variant: bait stations -->
+                <template lwc:if={isTermite}>
+                    <div class="info-item">
+                        <label class="info-label">Sentricon Stations</label>
+                        <span class="info-value">{displayStationCount}</span>
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label">Last Station Inspection</label>
+                        <span class="info-value">{displayLastStationInspection}</span>
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label">Soil Treatment Product</label>
+                        <span class="info-value">{displaySoilProduct}</span>
+                    </div>
+                </template>
+
+                <!-- Mosquito variant: nozzles + larvicide -->
+                <template lwc:if={isMosquito}>
+                    <div class="info-item">
+                        <label class="info-label">Nozzles in System</label>
+                        <span class="info-value">{displayNozzleCount}</span>
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label">Larvicide Product</label>
+                        <span class="info-value">{displayLarvicideProduct}</span>
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label">Standing Water Sources</label>
+                        <span class="info-value">{displayStandingWater}</span>
+                    </div>
+                </template>
+
+                <!-- Lawn variant: turf inputs -->
+                <template lwc:if={isLawn}>
+                    <div class="info-item">
+                        <label class="info-label">Turf Type</label>
+                        <span class="info-value">{displayTurfType}</span>
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label">Soil Temp</label>
+                        <span class="info-value">{displaySoilTemp}</span>
+                    </div>
+                    <div class="info-item">
+                        <label class="info-label">Last Fertilizer Application</label>
+                        <span class="info-value">{displayLastFert}</span>
+                    </div>
+                </template>
+            </div>
+
+            <button class="btn btn-primary" onclick={handleOpenScanner}>
+                Scan NFC Tag (Sentricon / Mosquito Controller)
+            </button>
+        </div>
+
+        <!-- AI Pest Pressure Forecast -->
+        <template lwc:if={hasPressureForecastCard}>
+            <c-ai-insight-card
+                title={forecastTitle}
+                summary={forecastSummary}
+                severity={forecastSeverity}
+                confidence={forecastConfidence}
+                source={forecastSource}
+                timestamp={forecastTimestamp}
+                details={forecastDetails}
+            ></c-ai-insight-card>
+        </template>
+
+        <!-- Walk-Around Field Measurements — variant-aware -->
+        <div class="card-section">
+            <h2 class="section-title">Walk-Around Findings</h2>
+            <p class="reading-prompt">{label.readingPrompt}</p>
+
+            <!-- Pest (residential GoGreen): pressure score, conducive conditions, perimeter -->
+            <template lwc:if={isPest}>
+                <div class="measurement-grid">
+                    <div class="measurement-item">
+                        <label for="pest-pressure" class="input-label">Pest Pressure Score (0-100)</label>
+                        <input id="pest-pressure" type="number" min="0" max="100" step="1"
+                               class="text-input" placeholder="35" onchange={handlePestPressureChange} />
+                    </div>
+                    <div class="measurement-item">
+                        <label for="conducive" class="input-label">Conducive Conditions Observed</label>
+                        <input id="conducive" type="text" class="text-input"
+                               placeholder="e.g. wood-to-soil contact, mulch against foundation"
+                               onchange={handleConduciveChange} />
+                    </div>
+                    <div class="measurement-item">
+                        <label for="perimeter" class="input-label">Treatment Perimeter (linear ft)</label>
+                        <input id="perimeter" type="number" min="0" step="1"
+                               class="text-input" placeholder="180" onchange={handlePerimeterChange} />
+                    </div>
+                </div>
+            </template>
+
+            <!-- Termite: active bait stations + soil treatment depth -->
+            <template lwc:if={isTermite}>
+                <div class="measurement-grid">
+                    <div class="measurement-item">
+                        <label for="bait-active" class="input-label">Active Bait Stations</label>
+                        <input id="bait-active" type="number" min="0" step="1"
+                               class="text-input" placeholder="4" onchange={handleBaitStationsChange} />
+                    </div>
+                    <div class="measurement-item">
+                        <label for="soil-depth" class="input-label">Soil Treatment Depth (in)</label>
+                        <input id="soil-depth" type="number" min="0" step="0.5"
+                               class="text-input" placeholder="6.0" onchange={handleSoilDepthChange} />
+                    </div>
+                </div>
+            </template>
+
+            <!-- Mosquito Hunter: standing water + nozzles -->
+            <template lwc:if={isMosquito}>
+                <div class="measurement-grid">
+                    <div class="measurement-item">
+                        <label for="standing-water" class="input-label">Standing Water Sources</label>
+                        <input id="standing-water" type="number" min="0" step="1"
+                               class="text-input" placeholder="2" onchange={handleStandingWaterChange} />
+                    </div>
+                    <div class="measurement-item">
+                        <label for="nozzles" class="input-label">Nozzles Inspected</label>
+                        <input id="nozzles" type="number" min="0" step="1"
+                               class="text-input" placeholder="22" onchange={handleNozzlesChange} />
+                    </div>
+                </div>
+            </template>
+
+            <!-- Lawn Service: soil temperature + weed coverage -->
+            <template lwc:if={isLawn}>
+                <div class="measurement-grid">
+                    <div class="measurement-item">
+                        <label for="soil-temp" class="input-label">Soil Temperature (°F)</label>
+                        <input id="soil-temp" type="number" step="0.1"
+                               class="text-input" placeholder="68.0" onchange={handleSoilTempChange} />
+                    </div>
+                    <div class="measurement-item">
+                        <label for="weed-coverage" class="input-label">Weed Coverage (%)</label>
+                        <input id="weed-coverage" type="number" min="0" max="100" step="1"
+                               class="text-input" placeholder="12" onchange={handleWeedCoverageChange} />
+                    </div>
+                </div>
+            </template>
+
+            <button class="btn btn-success" onclick={handleSaveReadings} disabled={isSaving}>
+                {saveButtonLabel}
+            </button>
+        </div>
+
+        <!-- Property Photos with AI analysis -->
+        <div class="card-section">
+            <h2 class="section-title">Property Photos <span class="section-sub">AI-assisted analysis</span></h2>
+
+            <input type="file" accept="image/*" class="file-input-hidden capture-input" onchange={handleFileSelected} />
+            <input type="file" accept="image/*" class="file-input-hidden upload-input" onchange={handleFileSelected} />
+
+            <div class="photo-actions">
+                <button class="btn btn-photo" onclick={handleCapturePhoto}>
+                    <span class="btn-icon">📷</span> Take Photo
+                </button>
+                <button class="btn btn-photo" onclick={handleUploadPhoto}>
+                    <span class="btn-icon">📁</span> Upload Photo
+                </button>
+                <span class="photo-count-badge">{photoCount}</span>
+            </div>
+
+            <template lwc:if={hasPhotos}>
+                <div class="photo-list">
+                    <template for:each={photos} for:item="photo">
+                        <div key={photo.id} class="photo-row">
+                            <div class="photo-row-thumb">
+                                <img src={photo.dataUrl} alt={photo.name} class="photo-thumb-lg" />
+                                <button class="photo-remove-btn" data-id={photo.id} onclick={handleRemovePhoto}>&#x2715;</button>
+                            </div>
+                            <div class="photo-row-meta">
+                                <div class="photo-name">{photo.name}</div>
+                                <template lwc:if={photo.analyzing}>
+                                    <div class="ai-analyzing">
+                                        <span class="ai-spinner"></span>
+                                        Analyzing image…
+                                    </div>
+                                </template>
+                                <template lwc:elseif={photo.analysis}>
+                                    <div class="ai-card">
+                                        <div class="ai-card-head">
+                                            <span class="ai-badge">AI VISION</span>
+                                            <span class={photo.analysis.severityClass}>{photo.analysis.severity}</span>
+                                            <span class="ai-confidence">{photo.analysis.confidencePct}% confidence</span>
+                                        </div>
+                                        <div class="ai-title">{photo.analysis.title}</div>
+                                        <div class="ai-desc">{photo.analysis.description}</div>
+                                        <button class="ai-rerun" data-id={photo.id} onclick={handleReanalyze}>
+                                            Re-run analysis
+                                        </button>
+                                    </div>
+                                </template>
+                                <template lwc:else>
+                                    <div class="ai-pending">Photo uploading — AI analysis will run shortly.</div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+            <template lwc:if={noPhotos}>
+                <div class="photo-empty">No photos captured yet</div>
+            </template>
+        </div>
+
+        <!-- NFC Scanner Modal — Sentricon stations + Mosquito Hunter controllers -->
+        <template lwc:if={isScannerOpen}>
+            <c-massey-flow-nfc-scanner
+                is-open={isScannerOpen}
+                expected-tag-id={displayNfcTagId}
+                onclose={handleScannerClose}
+                onnfcscancomplete={handleNfcScanComplete}
+            ></c-massey-flow-nfc-scanner>
+        </template>
+
+        <!-- Embedded Upsell Coach — marquee surface (P5.6, parallel agent) -->
+        <!-- The compact variant is rendered here mid-flow so the tech sees
+             attach-rate suggestions while still walking the property. The
+             `outcomecaptured` event is forwarded to the orchestrator. -->
+        <template lwc:if={accountId}>
+            <c-massey-upsell-coach
+                account-id={accountId}
+                variant="compact"
+                onoutcomecaptured={handleUpsellOutcome}
+            ></c-massey-upsell-coach>
+        </template>
+    </div>
+</template>

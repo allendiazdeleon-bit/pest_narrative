@@ -1,0 +1,140 @@
+<template>
+  <!-- Loading state -->
+  <template lwc:if={isLoading}>
+    <div class="loading-container">
+      <lightning-spinner alternative-text="Loading..."></lightning-spinner>
+    </div>
+  </template>
+
+  <!-- Main flow -->
+  <template lwc:if={isReady}>
+    <div class="flow-container">
+      <!-- Step Header -->
+      <c-massey-flow-step-header
+        current-step-index={currentStepIndex}
+        total-steps={totalSteps}
+        step-label={currentStepLabel}
+        work-order-number={workOrderNumber}
+        onnavigatetostep={handleNavigateToStep}
+        ontogglecontextpanel={handleToggleContextPanel}
+        ontogglestepmenu={handleToggleStepMenu}>
+      </c-massey-flow-step-header>
+
+      <!-- Step Menu Overlay -->
+      <template lwc:if={showStepMenu}>
+        <div class="step-menu-backdrop" onclick={handleCloseStepMenu}></div>
+        <div class="step-menu-panel">
+          <div class="step-menu-header">
+            <span class="step-menu-title">Jump to Step</span>
+            <button class="step-menu-close" onclick={handleCloseStepMenu}>&#x2715;</button>
+          </div>
+          <div class="step-menu-list">
+            <template for:each={stepMenuItems} for:item="item">
+              <div key={item.index} class={item.itemClass} data-index={item.index} onclick={handleStepMenuSelect}>
+                <span class="step-menu-icon">{item.icon}</span>
+                <div class="step-menu-label">{item.label}</div>
+                <template lwc:if={item.isCompleted}>
+                  <span class="step-menu-check">&#x2714;</span>
+                </template>
+                <template lwc:if={item.isCurrent}>
+                  <span class="step-menu-indicator">&#x25CF;</span>
+                </template>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      <!-- Step Content (one at a time via lwc:if) -->
+      <div class="step-content">
+        <!-- Step 0: Pre-Visit Safety -->
+        <template lwc:if={isStep0}>
+          <c-massey-flow-safety-step
+            record-id={recordId}
+            work-order={workOrderData}
+            onstepcomplete={handleStepComplete}
+            onstepdatasave={handleStepDataSave}>
+          </c-massey-flow-safety-step>
+        </template>
+
+        <!-- Step 1: Crew & Route -->
+        <template lwc:if={isStep1}>
+          <c-massey-flow-crew-step
+            record-id={recordId}
+            work-order={workOrderData}
+            onstepcomplete={handleStepComplete}
+            onstepdatasave={handleStepDataSave}>
+          </c-massey-flow-crew-step>
+        </template>
+
+        <!-- Step 2: Property Walk-Around (with Upsell Coach) -->
+        <template lwc:if={isStep2}>
+          <c-massey-flow-site-step
+            record-id={recordId}
+            work-order={workOrderData}
+            account-id={accountId}
+            onstepcomplete={handleStepComplete}
+            onstepdatasave={handleStepDataSave}>
+          </c-massey-flow-site-step>
+        </template>
+
+        <!-- Step 3: Treatment Execution -->
+        <template lwc:if={isStep3}>
+          <c-massey-flow-work-step
+            record-id={recordId}
+            work-order={workOrderData}
+            onstepcomplete={handleStepComplete}
+            onstepdatasave={handleStepDataSave}>
+          </c-massey-flow-work-step>
+        </template>
+
+        <!-- Step 4: Service Impact -->
+        <template lwc:if={isStep4}>
+          <c-massey-flow-service-impact-step
+            record-id={recordId}
+            work-order={workOrderData}
+            onstepcomplete={handleStepComplete}
+            onstepdatasave={handleStepDataSave}>
+          </c-massey-flow-service-impact-step>
+        </template>
+
+        <!-- Step 5: Verify & Close (with full Upsell Coach) -->
+        <template lwc:if={isStep5}>
+          <c-massey-flow-summary-step
+            record-id={recordId}
+            work-order={workOrderData}
+            account-id={accountId}
+            onstepcomplete={handleStepComplete}
+            onstepdatasave={handleStepDataSave}>
+          </c-massey-flow-summary-step>
+        </template>
+      </div>
+
+      <!-- Navigation buttons -->
+      <div class="navigation-bar">
+        <button
+          class="nav-btn nav-btn-back"
+          onclick={handleBack}
+          disabled={isFirstStep}
+          aria-label="Go to previous step">
+          Back
+        </button>
+        <button
+          class="nav-btn nav-btn-next"
+          onclick={handleNext}
+          disabled={isLastStep}
+          aria-label={nextButtonLabel}>
+          {nextButtonLabel}
+        </button>
+      </div>
+
+      <!-- Context Panel -->
+      <c-massey-flow-context-panel
+        work-order-id={recordId}
+        asset-id={assetId}
+        is-open={showContextPanel}
+        onclose={handleCloseContextPanel}>
+      </c-massey-flow-context-panel>
+    </div>
+  </template>
+</template>

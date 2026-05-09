@@ -1,0 +1,226 @@
+/* Mobile-first responsive layout */
+
+.flow-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f5f5f5;
+  color: #333;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #ffffff;
+}
+
+.step-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.navigation-bar {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background-color: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+  min-height: 56px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-btn {
+  flex: 1;
+  min-height: 44px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.nav-btn-back {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #d0d0d0;
+}
+
+.nav-btn-back:active:not(:disabled) {
+  background-color: #e0e0e0;
+}
+
+.nav-btn-back:disabled {
+  background-color: #f9f9f9;
+  color: #999;
+  border-color: #e0e0e0;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Massey green primary action (#2E7D32 — pest service brand) */
+.nav-btn-next {
+  background-color: #2E7D32;
+  color: #ffffff;
+  border: 1px solid #2E7D32;
+}
+
+.nav-btn-next:active:not(:disabled) {
+  background-color: #1B5E20;
+  border-color: #1B5E20;
+}
+
+.nav-btn-next:disabled {
+  background-color: #cccccc;
+  border-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Step Menu */
+.step-menu-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+.step-menu-panel {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 32px);
+  max-width: 360px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  z-index: 101;
+  overflow: hidden;
+}
+
+.step-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.step-menu-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.step-menu-close {
+  width: 32px;
+  height: 32px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.step-menu-close:active {
+  background: #f3f4f6;
+}
+
+.step-menu-list {
+  padding: 8px 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.step-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.step-menu-item:active {
+  background: #f3f4f6;
+}
+
+.step-menu-item-current {
+  background: rgba(46, 125, 50, 0.08);
+}
+
+.step-menu-item-completed {
+  opacity: 0.7;
+}
+
+.step-menu-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+
+.step-menu-label {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.step-menu-check {
+  color: #2E844A;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.step-menu-indicator {
+  color: #2E7D32;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .navigation-bar { padding: 20px 24px; gap: 16px; }
+  .nav-btn { min-height: 48px; padding: 14px 20px; font-size: 16px; }
+}
+
+@media (min-width: 1024px) {
+  .flow-container { height: auto; max-width: 1200px; margin: 0 auto; }
+  .navigation-bar { padding: 24px 32px; }
+  .nav-btn { min-height: 44px; }
+}
+
+.nav-btn:focus {
+  outline: 2px solid #2E7D32;
+  outline-offset: 2px;
+}
+
+.nav-btn:disabled:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-btn { transition: none; }
+}

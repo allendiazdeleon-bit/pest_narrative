@@ -1,0 +1,44 @@
+<template>
+    <template lwc:if={isOpen}>
+        <div class="scanner-overlay">
+            <div class="scanner-modal">
+                <template lwc:if={showScanningState}>
+                    <div class="modal-content scanning">
+                        <div class="spinner-container">
+                            <div class="spinner"></div>
+                        </div>
+                        <h2 class="modal-title">{scanningMessage}</h2>
+                        <p class="modal-description">Hold your device near the Sentricon station or Mosquito Hunter controller</p>
+                    </div>
+                </template>
+
+                <template lwc:if={showSuccessState}>
+                    <div class="modal-content success">
+                        <div class="result-icon success-icon">&#x2713;</div>
+                        <h2 class="modal-title">{scanSuccessMessage}</h2>
+                        <p class="modal-description">{scanDetailMessage}</p>
+                    </div>
+                </template>
+
+                <template lwc:if={showWarningState}>
+                    <div class="modal-content warning">
+                        <div class="result-icon warning-icon">!</div>
+                        <h2 class="modal-title">{scanSuccessMessage}</h2>
+                        <p class="modal-description">{scanDetailMessage}</p>
+                        <p class="warning-text">This tag does not match the expected NFC tag for this property.</p>
+                    </div>
+                </template>
+
+                <template lwc:if={showErrorState}>
+                    <div class="modal-content error">
+                        <div class="result-icon error-icon">&#x2715;</div>
+                        <h2 class="modal-title">Scan Failed</h2>
+                        <p class="modal-description">{scanError}</p>
+                    </div>
+                </template>
+
+                <button class="close-button" onclick={handleClose}>Close</button>
+            </div>
+        </div>
+    </template>
+</template>

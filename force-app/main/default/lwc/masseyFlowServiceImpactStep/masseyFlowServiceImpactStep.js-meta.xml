@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Massey Flow Service Impact Step</masterLabel>
+    <description>Service Impact step. Surfaces route-level cluster events — elevated pest pressure patterns, mosquito hotspots, termite Sentricon hits — and lets the tech link the visit, capture the pest finding, and draft cluster notifications. Quick Action on Work Order.</description>
+    <targets>
+        <target>lightning__RecordAction</target>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordAction">
+            <actionType>ScreenAction</actionType>
+        </targetConfig>
+        <targetConfig targets="lightning__RecordPage">
+            <objects>
+                <object>WorkOrder</object>
+            </objects>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

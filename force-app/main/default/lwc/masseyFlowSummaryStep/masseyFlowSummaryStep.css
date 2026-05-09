@@ -1,0 +1,175 @@
+:host {
+    --c-primary: #2E7D32;
+    --c-text: #1f2937;
+    --c-text-mute: #6b7280;
+    --c-bg: #ffffff;
+    --c-border: #e5e7eb;
+    --r: 8px;
+}
+
+.flow-summary-step { padding-bottom: 24px; }
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 16px;
+}
+
+.loading-spinner {
+    width: 32px; height: 32px;
+    border: 3px solid rgba(46, 125, 50, 0.2);
+    border-top-color: var(--c-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: var(--c-text-mute); }
+
+.completion-banner {
+    margin: 16px;
+    padding: 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #2E7D32, #4CAF50);
+    color: #fff;
+    border-radius: var(--r);
+}
+
+.completion-icon { font-size: 36px; margin-bottom: 8px; }
+.completion-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.completion-subtitle { font-size: 13px; opacity: 0.9; }
+
+.summary-card {
+    margin: 12px 16px;
+    padding: 16px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.card-icon { font-size: 18px; }
+.card-title { font-weight: 700; font-size: 15px; flex: 1; }
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--c-border);
+    font-size: 13px;
+    min-height: 32px;
+}
+
+.summary-row:last-child { border-bottom: none; }
+
+.summary-label { color: var(--c-text-mute); font-weight: 600; }
+.summary-value { color: var(--c-text); }
+.summary-value.muted { color: var(--c-text-mute); font-style: italic; }
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.badge-green { background: rgba(46, 132, 74, 0.15); color: #2E844A; }
+.badge-orange { background: rgba(245, 158, 11, 0.15); color: #B45309; }
+.badge-red { background: rgba(220, 38, 38, 0.15); color: #B91C1C; }
+
+.compliance-ready {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: auto;
+}
+
+.compliance-ready-yes { background: rgba(46, 132, 74, 0.15); color: #2E844A; }
+.compliance-ready-no { background: rgba(245, 158, 11, 0.15); color: #B45309; }
+
+.compliance-summary-text { font-size: 13px; color: var(--c-text-mute); margin-bottom: 12px; line-height: 1.5; }
+
+.compliance-checks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+
+.comp-check {
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+    background: #f9fafb;
+    border-radius: 4px;
+    align-items: flex-start;
+}
+
+.comp-status {
+    font-size: 14px;
+    font-weight: 700;
+    min-width: 20px;
+}
+
+.comp-status-pass { color: #2E844A; }
+.comp-status-warn { color: #B45309; }
+.comp-status-fail { color: #B91C1C; }
+.comp-status-na { color: var(--c-text-mute); }
+
+.comp-check-meta { flex: 1; }
+.comp-req { font-weight: 600; font-size: 13px; }
+.comp-detail { font-size: 12px; color: var(--c-text-mute); margin-top: 2px; }
+.comp-evidence { font-size: 11px; color: var(--c-text-mute); font-style: italic; margin-top: 2px; }
+
+.compliance-generate {
+    width: 100%;
+    padding: 10px;
+    background: var(--c-primary);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 40px;
+}
+
+.compliance-generate:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.complete-btn {
+    margin: 16px;
+    padding: 16px;
+    width: calc(100% - 32px);
+    background: var(--c-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--r);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    min-height: 56px;
+}
+
+.complete-btn.processing { opacity: 0.7; cursor: wait; }
+.complete-btn.completed { background: #2E844A; cursor: default; }
+
+.error-banner {
+    margin: 12px 16px;
+    padding: 12px;
+    background: rgba(220, 38, 38, 0.1);
+    border-left: 4px solid #B91C1C;
+    border-radius: 4px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 13px;
+}
+
+.error-icon { font-size: 18px; }
+.error-text { flex: 1; }

@@ -1,0 +1,172 @@
+<template>
+  <div class="flow-summary-step">
+    <template lwc:if={isLoading}>
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading summary...</div>
+      </div>
+    </template>
+
+    <template lwc:if={isReady}>
+      <div class="completion-banner">
+        <div class="completion-icon">&#x2705;</div>
+        <div class="completion-title">Service Visit Summary</div>
+        <div class="completion-subtitle">Review all data before completing</div>
+      </div>
+
+      <!-- Service Visit Details -->
+      <div class="summary-card">
+        <div class="card-header">
+          <span class="card-icon">&#x1F4CB;</span>
+          <span class="card-title">Service Visit Details</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Work Order</span>
+          <span class="summary-value">{workOrderNumber}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Property</span>
+          <span class="summary-value">{assetName}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Service Line</span>
+          <span class="summary-value">{serviceLine}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Duration</span>
+          <span class="summary-value">{duration}</span>
+        </div>
+      </div>
+
+      <!-- Safety Gate -->
+      <div class="summary-card">
+        <div class="card-header">
+          <span class="card-icon">&#x1F6E1;&#xFE0F;</span>
+          <span class="card-title">Safety Gate</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Status</span>
+          <span class={safetyBadgeClass}>{safetyGateStatus}</span>
+        </div>
+        <template lwc:if={safetyGatePassedAt}>
+          <div class="summary-row">
+            <span class="summary-label">Cleared At</span>
+            <span class="summary-value">{safetyGatePassedAt}</span>
+          </div>
+        </template>
+      </div>
+
+      <!-- Service Impact (cluster events) -->
+      <div class="summary-card">
+        <div class="card-header">
+          <span class="card-icon">&#x26A1;</span>
+          <span class="card-title">Service Impact &amp; Cluster Events</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Pest Finding</span>
+          <span class="summary-value">{pestFinding}</span>
+        </div>
+        <template lwc:if={hasLinkedIncident}>
+          <div class="summary-row">
+            <span class="summary-label">Linked Cluster</span>
+            <span class="summary-value">{incidentNumber}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Priority</span>
+            <span class="summary-value">{incidentPriority}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Cluster Status</span>
+            <span class="summary-value">{incidentStatus}</span>
+          </div>
+        </template>
+        <template lwc:else>
+          <div class="summary-row">
+            <span class="summary-label">Linked Cluster</span>
+            <span class="summary-value muted">None</span>
+          </div>
+        </template>
+      </div>
+
+      <!-- Treatment Report (regulatory packet) -->
+      <template lwc:if={hasReport}>
+        <div class="summary-card compliance-card">
+          <div class="card-header">
+            <span class="card-icon">📑</span>
+            <span class="card-title">Treatment Report Package</span>
+            <span class={report.readyClass}>
+              <template lwc:if={report.readyToFile}>Ready to share</template>
+              <template lwc:else>Review warnings</template>
+            </span>
+          </div>
+          <div class="compliance-summary-text">{report.summary}</div>
+          <div class="compliance-checks">
+            <template for:each={report.checks} for:item="c">
+              <div key={c.requirement} class="comp-check">
+                <span class={c.statusClass}>{c.statusIcon}</span>
+                <div class="comp-check-meta">
+                  <div class="comp-req">{c.requirement}</div>
+                  <div class="comp-detail">{c.detail}</div>
+                  <template lwc:if={c.evidence}>
+                    <div class="comp-evidence">Evidence: {c.evidence}</div>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+          <button class="compliance-generate" onclick={handleGenerateReport} disabled={generateDisabled}>
+            {generateButtonLabel}
+          </button>
+        </div>
+      </template>
+
+      <!-- AI Visit Quality Score -->
+      <c-ai-insight-card
+        title={visitQualityTitle}
+        summary={visitQualitySummary}
+        severity={visitQualitySeverity}
+        confidence={visitQualityConfidence}
+        source={visitQualitySource}
+        timestamp={insightTimestamp}
+        details={visitQualityDetails}
+      ></c-ai-insight-card>
+
+      <!-- AI Property Pressure Impact -->
+      <template lwc:if={hasPressureImpactCard}>
+        <c-ai-insight-card
+          title={pressureImpactTitle}
+          summary={pressureImpactSummary}
+          severity={pressureImpactSeverity}
+          confidence={pressureImpactConfidence}
+          source={pressureImpactSource}
+          timestamp={insightTimestamp}
+          details={pressureImpactDetails}
+        ></c-ai-insight-card>
+      </template>
+
+      <!-- Embedded Upsell Coach (full variant) — close-out attach-rate moment -->
+      <template lwc:if={effectiveAccountId}>
+        <c-massey-upsell-coach
+          account-id={effectiveAccountId}
+          variant="full"
+          onoutcomecaptured={handleUpsellOutcome}
+        ></c-massey-upsell-coach>
+      </template>
+
+      <button
+        class={completeButtonClass}
+        onclick={handleCompleteWorkOrder}
+        disabled={isProcessing}
+      >
+        {completeButtonLabel}
+      </button>
+    </template>
+
+    <template lwc:if={error}>
+      <div class="error-banner">
+        <span class="error-icon">&#x26A0;&#xFE0F;</span>
+        <span class="error-text">{error}</span>
+      </div>
+    </template>
+  </div>
+</template>
