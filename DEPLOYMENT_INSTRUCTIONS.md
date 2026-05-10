@@ -14,7 +14,7 @@ This is the runbook for deploying the masseyFlow demo into a fresh Salesforce or
 Confirm every line below before kicking off step 1.
 
 - [ ] Org edition: **Enterprise**, **Unlimited**, or **Developer** with Service Cloud + Field Service Lightning licensed.
-- [ ] **Massey brand-use legal sign-off CONFIRMED** (gating per `CLAUDE.md`). Do not deploy externally without it.
+- [x] **Massey brand-use legal sign-off CONFIRMED** (2026-05-10). Demo can be presented externally.
 - [ ] Service Cloud Voice number **already provisioned** in target org. Allen owns this; no procurement work in this run. See section 6.
 - [ ] Salesforce CLI **2.x** installed; authenticated to target org (`sf org login web --alias <alias>`).
 - [ ] Massey FSL package(s) installed in target org (managed FSL package + any AppExchange dependencies the parent org already carries).
@@ -224,16 +224,16 @@ API names preserved to avoid migration churn. New code references them by API na
 
 ## 4. Permission Sets
 
-**Note:** Permission Set XML is not yet authored in this repo (the `permissionsets/` directory is empty as of P6.5 commit window). The matrix below is the spec to author at deploy time; admin can build via Setup UI or hand-author XML.
+Four permission sets ship as XML under `force-app/main/default/permissionsets/`. Each is assigned to its persona's user record at install time.
 
-| Permission Set | Persona(s) | Object Perms | Field Perms | Apex Access | LWC Access | Quick Actions |
-|----------------|------------|--------------|-------------|-------------|------------|---------------|
-| `Massey_FSL_Technician` | Maria Lopez, Tom Walker | R/W on WorkOrder, WorkStep, WorkStepTemplate, Asset, LOTO_Record__c, Hazard__c, Account (read-only); R on Incident | All masseyFlow custom fields R/W; Account.upsell fields R/W (so techs can capture outcome) | All `masseyFlow*` Apex; `UpsellCoachService` | All `masseyFlow*` LWCs; `masseyUpsellCoach` | 7 implicit (orchestrator + 6 steps); `Account.MasseyUpsellCoach` |
-| `Massey_Branch_Agent` | Jordan Martinez | R/W Account, Case, Lead; R on WorkOrder, Asset, Incident | All Account upsell fields R/W | `UpsellCoachService` | `masseyUpsellCoach`, `aiInsightCard`, Service Console widgets | `Account.MasseyUpsellCoach` |
-| `Massey_Branch_Manager` | Ray Garcia | R on all FSL objects; R/W on Incident, ProductServiceCampaign | All R; Account upsell R | `UpsellCoachService`, dispatch_* controllers | `dispatch_ActivePSCDrawer`, `dispatch_SmartSuggester`, `dispatch_TopOfQueueSummary`, `realTimePulse` | All 8 demoMagic Quick Actions |
-| `Massey_Demo_Admin` | Presenter | All — superset | All — superset | All | All | All |
+| Permission Set | File | Persona(s) | Object Perms | Field Perms | Apex Class Access | Tabs |
+|----------------|------|------------|--------------|-------------|-------------------|------|
+| `Massey_FSL_Technician` | `Massey_FSL_Technician.permissionset-meta.xml` | Maria Lopez, Tom Walker | 21 (R+E on FSL ops objects; R+C+E on WorkPlan/WorkStep/Lead/LOTO/Hazard) | 64 (All masseyFlow custom fields, mostly R+E) | 19 (PestPressureAnalyzer, ChemicalApplicationService, UpsellCoachService, etc.) | 0 (mobile only) |
+| `Massey_Branch_Agent` | `Massey_Branch_Agent.permissionset-meta.xml` | Jordan Martinez | 11 (R+C+E on Account/Case/Lead/SA/WO; R on Asset/Incident/PSC) | 56 (Account upsell R+E; Asset R; WO R+E; Incident R) | 18 (AppointmentBooker, KnowledgeArticleSuggester, UpsellCoachService, etc.) | 6 (Service Console) |
+| `Massey_Branch_Manager` | `Massey_Branch_Manager.permissionset-meta.xml` | Ray Garcia | 12 (R+E on dispatch/cluster objects; R on customer-facing) | 56 (Account upsell R; Asset R; WO R+E; Incident R+E) | 16 (ClusterDetector, EmergencyDivertOrchestrator, dispatch_*, UpsellCoachService) | 6 (Reports/Dashboards/dispatch) |
+| `Massey_Demo_Admin` | `Massey_Demo_Admin.permissionset-meta.xml` | Presenter | 22 (R+C+E+D on every demo object) | 78 (every Massey custom field R+E) | 39 (all pest classes) | 13 (all demo tabs) |
 
-Authoring guidance: clone `Massey_FSL_Technician` first (largest scope), then trim down for the other three. Field-level entries should be generated from the field XML, not hand-typed.
+**Safety:** none of the four permsets grant `ModifyAllData`, `CustomizeApplication`, `<modifyAllRecords>true>`, or `<viewAllRecords>true>`. Demo Admin grants only `ViewSetup` (navigation, non-elevating).
 
 ---
 
@@ -325,7 +325,7 @@ LWR site. **Owner: Allen.** Setup → Digital Experiences → All Sites → New 
 - Schedule Service (anonymous booking with `AppointmentBooker.cls`)
 - Account Portal (authenticated; visit history, upsell offers, reschedule)
 
-**Branding:** Massey colors + logo. Pending legal sign-off on logo use (see section 0 checklist).
+**Branding:** Massey colors + logo. Legal sign-off confirmed 2026-05-10.
 
 **Embedded Agentforce Chat** on every page; chat config inherits from the org-level Agentforce setup (section 7).
 
@@ -371,10 +371,10 @@ Mirrored from `CLAUDE.md` and the P0.2 stub. Single source for a deploying admin
 - [ ] **P4.3** — "Upsell Recommendation" Agentforce topic + Sidekick library entry — Agentforce admin UI. Owner: **Allen**.
 - [ ] **P2.5** — 12 Knowledge articles — content authoring + publishing. Owner: **Allen**.
 - [ ] **P5.8** — `massey-portal` Experience Cloud (LWR) site — Experience Cloud admin UI. Owner: **Allen**.
-- [ ] **Massey brand-use legal sign-off** — confirm before any external presentation. Owner: **Allen** (with legal).
+- [x] **Massey brand-use legal sign-off** — confirmed 2026-05-10. Owner: **Allen** (with legal).
 - [ ] **P6.2 offline regression test** — manual device test on FSL Mobile (iPad + iPhone). Owner: **Allen**.
 - [ ] **Scheduling Policies + Work Rules + Service Objectives** — Field Service Setup admin UI. Two policies recommended: Massey Standard (default) + Cluster Response. Owner: **Allen**.
-- [ ] **Permission Set authoring** — section 4 matrix is the spec; the four permsets do not yet ship as XML in `force-app/main/default/permissionsets/`. Author at deploy time.
+- [x] **Permission Set authoring** — 4 permsets ship as XML in `force-app/main/default/permissionsets/`. Assign to each persona's user record at install time (section 4).
 
 ---
 
