@@ -160,16 +160,17 @@ public with sharing class CustomerNotificationService {
         String campaignName = 'Cluster Notification — ' + (inc.Subject == null ? '(unnamed)' : inc.Subject);
         ProductServiceCampaign psc;
         try {
+            // PSC's display field is `Subject` in this org (not `Name`)
             List<ProductServiceCampaign> existing = [
-                SELECT Id, Name FROM ProductServiceCampaign
-                WHERE Name = :campaignName LIMIT 1
+                SELECT Id, Subject FROM ProductServiceCampaign
+                WHERE Subject = :campaignName LIMIT 1
             ];
             if (!existing.isEmpty()) {
                 psc = existing[0];
                 result.reused = true;
             } else {
                 psc = new ProductServiceCampaign();
-                psc.Name = campaignName;
+                psc.Subject = campaignName;
                 try { psc.put('Status', 'Planned'); } catch (Exception ignore) {}
                 insert psc;
             }
