@@ -526,45 +526,52 @@ export default class MasseyFlowSafetyStep extends LightningElement {
         ];
     }
 
-    // Decorated risk chips — renders as bold visual badges with icons + colors
-    // instead of the generic AI insight card's small caps key-value list.
+    // Compact risk chips — at-a-glance only. Each chip = one icon + one short
+    // value. Verbose narrative (the Apex `summary` paragraph) is intentionally
+    // NOT rendered — it competed with the chips for the tech's eye.
     get riskChips() {
         if (!this.riskBriefing) return [];
-        const weather = this.riskBriefing.weatherRisk || 'Unknown';
-        const pets = this.riskBriefing.petsOnProperty || 'None';
+        const weatherLevel = this.riskBriefing.weatherRisk || 'Unknown';
+        const weatherDetail = this.riskBriefing.weatherDetail || '';
         const hazards = this.riskBriefing.nearbyHazards ?? 0;
         const history = this.riskBriefing.assetHistoryRisk || 'Low';
-        // Map values to icons + severity class
-        const weatherIcon = /rain|storm/i.test(weather) ? '🌧️'
-            : /cloud/i.test(weather) ? '⛅'
-            : /sun|clear/i.test(weather) ? '☀️'
+        const rupAuth = this.riskBriefing.locateTicketStatus || 'N/A';
+
+        // Pull a short weather summary from the verbose forecast string —
+        // first clause only ("sunny, 82F" not the whole paragraph).
+        let weatherShort = weatherDetail;
+        if (weatherDetail) {
+            const firstSentence = weatherDetail.split(/[.•]/)[0].trim();
+            const afterColon = firstSentence.includes(':')
+                ? firstSentence.split(':').slice(1).join(':').trim()
+                : firstSentence;
+            weatherShort = afterColon.length < 32 ? afterColon : afterColon.slice(0, 30) + '…';
+        }
+        if (!weatherShort) weatherShort = weatherLevel;
+
+        const weatherIcon = /rain|storm/i.test(weatherDetail) ? '🌧️'
+            : /cloud/i.test(weatherDetail) ? '⛅'
+            : /sun|clear/i.test(weatherDetail) ? '☀️'
             : '🌤️';
-        const petsIcon = /dog/i.test(pets) ? '🐕'
-            : /cat/i.test(pets) ? '🐈'
-            : pets && pets !== 'None' && pets !== 'Unknown' ? '🐾' : '✓';
         const hazardsIcon = hazards > 0 ? '⚠️' : '✓';
         const historyIcon = history === 'High' ? '🔴' : history === 'Medium' ? '🟡' : '🟢';
+        const rupIcon = rupAuth === 'Verified' ? '✓' : rupAuth === 'Pending' ? '⏳' : '—';
+
         const chip = (icon, label, value, severity) => ({
-            key: label,
-            icon,
-            label,
-            value,
+            key: label, icon, label, value,
             chipClass: 'risk-chip risk-chip-' + severity
         });
-        const weatherSev = /rain|storm/i.test(weather) ? 'warning' : 'ok';
-        const petsSev = pets && pets !== 'None' && pets !== 'Unknown' ? 'warning' : 'ok';
+        const weatherSev = /rain|storm/i.test(weatherDetail) ? 'warning'
+            : weatherLevel === 'Severe' ? 'critical' : 'ok';
         const hazardsSev = hazards > 0 ? 'critical' : 'ok';
         const historySev = history === 'High' ? 'critical' : history === 'Medium' ? 'warning' : 'ok';
+        const rupSev = rupAuth === 'Verified' ? 'ok' : rupAuth === 'Pending' ? 'warning' : 'ok';
         return [
-            chip(weatherIcon, 'Weather', weather, weatherSev),
-            chip(petsIcon, 'Pets', pets, petsSev),
+            chip(weatherIcon, 'Weather', weatherShort, weatherSev),
             chip(hazardsIcon, 'Hazards', hazards + ' nearby', hazardsSev),
-            chip(historyIcon, 'History', history, historySev)
+            chip(historyIcon, 'Property History', history, historySev),
+            chip(rupIcon, 'RUP Auth', rupAuth, rupSev)
         ];
-    }
-
-    get riskBriefingHeadline() {
-        return this.riskBriefing ? (this.riskBriefing.summary || 'Pre-visit briefing') : '';
     }
 
     get riskBriefingConfidence() {
