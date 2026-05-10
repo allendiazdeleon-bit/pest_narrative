@@ -217,9 +217,9 @@ public with sharing class ChemicalApplicationService {
     }
 
     @AuraEnabled
-    public static void markVerified(Id lotoId) {
-        if (lotoId == null) {
-            throw new AuraHandledException('lotoId is required');
+    public static void markVerified(Id applicationId) {
+        if (applicationId == null) {
+            throw new AuraHandledException('applicationId is required');
         }
 
         LOTO_Record__c rec;
@@ -227,12 +227,12 @@ public with sharing class ChemicalApplicationService {
             rec = [
                 SELECT Id, Status__c, Isolated_By__c
                 FROM LOTO_Record__c
-                WHERE Id = :lotoId
+                WHERE Id = :applicationId
                 WITH SECURITY_ENFORCED
                 LIMIT 1
             ];
         } catch (Exception e) {
-            throw new AuraHandledException('RUP attestation row not found: ' + lotoId);
+            throw new AuraHandledException('RUP attestation row not found: ' + applicationId);
         }
 
         Id currentUserId = UserInfo.getUserId();
@@ -344,5 +344,50 @@ public with sharing class ChemicalApplicationService {
         m.put('energySource', energySource);
         m.put('point', point);
         return m;
+    }
+
+    // ------------------------------------------------------------------
+    // Pest-named wrappers (called from masseyFlowChemicalPanel LWC).
+    // Thin shims over the existing methods with pest-flavor param names
+    // and the extra LOTO_Record__c custom fields the LWC captures.
+    // ------------------------------------------------------------------
+
+    @AuraEnabled
+    public static Id createApplication(
+        Id workOrderId,
+        String product,
+        String applicationPoint,
+        String epaRegNumber,
+        String applicatorLicense,
+        Boolean rupAttested,
+        String notes
+    ) {
+        if (rupAttested != true) {
+            throw new AuraHandledException('RUP attestation must be checked before saving the application.');
+        }
+        Id rupId = createIsolationPoint(workOrderId, product, applicationPoint, '(see app)', notes);
+        if (rupId != null && (String.isNotBlank(epaRegNumber) || String.isNotBlank(applicatorLicense) || String.isNotBlank(product))) {
+            LOTO_Record__c rec = [SELECT Id FROM LOTO_Record__c WHERE Id = :rupId LIMIT 1];
+            if (String.isNotBlank(epaRegNumber)) rec.EPA_Reg_Number__c = epaRegNumber;
+            if (String.isNotBlank(applicatorLicense)) rec.Applicator_License__c = applicatorLicense;
+            if (String.isNotBlank(product)) rec.Chemical_Name__c = product;
+            try { update rec; } catch (DmlException e) { /* non-fatal: row exists, extras best-effort */ }
+        }
+        return rupId;
+    }
+
+    @AuraEnabled
+    public static void markMixed(Id applicationId, String photoContentVersionId) {
+        markIsolated(applicationId, photoContentVersionId);
+    }
+
+    @AuraEnabled
+    public static void markFinalized(Id applicationId) {
+        markRemoved(applicationId);
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<Map<String, String>> suggestApplicationsForWorkType(Id workOrderId) {
+        return suggestIsolationPointsForWorkType(workOrderId);
     }
 }

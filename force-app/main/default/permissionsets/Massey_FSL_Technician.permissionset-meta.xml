@@ -463,10 +463,6 @@
         <editable>true</editable><readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <field>LOTO_Record__c.Isolation_Point__c</field>
-        <editable>true</editable><readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
         <field>LOTO_Record__c.Lock_Tag_Number__c</field>
         <editable>true</editable><readable>true</readable>
     </fieldPermissions>

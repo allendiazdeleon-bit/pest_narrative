@@ -417,11 +417,6 @@
         <tab>standard-Dashboard</tab>
         <visibility>Visible</visibility>
     </tabSettings>
-    <tabSettings>
-        <tab>LOTO_Record__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-
     <!-- Account upsell custom fields — Read+Edit -->
     <fieldPermissions>
         <field>Account.Eligible_Upsells__c</field>
@@ -605,10 +600,6 @@
     <!-- LOTO_Record__c custom fields — Read+Edit -->
     <fieldPermissions>
         <field>LOTO_Record__c.Energy_Source__c</field>
-        <editable>true</editable><readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <field>LOTO_Record__c.Isolation_Point__c</field>
         <editable>true</editable><readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
