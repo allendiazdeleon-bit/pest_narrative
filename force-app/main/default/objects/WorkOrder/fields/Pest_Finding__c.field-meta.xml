@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Pest_Finding__c</fullName>
+    <label>Pest Finding</label>
+    <type>Picklist</type>
+    <required>false</required>
+    <description>Tech's categorical finding captured in the Service Impact step (masseyFlowServiceImpactStep).</description>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>None</fullName><default>true</default><label>None / no finding</label></value>
+            <value><fullName>Pest_Pressure_Elevated</fullName><default>false</default><label>Pest pressure elevated</label></value>
+            <value><fullName>Mosquito_Hotspot</fullName><default>false</default><label>Mosquito hotspot</label></value>
+            <value><fullName>Sentricon_Activity</fullName><default>false</default><label>Sentricon activity / hits</label></value>
+            <value><fullName>Termite_Swarmer_Sighting</fullName><default>false</default><label>Termite swarmer sighting</label></value>
+            <value><fullName>Conducive_Conditions</fullName><default>false</default><label>Conducive conditions flagged</label></value>
+            <value><fullName>Wildlife_Encounter</fullName><default>false</default><label>Wildlife encounter</label></value>
+            <value><fullName>Lawn_Distress</fullName><default>false</default><label>Lawn distress / disease</label></value>
+            <value><fullName>Other</fullName><default>false</default><label>Other (see notes)</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

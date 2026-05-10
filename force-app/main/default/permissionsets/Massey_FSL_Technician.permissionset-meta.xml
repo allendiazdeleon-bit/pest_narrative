@@ -533,10 +533,6 @@
         <editable>true</editable><readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <field>Hazard__c.Severity__c</field>
-        <editable>true</editable><readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
         <field>Hazard__c.Status__c</field>
         <editable>true</editable><readable>true</readable>
     </fieldPermissions>

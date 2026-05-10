@@ -418,10 +418,6 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>Hazard__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
         <tab>LOTO_Record__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
@@ -679,10 +675,6 @@
     <!-- Hazard__c custom fields — Read+Edit -->
     <fieldPermissions>
         <field>Hazard__c.Description__c</field>
-        <editable>true</editable><readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <field>Hazard__c.Severity__c</field>
         <editable>true</editable><readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
