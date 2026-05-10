@@ -27,7 +27,7 @@ import ASSET_NFC_TAG from '@salesforce/schema/Asset.NFC_Tag_Id__c';
 import ASSET_SERVICE_LINE from '@salesforce/schema/Asset.Service_Line__c';
 
 // Pest variant: spray equipment + treatment perimeter
-import ASSET_LAST_TREATMENT from '@salesforce/schema/Asset.Last_Treatment_Date__c';
+import ASSET_LAST_TREATMENT from '@salesforce/schema/Asset.Last_Treatment_DateTime__c';
 import ASSET_PEST_PRESSURE from '@salesforce/schema/Asset.Pest_Pressure_Score__c';
 import ASSET_CONDUCIVE_CONDITIONS from '@salesforce/schema/Asset.Conducive_Conditions__c';
 import ASSET_PERIMETER_LF from '@salesforce/schema/Asset.Treatment_Perimeter_LinearFt__c';
@@ -151,7 +151,7 @@ export default class MasseyFlowSiteStep extends LightningElement {
             InstallDate: getFieldValue(record, ASSET_INSTALL_DATE),
             NFC_Tag_Id__c: getFieldValue(record, ASSET_NFC_TAG),
             Service_Line__c: getFieldValue(record, ASSET_SERVICE_LINE),
-            Last_Treatment_Date__c: getFieldValue(record, ASSET_LAST_TREATMENT),
+            Last_Treatment_DateTime__c: getFieldValue(record, ASSET_LAST_TREATMENT),
             Pest_Pressure_Score__c: getFieldValue(record, ASSET_PEST_PRESSURE),
             Conducive_Conditions__c: getFieldValue(record, ASSET_CONDUCIVE_CONDITIONS),
             Treatment_Perimeter_LinearFt__c: getFieldValue(record, ASSET_PERIMETER_LF),
@@ -193,7 +193,7 @@ export default class MasseyFlowSiteStep extends LightningElement {
     get displayLatitude() { return this.assetData.Latitude || 'N/A'; }
     get displayLongitude() { return this.assetData.Longitude || 'N/A'; }
     get displayNfcTagId() { return this.assetData.NFC_Tag_Id__c || 'Not Set'; }
-    get displayLastTreatment() { return this.assetData.Last_Treatment_Date__c || 'No prior visit on file'; }
+    get displayLastTreatment() { return this.assetData.Last_Treatment_DateTime__c || 'No prior visit on file'; }
     get displayPerimeter() {
         return this.assetData.Treatment_Perimeter_LinearFt__c
             ? `${this.assetData.Treatment_Perimeter_LinearFt__c} linear ft`

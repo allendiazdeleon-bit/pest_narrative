@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Larvicide_Product__c</fullName>
+    <label>Larvicide Product</label>
+    <type>Text</type>
+    <length>80</length>
+    <required>false</required>
+    <description>Larvicide product currently charged in the mosquito system (e.g., Altosid).</description>
+</CustomField>
