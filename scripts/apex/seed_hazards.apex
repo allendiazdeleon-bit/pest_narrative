@@ -90,16 +90,14 @@ List<HazardSpec> specs = new List<HazardSpec>{
 };
 
 // 3. Idempotency check — find any sentinels already seeded -----------------
-//    SOQL LIKE on Description__c is the keyed lookup. We can't IN-list across
-//    LIKE patterns in a single SOQL, so we batch-fetch all hazards whose
-//    Description__c starts with the common '[HZ-' prefix, then filter in Apex.
+//    Description__c is a long-text field that can't be filtered in SOQL.
+//    Fall back to a per-record-batch check: pull all Hazard__c records and
+//    filter sentinels in Apex.
 Set<String> existingSentinels = new Set<String>();
-for (Hazard__c h : [SELECT Id, Description__c FROM Hazard__c
-                    WHERE Description__c LIKE '[HZ-%' LIMIT 1000]) {
+for (Hazard__c h : [SELECT Id, Description__c FROM Hazard__c LIMIT 2000]) {
     if (h.Description__c == null) continue;
-    // Sentinel is everything up to and including the first ']'.
     Integer endIdx = h.Description__c.indexOf(']');
-    if (endIdx > 0) {
+    if (endIdx > 0 && h.Description__c.startsWith('[HZ-')) {
         existingSentinels.add(h.Description__c.substring(0, endIdx + 1));
     }
 }

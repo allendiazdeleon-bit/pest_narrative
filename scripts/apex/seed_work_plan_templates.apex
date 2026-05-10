@@ -60,8 +60,11 @@ for (String wtName : planByWorkType.keySet()) {
 // ------------------------------------------------------------------
 Set<String> wantedPlanNames = new Set<String>(planByWorkType.values());
 
+// WorkPlanTemplate has no WorkTypeId in this org (FSL standard schema varies).
+// The link from WorkType to its plan can be established post-insert (admin UI
+// or a separate WorkType update). Here we just seed the WPT records.
 Map<String, WorkPlanTemplate> existingPlanByName = new Map<String, WorkPlanTemplate>();
-for (WorkPlanTemplate wpt : [SELECT Id, Name, WorkTypeId FROM WorkPlanTemplate WHERE Name IN :wantedPlanNames]) {
+for (WorkPlanTemplate wpt : [SELECT Id, Name FROM WorkPlanTemplate WHERE Name IN :wantedPlanNames]) {
     existingPlanByName.put(wpt.Name, wpt);
 }
 
@@ -71,7 +74,6 @@ for (String wtName : planByWorkType.keySet()) {
     if (!existingPlanByName.containsKey(planName)) {
         plansToInsert.add(new WorkPlanTemplate(
             Name = planName,
-            WorkTypeId = workTypeIdByName.get(wtName),
             Description = 'Auto-generated checklist for the "' + wtName + '" Work Type. Massey Services pest demo (P1.6).'
         ));
     }
@@ -79,6 +81,27 @@ for (String wtName : planByWorkType.keySet()) {
 if (!plansToInsert.isEmpty()) {
     insert plansToInsert;
     for (WorkPlanTemplate wpt : plansToInsert) existingPlanByName.put(wpt.Name, wpt);
+}
+
+// Link WorkType -> WorkPlanTemplate via WorkType.WorkPlanTemplateId (best-effort
+// — only applies if the org has the field; tolerated if not).
+try {
+    if (Schema.SObjectType.WorkType.fields.getMap().containsKey('workplantemplateid')) {
+        List<WorkType> wtsToUpdate = new List<WorkType>();
+        for (String wtName : planByWorkType.keySet()) {
+            Id wtId = workTypeIdByName.get(wtName);
+            String planName = planByWorkType.get(wtName);
+            WorkPlanTemplate wpt = existingPlanByName.get(planName);
+            if (wtId != null && wpt != null) {
+                WorkType wt = new WorkType(Id = wtId);
+                wt.put('WorkPlanTemplateId', wpt.Id);
+                wtsToUpdate.add(wt);
+            }
+        }
+        if (!wtsToUpdate.isEmpty()) update wtsToUpdate;
+    }
+} catch (Exception e) {
+    System.debug('WorkType.WorkPlanTemplateId link skipped: ' + e.getMessage());
 }
 System.debug('WorkPlanTemplates inserted this run: ' + plansToInsert.size());
 System.debug('WorkPlanTemplates total in scope: ' + existingPlanByName.size());
