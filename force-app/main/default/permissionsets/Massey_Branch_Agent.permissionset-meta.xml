@@ -336,6 +336,10 @@
         <field>WorkOrder.Linked_Incident__c</field>
         <editable>true</editable><readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <field>WorkOrder.Pest_Finding__c</field>
+        <editable>false</editable><readable>true</readable>
+    </fieldPermissions>
 
     <!-- Incident custom fields — Read -->
     <fieldPermissions>
