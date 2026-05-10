@@ -4,7 +4,11 @@
     <description>Catch-all for the demo presenter. R/W on demo objects + custom fields + all pest Apex classes. No ModifyAllData / CustomizeApplication.</description>
     <hasActivationRequired>false</hasActivationRequired>
 
-    <!-- User Permission: ViewSetup so the presenter can navigate Setup if needed during demo -->
+    <!-- User Permissions: ViewSetup + ViewRoles (ViewSetup depends on ViewRoles) -->
+    <userPermissions>
+        <name>ViewRoles</name>
+        <enabled>true</enabled>
+    </userPermissions>
     <userPermissions>
         <name>ViewSetup</name>
         <enabled>true</enabled>
@@ -598,14 +602,6 @@
     </fieldPermissions>
 
     <!-- LOTO_Record__c custom fields — Read+Edit -->
-    <fieldPermissions>
-        <field>LOTO_Record__c.Energy_Source__c</field>
-        <editable>true</editable><readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <field>LOTO_Record__c.Lock_Tag_Number__c</field>
-        <editable>true</editable><readable>true</readable>
-    </fieldPermissions>
     <fieldPermissions>
         <field>LOTO_Record__c.Isolated_By__c</field>
         <editable>true</editable><readable>true</readable>

@@ -32,6 +32,40 @@ public with sharing class PestPressureAnalyzer {
         @InvocableVariable(label='Primary Asset Id') public Id primaryAssetId;
     }
 
+    public class AssetForecast {
+        @AuraEnabled public Decimal riskScore;
+        @AuraEnabled public String summary;
+        @AuraEnabled public Decimal confidence;
+        @AuraEnabled public String source;
+        @AuraEnabled public String anomalyType;
+        @AuraEnabled public Id assetId;
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static AssetForecast analyzeForAsset(Id assetId) {
+        AssetForecast f = new AssetForecast();
+        f.assetId = assetId;
+        f.confidence = 70;
+        f.source = 'PestPressureAnalyzer';
+        f.anomalyType = 'NONE';
+        if (assetId == null) { f.summary = 'No asset selected.'; f.riskScore = 0; return f; }
+        Id accountId = null;
+        try {
+            Asset a = [SELECT Id, AccountId FROM Asset WHERE Id = :assetId LIMIT 1];
+            accountId = a.AccountId;
+        } catch (Exception e) { f.summary = 'Asset not found.'; f.riskScore = 0; return f; }
+        if (accountId == null) { f.summary = 'Asset has no parent Account.'; f.riskScore = 0; return f; }
+        Request r = new Request();
+        r.personAccountId = accountId;
+        r.daysBack = 30;
+        List<Response> resps = analyze(new List<Request>{ r });
+        Response resp = resps.isEmpty() ? new Response() : resps[0];
+        f.riskScore = resp.pestPressureScore != null ? resp.pestPressureScore : 0;
+        f.summary = resp.diagnosis;
+        f.anomalyType = resp.anomalyType != null ? resp.anomalyType : 'NONE';
+        return f;
+    }
+
     @InvocableMethod(label='Analyze Pest Pressure' description='Read bait-station, trap, and conducive-condition telemetry on a customer Account and return a pest-pressure diagnosis (e.g., heavy termite activity, elevated mosquito pressure).')
     public static List<Response> analyze(List<Request> requests) {
         List<Response> out = new List<Response>();

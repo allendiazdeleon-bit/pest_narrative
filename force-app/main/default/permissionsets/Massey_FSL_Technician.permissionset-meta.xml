@@ -459,14 +459,6 @@
 
     <!-- LOTO_Record__c custom fields — Read+Edit (Work_Order__c + Status__c are required, get implicit FLS) -->
     <fieldPermissions>
-        <field>LOTO_Record__c.Energy_Source__c</field>
-        <editable>true</editable><readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <field>LOTO_Record__c.Lock_Tag_Number__c</field>
-        <editable>true</editable><readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
         <field>LOTO_Record__c.Isolated_By__c</field>
         <editable>true</editable><readable>true</readable>
     </fieldPermissions>

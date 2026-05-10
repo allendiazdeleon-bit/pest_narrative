@@ -561,4 +561,55 @@ public with sharing class PropertyTreatmentHistoryService {
         }
         return flags;
     }
+
+    public class RecentVisit {
+        @AuraEnabled public Id workOrderId;
+        @AuraEnabled public String workOrderNumber;
+        @AuraEnabled public String subject;
+        @AuraEnabled public String status;
+        @AuraEnabled public DateTime startDate;
+        @AuraEnabled public DateTime endDate;
+        @AuraEnabled public String workTypeName;
+    }
+
+    /**
+     * LWC-friendly: returns the last N WorkOrders for the Asset's Account
+     * (or just the Asset, fallback). Used by masseyFlowSiteStep to show
+     * the "recent visits" mini-history when the tech opens Site Assessment.
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<RecentVisit> recentVisits(Id assetId, Integer limitCount) {
+        List<RecentVisit> out = new List<RecentVisit>();
+        if (assetId == null) return out;
+        Integer cap = (limitCount == null || limitCount <= 0) ? 5 : limitCount;
+        Id accountId = null;
+        try {
+            Asset a = [SELECT Id, AccountId FROM Asset WHERE Id = :assetId LIMIT 1];
+            accountId = a.AccountId;
+        } catch (Exception e) { return out; }
+        List<WorkOrder> wos;
+        try {
+            wos = [
+                SELECT Id, WorkOrderNumber, Subject, Status, StartDate, EndDate,
+                       WorkType.Name
+                FROM WorkOrder
+                WHERE AccountId = :accountId
+                  AND (CreatedDate != null)
+                ORDER BY CreatedDate DESC
+                LIMIT :cap
+            ];
+        } catch (Exception e) { return out; }
+        for (WorkOrder wo : wos) {
+            RecentVisit v = new RecentVisit();
+            v.workOrderId = wo.Id;
+            v.workOrderNumber = wo.WorkOrderNumber;
+            v.subject = wo.Subject;
+            v.status = wo.Status;
+            v.startDate = wo.StartDate;
+            v.endDate = wo.EndDate;
+            v.workTypeName = wo.WorkType != null ? wo.WorkType.Name : null;
+            out.add(v);
+        }
+        return out;
+    }
 }
