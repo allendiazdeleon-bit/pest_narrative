@@ -131,18 +131,10 @@
         details={visitQualityDetails}
       ></c-ai-insight-card>
 
-      <!-- AI Property Pressure Impact -->
-      <template lwc:if={hasPressureImpactCard}>
-        <c-ai-insight-card
-          title={pressureImpactTitle}
-          summary={pressureImpactSummary}
-          severity={pressureImpactSeverity}
-          confidence={pressureImpactConfidence}
-          source={pressureImpactSource}
-          timestamp={insightTimestamp}
-          details={pressureImpactDetails}
-        ></c-ai-insight-card>
-      </template>
+      <!-- AI Property Pressure Impact card removed per PM review #6.
+           Signal already surfaced on the Site step / upsell card; on the
+           Summary surface it competed with the Visit Quality card. One AI
+           card on close-out. -->
 
       <!-- Embedded Upsell Coach (full variant) — close-out attach-rate moment -->
       <template lwc:if={effectiveAccountId}>
@@ -153,13 +145,150 @@
         ></c-massey-upsell-coach>
       </template>
 
+      <!-- Sign-Off card — last action before Complete. Two paths:
+           customer-here -> signature pad; customer-not-home -> photo of
+           door hanger. Both produce a ContentVersion linked to the WO. -->
+      <div class="summary-card signoff-card">
+        <div class="card-header">
+          <span class="card-icon">&#x270D;&#xFE0F;</span>
+          <span class="card-title">{labels.heading}</span>
+          <template lwc:if={signOffComplete}>
+            <span class="signoff-pill">
+              <template lwc:if={signatureCaptured}>&#x2713; {labels.signed}</template>
+              <template lwc:if={hangerCaptured}>&#x2713; {labels.hangerLogged}</template>
+            </span>
+          </template>
+        </div>
+
+        <!-- Path chooser -->
+        <template lwc:if={showPathChooser}>
+          <div class="signoff-choices">
+            <button
+              type="button"
+              class="signoff-choice signoff-choice-home"
+              data-path="home"
+              onclick={handleChoosePath}
+            >
+              <span class="signoff-choice-icon">&#x1F464;</span>
+              <span class="signoff-choice-label">{labels.chooseHome}</span>
+            </button>
+            <button
+              type="button"
+              class="signoff-choice signoff-choice-nothome"
+              data-path="nothome"
+              onclick={handleChoosePath}
+            >
+              <span class="signoff-choice-icon">&#x1F6AA;</span>
+              <span class="signoff-choice-label">{labels.chooseNotHome}</span>
+            </button>
+          </div>
+        </template>
+
+        <!-- Customer here: signature pad -->
+        <template lwc:if={showHomePath}>
+          <div class="signoff-sign-heading">{labels.signHeading}</div>
+          <div class="signature-pad-wrap">
+            <canvas
+              class="signature-canvas"
+              onmousedown={handleSignatureStart}
+              onmousemove={handleSignatureMove}
+              onmouseup={handleSignatureEnd}
+              onmouseleave={handleSignatureEnd}
+              ontouchstart={handleSignatureStart}
+              ontouchmove={handleSignatureMove}
+              ontouchend={handleSignatureEnd}
+              ontouchcancel={handleSignatureEnd}
+            ></canvas>
+          </div>
+          <div class="signoff-actions">
+            <button type="button" class="signoff-secondary" onclick={handleClearSignature}>
+              {labels.signClear}
+            </button>
+            <button
+              type="button"
+              class="signoff-primary"
+              onclick={handleSaveSignature}
+              disabled={saveSignatureDisabled}
+            >
+              {labels.signSave}
+            </button>
+          </div>
+        </template>
+
+        <!-- Customer not home: door hanger photo -->
+        <template lwc:if={showNotHomePath}>
+          <input
+            type="file"
+            accept="image/*"
+            class="file-input-hidden hanger-input"
+            onchange={handleHangerFileSelected}
+          />
+          <button
+            type="button"
+            class="signoff-primary signoff-hanger-cta"
+            onclick={handleHangerCaptureClick}
+            disabled={signOffSaving}
+          >
+            <span class="btn-icon">&#x1F4F7;</span> {labels.hangerCta}
+          </button>
+        </template>
+
+        <!-- Confirmation: signature thumbnail / hanger thumbnail -->
+        <template lwc:if={showSignedPill}>
+          <div class="signoff-confirm">&#x2713; {labels.signed} {signatureSavedAt}</div>
+          <template lwc:if={signOffOffline}>
+            <div class="signoff-offline">&#x2713; Saved offline — will sync</div>
+          </template>
+        </template>
+        <template lwc:if={showHangerPill}>
+          <template lwc:if={hangerThumbDataUrl}>
+            <img src={hangerThumbDataUrl} alt="Door hanger" class="hanger-thumb" />
+          </template>
+          <div class="signoff-confirm">&#x2713; {labels.hangerLogged} {hangerSavedAt}</div>
+          <template lwc:if={signOffOffline}>
+            <div class="signoff-offline">&#x2713; Saved offline — will sync</div>
+          </template>
+        </template>
+
+        <!-- Reset: switch between paths if tech tapped wrong -->
+        <template lwc:if={canShowChangeLink}>
+          <button type="button" class="signoff-change-link" onclick={handleResetPath}>
+            {labels.change}
+          </button>
+        </template>
+      </div>
+
       <button
         class={completeButtonClass}
         onclick={handleCompleteWorkOrder}
-        disabled={isProcessing}
+        disabled={completeDisabled}
       >
         {completeButtonLabel}
       </button>
+
+      <!-- Next-stop handoff modal — fires after Complete succeeds. Gives the
+           tech a momentum signal ("here's where you go next") instead of a
+           dead-end success dialog. -->
+      <template lwc:if={showNextStopHandoff}>
+        <div class="next-stop-backdrop" onclick={handleCloseNextStopHandoff}></div>
+        <div class="next-stop-modal" role="dialog" aria-labelledby="next-stop-heading">
+          <div class="next-stop-check">✓</div>
+          <h3 id="next-stop-heading" class="next-stop-heading">Service visit complete</h3>
+          <p class="next-stop-sub">Lead captured. Jordan will follow up to close the sale.</p>
+          <div class="next-stop-card">
+            <span class="next-stop-card-label">Up next</span>
+            <p class="next-stop-time">{nextStopTime}</p>
+            <p class="next-stop-name">{nextStopName}</p>
+            <p class="next-stop-address">{nextStopAddress}</p>
+            <p class="next-stop-distance">{nextStopDistance}</p>
+          </div>
+          <div class="next-stop-actions">
+            <button class="next-stop-btn-primary" onclick={handleStartNextStop}>
+              Start next stop
+            </button>
+          </div>
+        </div>
+      </template>
     </template>
 
     <template lwc:if={error}>

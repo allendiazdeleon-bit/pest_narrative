@@ -4,7 +4,21 @@ import { getRelatedListRecords } from 'lightning/uiRelatedListApi';
 import WS_ID from '@salesforce/schema/WorkStep.Id';
 import WS_COMPLETED_AT from '@salesforce/schema/WorkStep.Completed_At__c';
 import WO_ASSET_ID from '@salesforce/schema/WorkOrder.AssetId';
+import WO_PEST_FINDING from '@salesforce/schema/WorkOrder.Pest_Finding__c';
 import ASSET_SERVICE_LINE from '@salesforce/schema/Asset.Service_Line__c';
+
+// Walk-Around Findings — variant-aware Asset measurement fields. Captured here
+// in Treatment Execution (relocated from masseyFlowSiteStep) since the tech is
+// actively recording what was found during the visit.
+import ASSET_PEST_PRESSURE from '@salesforce/schema/Asset.Pest_Pressure_Score__c';
+import ASSET_CONDUCIVE_CONDITIONS from '@salesforce/schema/Asset.Conducive_Conditions__c';
+import ASSET_PERIMETER_LF from '@salesforce/schema/Asset.Treatment_Perimeter_LinearFt__c';
+import ASSET_STATION_COUNT from '@salesforce/schema/Asset.Bait_Station_Count__c';
+import ASSET_STATION_LAST_INSPECT from '@salesforce/schema/Asset.Last_Station_Inspection__c';
+import ASSET_NOZZLE_COUNT from '@salesforce/schema/Asset.Nozzle_Count__c';
+import ASSET_STANDING_WATER from '@salesforce/schema/Asset.Standing_Water_Sources__c';
+import ASSET_SOIL_TEMP from '@salesforce/schema/Asset.Soil_Temp_F__c';
+
 import suggestForStep from '@salesforce/apex/NextBestActionService.suggestForStep';
 
 // Pest treatment phase labels — three-phase model:
@@ -19,6 +33,9 @@ import LBL_EXECUTE_TITLE from '@salesforce/label/c.MasseyFlow_Execute_Phase_Titl
 import LBL_VERIFY_TITLE from '@salesforce/label/c.MasseyFlow_Verify_Phase_Title';
 import LBL_PRECHECK_LOCK from '@salesforce/label/c.MasseyFlow_PreCheck_Lock_Message';
 import LBL_EXECUTE_LOCK from '@salesforce/label/c.MasseyFlow_Execute_Lock_Message';
+import LBL_FINDINGS_HEADING from '@salesforce/label/c.MasseyFlow_Findings_Section_Heading';
+import LBL_PEST_FINDING from '@salesforce/label/c.MasseyFlow_PestFinding_Label';
+import LBL_READING_PROMPT from '@salesforce/label/c.MasseyFlow_ReadingPrompt';
 
 const WORKSTEP_FIELDS = [
     'WorkStep.Id', 'WorkStep.Name', 'WorkStep.Description',
@@ -51,11 +68,39 @@ export default class MasseyFlowWorkStep extends LightningElement {
     @track localChecks = {};
     @track localNAs = {};
 
-    // Self-wire: WorkOrder → AssetId for service-line detection
-    @wire(getRecord, { recordId: '$recordId', fields: [WO_ASSET_ID] })
+    // Walk-Around Findings — variant-aware live measurements captured during
+    // the visit. Each service line populates its own subset; rest stay null.
+    @track measurements = {
+        // Pest (residential GoGreen)
+        pestPressureScore: null,
+        conduciveConditions: '',
+        perimeterLinearFeet: null,
+        // Termite (Sentricon + Termidor)
+        baitStationsActive: null,
+        soilTreatmentDepthInches: null,
+        // Mosquito Hunter
+        standingWaterSources: null,
+        nozzlesInspected: null,
+        // Lawn Service
+        soilTempF: null,
+        weedCoveragePct: null
+    };
+
+    @track isSavingFindings = false;
+    @track pestFinding = null;
+
+    label = {
+        findingsHeading: LBL_FINDINGS_HEADING,
+        pestFinding: LBL_PEST_FINDING,
+        readingPrompt: LBL_READING_PROMPT
+    };
+
+    // Self-wire: WorkOrder → AssetId for service-line detection + Pest_Finding picker.
+    @wire(getRecord, { recordId: '$recordId', fields: [WO_ASSET_ID, WO_PEST_FINDING] })
     wiredWorkOrder({ data }) {
         if (data) {
             this.selfAssetId = getFieldValue(data, WO_ASSET_ID) || null;
+            this.pestFinding = getFieldValue(data, WO_PEST_FINDING) || 'None';
         }
     }
 
@@ -76,10 +121,11 @@ export default class MasseyFlowWorkStep extends LightningElement {
     // three-phase shape across all service lines; the per-line variation
     // shows up via the WorkStep records (Step_Category__c filtering) and the
     // chemical panel inputs (RUP attestation).
-    get isPest() { return this.effectiveServiceLine === 'GoGreen Pest'; }
-    get isTermite() { return this.effectiveServiceLine === 'Termite Protection'; }
-    get isMosquito() { return this.effectiveServiceLine === 'Mosquito Hunter'; }
-    get isLawn() { return this.effectiveServiceLine === 'Lawn Service'; }
+    // Asset.Service_Line__c picklist API values per P1.1: Pest / Termite / Mosquito / Lawn.
+    get isPest() { return this.effectiveServiceLine === 'Pest'; }
+    get isTermite() { return this.effectiveServiceLine === 'Termite'; }
+    get isMosquito() { return this.effectiveServiceLine === 'Mosquito'; }
+    get isLawn() { return this.effectiveServiceLine === 'Lawn'; }
 
     get phase1Title() { return LBL_PRECHECK_TITLE; }
     get phase2Title() { return LBL_EXECUTE_TITLE; }
@@ -327,6 +373,124 @@ export default class MasseyFlowWorkStep extends LightningElement {
             }
         });
         this.localChecks = updated;
+    }
+
+    // ── Walk-Around Findings — variant-aware measurement capture ──────
+    // Relocated from masseyFlowSiteStep. Persisted via updateRecord on the
+    // Asset (Property) — same Komaci-clean offline path as before.
+
+    get saveFindingsLabel() {
+        return this.isSavingFindings ? 'Saving...' : 'Save Walk-Around Findings';
+    }
+
+    handlePestPressureChange(event) {
+        this.measurements.pestPressureScore = event.target.value
+            ? parseInt(event.target.value, 10) : null;
+    }
+    handleConduciveChange(event) {
+        this.measurements.conduciveConditions = event.target.value || '';
+    }
+    handlePerimeterChange(event) {
+        this.measurements.perimeterLinearFeet = event.target.value
+            ? parseInt(event.target.value, 10) : null;
+    }
+    handleBaitStationsChange(event) {
+        this.measurements.baitStationsActive = event.target.value
+            ? parseInt(event.target.value, 10) : null;
+    }
+    handleSoilDepthChange(event) {
+        this.measurements.soilTreatmentDepthInches = event.target.value
+            ? parseFloat(event.target.value) : null;
+    }
+    handleStandingWaterChange(event) {
+        this.measurements.standingWaterSources = event.target.value
+            ? parseInt(event.target.value, 10) : null;
+    }
+    handleNozzlesChange(event) {
+        this.measurements.nozzlesInspected = event.target.value
+            ? parseInt(event.target.value, 10) : null;
+    }
+    handleSoilTempChange(event) {
+        this.measurements.soilTempF = event.target.value
+            ? parseFloat(event.target.value) : null;
+    }
+    handleWeedCoverageChange(event) {
+        this.measurements.weedCoveragePct = event.target.value
+            ? parseInt(event.target.value, 10) : null;
+    }
+
+    // Pest_Finding__c picklist options. Mirrors the field metadata and is
+    // rendered as a <select> next to the Walk-Around inputs.
+    get pestFindingOptions() {
+        const current = this.pestFinding || 'None';
+        return [
+            { value: 'None',                    label: 'None / no finding' },
+            { value: 'Pest_Pressure_Elevated',  label: 'Pest pressure elevated' },
+            { value: 'Mosquito_Hotspot',        label: 'Mosquito hotspot' },
+            { value: 'Sentricon_Activity',      label: 'Sentricon activity / hits' },
+            { value: 'Termite_Swarmer_Sighting',label: 'Termite swarmer sighting' },
+            { value: 'Conducive_Conditions',    label: 'Conducive conditions flagged' },
+            { value: 'Wildlife_Encounter',      label: 'Wildlife encounter' },
+            { value: 'Lawn_Distress',           label: 'Lawn distress / disease' },
+            { value: 'Other',                   label: 'Other (see notes)' }
+        ].map(o => ({ ...o, selected: o.value === current }));
+    }
+
+    handlePestFindingChange(event) {
+        const next = event.target.value || 'None';
+        this.pestFinding = next;
+        const fields = {
+            Id: this.recordId,
+            [WO_PEST_FINDING.fieldApiName]: next === 'None' ? null : next
+        };
+        updateRecord({ fields }).catch((error) => {
+            console.error('[WorkStep] Pest_Finding__c save failed:',
+                error?.body?.message || error?.message || JSON.stringify(error));
+        });
+    }
+
+    async handleSaveFindings() {
+        const targetAssetId = this.selfAssetId
+            || this.workOrder?.AssetId
+            || this.workOrder?.Asset?.Id;
+        if (!targetAssetId) return;
+        this.isSavingFindings = true;
+        try {
+            const fields = { Id: targetAssetId };
+            if (this.isPest) {
+                if (this.measurements.pestPressureScore != null) {
+                    fields[ASSET_PEST_PRESSURE.fieldApiName] = this.measurements.pestPressureScore;
+                }
+                if (this.measurements.conduciveConditions) {
+                    fields[ASSET_CONDUCIVE_CONDITIONS.fieldApiName] = this.measurements.conduciveConditions;
+                }
+                if (this.measurements.perimeterLinearFeet != null) {
+                    fields[ASSET_PERIMETER_LF.fieldApiName] = this.measurements.perimeterLinearFeet;
+                }
+            } else if (this.isTermite) {
+                if (this.measurements.baitStationsActive != null) {
+                    fields[ASSET_STATION_COUNT.fieldApiName] = this.measurements.baitStationsActive;
+                }
+                fields[ASSET_STATION_LAST_INSPECT.fieldApiName] = new Date().toISOString();
+            } else if (this.isMosquito) {
+                if (this.measurements.standingWaterSources != null) {
+                    fields[ASSET_STANDING_WATER.fieldApiName] = this.measurements.standingWaterSources;
+                }
+                if (this.measurements.nozzlesInspected != null) {
+                    fields[ASSET_NOZZLE_COUNT.fieldApiName] = this.measurements.nozzlesInspected;
+                }
+            } else if (this.isLawn) {
+                if (this.measurements.soilTempF != null) {
+                    fields[ASSET_SOIL_TEMP.fieldApiName] = this.measurements.soilTempF;
+                }
+            }
+            await updateRecord({ fields });
+        } catch (error) {
+            console.error('[WorkStep] Walk-Around save failed:',
+                error?.body?.message || error?.message || JSON.stringify(error));
+        } finally {
+            this.isSavingFindings = false;
+        }
     }
 
     // ── AI Next Best Actions ─────────────────────────────────────────

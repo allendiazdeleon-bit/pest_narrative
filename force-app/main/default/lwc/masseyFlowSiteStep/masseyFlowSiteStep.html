@@ -1,5 +1,18 @@
 <template>
     <div class="site-step-container">
+        <!-- Customer Alerts — heads-up from prior visit or Account-level notes.
+             Highest-priority card on this surface. Tech misses this = dog bite,
+             gate locked, or wrong door. Rendered only when non-empty. -->
+        <template lwc:if={hasCustomerAlerts}>
+            <div class="customer-alerts-card" role="alert">
+                <span class="customer-alerts-icon">⚠️</span>
+                <div class="customer-alerts-body">
+                    <span class="customer-alerts-heading">Heads-up from last visit</span>
+                    <p class="customer-alerts-text">{customerAlertsText}</p>
+                </div>
+            </div>
+        </template>
+
         <!-- Upsell Coach — TOP of Site step (the marquee moment for Maria/Bennett scene 5).
              Renders before any data the tech captures DURING the visit so she sees the
              pitch recommendation immediately when she opens the step at the door. -->
@@ -11,85 +24,23 @@
             ></c-massey-upsell-coach>
         </template>
 
-        <!-- Property Identification Section -->
-        <div class="card-section">
-            <h2 class="section-title">Property Identification</h2>
+        <!-- Property Identification — single inline line. Drops the card-with-grid
+             chrome; Maria sees customer + service + last visit at a glance. -->
+        <p class="property-id-line">
+            <span class="property-id-name">🏠 {displayName}</span>
+            <span class="property-id-sep">·</span>
+            <span class="property-id-svc">{serviceLine}</span>
+            <span class="property-id-sep">·</span>
+            <span class="property-id-last">Last visit {displayLastTreatment}</span>
+        </p>
 
-            <div class="info-grid">
-                <div class="info-item">
-                    <label class="info-label">{nameLabel}</label>
-                    <span class="info-value">{displayName}</span>
-                </div>
-                <div class="info-item">
-                    <label class="info-label">Service Line</label>
-                    <span class="info-value">{serviceLine}</span>
-                </div>
-                <div class="info-item">
-                    <label class="info-label">Last Visit</label>
-                    <span class="info-value">{displayLastTreatment}</span>
-                </div>
-
-                <!-- Pest variant: treatment perimeter -->
-                <template lwc:if={isPest}>
-                    <div class="info-item">
-                        <label class="info-label">Treatment Perimeter</label>
-                        <span class="info-value">{displayPerimeter}</span>
-                    </div>
-                </template>
-
-                <!-- Termite variant: bait stations -->
-                <template lwc:if={isTermite}>
-                    <div class="info-item">
-                        <label class="info-label">Sentricon Stations</label>
-                        <span class="info-value">{displayStationCount}</span>
-                    </div>
-                    <div class="info-item">
-                        <label class="info-label">Last Station Inspection</label>
-                        <span class="info-value">{displayLastStationInspection}</span>
-                    </div>
-                    <div class="info-item">
-                        <label class="info-label">Soil Treatment Product</label>
-                        <span class="info-value">{displaySoilProduct}</span>
-                    </div>
-                </template>
-
-                <!-- Mosquito variant: nozzles + larvicide -->
-                <template lwc:if={isMosquito}>
-                    <div class="info-item">
-                        <label class="info-label">Nozzles in System</label>
-                        <span class="info-value">{displayNozzleCount}</span>
-                    </div>
-                    <div class="info-item">
-                        <label class="info-label">Larvicide Product</label>
-                        <span class="info-value">{displayLarvicideProduct}</span>
-                    </div>
-                    <div class="info-item">
-                        <label class="info-label">Standing Water Sources</label>
-                        <span class="info-value">{displayStandingWater}</span>
-                    </div>
-                </template>
-
-                <!-- Lawn variant: turf inputs -->
-                <template lwc:if={isLawn}>
-                    <div class="info-item">
-                        <label class="info-label">Turf Type</label>
-                        <span class="info-value">{displayTurfType}</span>
-                    </div>
-                    <div class="info-item">
-                        <label class="info-label">Soil Temp</label>
-                        <span class="info-value">{displaySoilTemp}</span>
-                    </div>
-                    <div class="info-item">
-                        <label class="info-label">Last Fertilizer Application</label>
-                        <span class="info-value">{displayLastFert}</span>
-                    </div>
-                </template>
-            </div>
-
+        <!-- NFC scan — only render for Termite (Sentricon stations) + Mosquito
+             (Hunter system controllers). Pest + Lawn have no NFC assets. -->
+        <template lwc:if={hasNfcAssets}>
             <button class="btn btn-primary" onclick={handleOpenScanner}>
                 Scan NFC Tag (Sentricon / Mosquito Controller)
             </button>
-        </div>
+        </template>
 
         <!-- Property Context — embeds the (preserved) Service Impact LWC
              inline whenever a cluster incident is linked to this WO. For the
@@ -113,98 +64,16 @@
             </div>
         </template>
 
-        <!-- AI Pest Pressure Forecast -->
-        <template lwc:if={hasPressureForecastCard}>
-            <c-ai-insight-card
-                title={forecastTitle}
-                summary={forecastSummary}
-                severity={forecastSeverity}
-                confidence={forecastConfidence}
-                source={forecastSource}
-                timestamp={forecastTimestamp}
-                details={forecastDetails}
-            ></c-ai-insight-card>
-        </template>
+        <!-- (AI Pest Pressure Forecast card removed — that signal now folds
+             into the upsell card's reason prose so Maria sees ONE inline
+             cue at the top of the step, not two competing cards. The signal
+             still drives Apex recommendation scoring; only the standalone
+             card is gone.) -->
 
-        <!-- Walk-Around Field Measurements — variant-aware -->
-        <div class="card-section">
-            <h2 class="section-title">Walk-Around Findings</h2>
-            <p class="reading-prompt">{label.readingPrompt}</p>
-
-            <!-- Pest (residential GoGreen): pressure score, conducive conditions, perimeter -->
-            <template lwc:if={isPest}>
-                <div class="measurement-grid">
-                    <div class="measurement-item">
-                        <label for="pest-pressure" class="input-label">Pest Pressure Score (0-100)</label>
-                        <input id="pest-pressure" type="number" min="0" max="100" step="1"
-                               class="text-input" placeholder="35" onchange={handlePestPressureChange} />
-                    </div>
-                    <div class="measurement-item">
-                        <label for="conducive" class="input-label">Conducive Conditions Observed</label>
-                        <input id="conducive" type="text" class="text-input"
-                               placeholder="e.g. wood-to-soil contact, mulch against foundation"
-                               onchange={handleConduciveChange} />
-                    </div>
-                    <div class="measurement-item">
-                        <label for="perimeter" class="input-label">Treatment Perimeter (linear ft)</label>
-                        <input id="perimeter" type="number" min="0" step="1"
-                               class="text-input" placeholder="180" onchange={handlePerimeterChange} />
-                    </div>
-                </div>
-            </template>
-
-            <!-- Termite: active bait stations + soil treatment depth -->
-            <template lwc:if={isTermite}>
-                <div class="measurement-grid">
-                    <div class="measurement-item">
-                        <label for="bait-active" class="input-label">Active Bait Stations</label>
-                        <input id="bait-active" type="number" min="0" step="1"
-                               class="text-input" placeholder="4" onchange={handleBaitStationsChange} />
-                    </div>
-                    <div class="measurement-item">
-                        <label for="soil-depth" class="input-label">Soil Treatment Depth (in)</label>
-                        <input id="soil-depth" type="number" min="0" step="0.5"
-                               class="text-input" placeholder="6.0" onchange={handleSoilDepthChange} />
-                    </div>
-                </div>
-            </template>
-
-            <!-- Mosquito Hunter: standing water + nozzles -->
-            <template lwc:if={isMosquito}>
-                <div class="measurement-grid">
-                    <div class="measurement-item">
-                        <label for="standing-water" class="input-label">Standing Water Sources</label>
-                        <input id="standing-water" type="number" min="0" step="1"
-                               class="text-input" placeholder="2" onchange={handleStandingWaterChange} />
-                    </div>
-                    <div class="measurement-item">
-                        <label for="nozzles" class="input-label">Nozzles Inspected</label>
-                        <input id="nozzles" type="number" min="0" step="1"
-                               class="text-input" placeholder="22" onchange={handleNozzlesChange} />
-                    </div>
-                </div>
-            </template>
-
-            <!-- Lawn Service: soil temperature + weed coverage -->
-            <template lwc:if={isLawn}>
-                <div class="measurement-grid">
-                    <div class="measurement-item">
-                        <label for="soil-temp" class="input-label">Soil Temperature (°F)</label>
-                        <input id="soil-temp" type="number" step="0.1"
-                               class="text-input" placeholder="68.0" onchange={handleSoilTempChange} />
-                    </div>
-                    <div class="measurement-item">
-                        <label for="weed-coverage" class="input-label">Weed Coverage (%)</label>
-                        <input id="weed-coverage" type="number" min="0" max="100" step="1"
-                               class="text-input" placeholder="12" onchange={handleWeedCoverageChange} />
-                    </div>
-                </div>
-            </template>
-
-            <button class="btn btn-success" onclick={handleSaveReadings} disabled={isSaving}>
-                {saveButtonLabel}
-            </button>
-        </div>
+        <!-- Walk-Around Findings moved to Treatment Execution step (masseyFlowWorkStep)
+             where the tech is actually doing the work and capturing what she found.
+             Site step now stays focused on door-arrival surfaces: upsell coach,
+             property identification, and proof-of-service photos. -->
 
         <!-- Property Photos with AI analysis -->
         <div class="card-section">

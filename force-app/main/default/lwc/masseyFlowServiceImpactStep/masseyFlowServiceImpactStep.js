@@ -105,10 +105,10 @@ export default class MasseyFlowServiceImpactStep extends LightningElement {
             || this.selfServiceLine;
     }
 
-    get isPest() { return this.effectiveServiceLine === 'GoGreen Pest'; }
-    get isTermite() { return this.effectiveServiceLine === 'Termite Protection'; }
-    get isMosquito() { return this.effectiveServiceLine === 'Mosquito Hunter'; }
-    get isLawn() { return this.effectiveServiceLine === 'Lawn Service'; }
+    get isPest() { return this.effectiveServiceLine === 'Pest'; }
+    get isTermite() { return this.effectiveServiceLine === 'Termite'; }
+    get isMosquito() { return this.effectiveServiceLine === 'Mosquito'; }
+    get isLawn() { return this.effectiveServiceLine === 'Lawn'; }
 
     get hasIncidents() { return this.incidents && this.incidents.length > 0; }
 

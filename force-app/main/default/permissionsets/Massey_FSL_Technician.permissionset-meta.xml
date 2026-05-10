@@ -335,6 +335,10 @@
         <editable>false</editable><readable>true</readable>
     </fieldPermissions>
 
+    <fieldPermissions>
+        <field>Account.Customer_Alerts__c</field>
+        <editable>true</editable><readable>true</readable>
+    </fieldPermissions>
     <!-- Asset custom fields (P1.1+P1.2) — Read+Edit (Service_Line__c is required, gets implicit FLS via object Edit grant) -->
     <fieldPermissions>
         <field>Asset.Equipment_Type__c</field>

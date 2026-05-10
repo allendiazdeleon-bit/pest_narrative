@@ -1,5 +1,5 @@
 import { LightningElement, api, wire, track } from 'lwc';
-import { getRecord, getFieldValue, updateRecord, createRecord } from 'lightning/uiRecordApi';
+import { getRecord, getFieldValue, createRecord } from 'lightning/uiRecordApi';
 import Alert from 'lightning/alert';
 
 import analyzePhoto from '@salesforce/apex/PhotoAnalysisService.analyzePhoto';
@@ -7,13 +7,15 @@ import analyzePestPressure from '@salesforce/apex/PestPressureAnalyzer.analyzeFo
 import getPropertyHistory from '@salesforce/apex/PropertyTreatmentHistoryService.recentVisits';
 
 // Custom Labels — pest voice
-import LBL_READING_PROMPT from '@salesforce/label/c.MasseyFlow_ReadingPrompt';
 import LBL_ISOLATION from '@salesforce/label/c.MasseyFlow_IsolationAction';
 
 // WorkOrder schema imports
 import WO_ASSET_ID from '@salesforce/schema/WorkOrder.AssetId';
 import WO_ACCOUNT_ID from '@salesforce/schema/WorkOrder.AccountId';
 import WO_LINKED_INCIDENT from '@salesforce/schema/WorkOrder.Linked_Incident__c';
+
+// Account.Customer_Alerts__c — tech-facing heads-up rendered at top of Site step.
+import ACCOUNT_CUSTOMER_ALERTS from '@salesforce/schema/Account.Customer_Alerts__c';
 
 // Property Context card heading — surfaced inline (replaces the dedicated
 // Service Impact step for the 5% cluster-dispatch case).
@@ -70,7 +72,6 @@ export default class MasseyFlowSiteStep extends LightningElement {
     @api accountId;
 
     label = {
-        readingPrompt: LBL_READING_PROMPT,
         perimeter: LBL_ISOLATION,
         propertyContext: LBL_PROPERTY_CONTEXT
     };
@@ -80,29 +81,10 @@ export default class MasseyFlowSiteStep extends LightningElement {
     @track linkedIncidentId = null;
     @track propertyContextExpanded = false;
 
-    // Live measurements captured during the walk-around. Each service line
-    // populates its own subset; the rest stay null.
-    @track measurements = {
-        // Pest (residential GoGreen)
-        pestPressureScore: null,
-        conduciveConditions: '',
-        perimeterLinearFeet: null,
-        // Termite (Sentricon + Termidor)
-        baitStationsActive: null,
-        soilTreatmentDepthInches: null,
-        // Mosquito Hunter
-        standingWaterSources: null,
-        nozzlesInspected: null,
-        // Lawn Service
-        soilTempF: null,
-        weedCoveragePct: null
-    };
-
     @track isScannerOpen = false;
     @track photos = [];
     _photoIdCounter = 0;
     _captureAttributeSet = false;
-    @track isSaving = false;
 
     @track propertyHistory;
 
@@ -114,10 +96,6 @@ export default class MasseyFlowSiteStep extends LightningElement {
                 this._captureAttributeSet = true;
             }
         }
-    }
-
-    get saveButtonLabel() {
-        return this.isSaving ? 'Saving...' : 'Save Walk-Around';
     }
 
     @wire(getRecord, { recordId: '$recordId', fields: [WO_ASSET_ID, WO_ACCOUNT_ID, WO_LINKED_INCIDENT] })
@@ -161,6 +139,15 @@ export default class MasseyFlowSiteStep extends LightningElement {
     handleTogglePropertyContext(event) {
         event.stopPropagation();
         this.propertyContextExpanded = !this.propertyContextExpanded;
+    }
+
+    // Wire on Account.Customer_Alerts__c — drives the heads-up card at top
+    // of the Site step. Null/blank value = card hidden.
+    @wire(getRecord, { recordId: '$accountId', fields: [ACCOUNT_CUSTOMER_ALERTS] })
+    wiredAccount({ data }) {
+        if (data) {
+            this._customerAlerts = getFieldValue(data, ACCOUNT_CUSTOMER_ALERTS) || '';
+        }
     }
 
     @wire(getRecord, { recordId: '$assetId', fields: ASSET_FIELDS })
@@ -210,10 +197,20 @@ export default class MasseyFlowSiteStep extends LightningElement {
         return this.assetData.Service_Line__c;
     }
 
-    get isPest() { return this.serviceLine === 'GoGreen Pest'; }
-    get isTermite() { return this.serviceLine === 'Termite Protection'; }
-    get isMosquito() { return this.serviceLine === 'Mosquito Hunter'; }
-    get isLawn() { return this.serviceLine === 'Lawn Service'; }
+    get isPest() { return this.serviceLine === 'Pest'; }
+    get isTermite() { return this.serviceLine === 'Termite'; }
+    get isMosquito() { return this.serviceLine === 'Mosquito'; }
+    get isLawn() { return this.serviceLine === 'Lawn'; }
+
+    // NFC scan only relevant for Termite (Sentricon stations) + Mosquito
+    // (Hunter system controllers). Pest + Lawn have no NFC tagging on assets.
+    get hasNfcAssets() { return this.isTermite || this.isMosquito; }
+
+    // Customer Alerts — wired off Account.Customer_Alerts__c. Rendered as the
+    // top-most card on Site step when non-empty.
+    @track _customerAlerts = '';
+    get customerAlertsText() { return this._customerAlerts; }
+    get hasCustomerAlerts() { return !!(this._customerAlerts && this._customerAlerts.trim().length > 0); }
 
     get nameLabel() {
         if (this.isPest) return 'Property Address';
@@ -262,104 +259,9 @@ export default class MasseyFlowSiteStep extends LightningElement {
         }
     }
 
-    // ── Measurement input handlers ────────────────────────────────────
-    handlePestPressureChange(event) {
-        this.measurements.pestPressureScore = event.target.value
-            ? parseInt(event.target.value, 10) : null;
-    }
-    handleConduciveChange(event) {
-        this.measurements.conduciveConditions = event.target.value || '';
-    }
-    handlePerimeterChange(event) {
-        this.measurements.perimeterLinearFeet = event.target.value
-            ? parseInt(event.target.value, 10) : null;
-    }
-    handleBaitStationsChange(event) {
-        this.measurements.baitStationsActive = event.target.value
-            ? parseInt(event.target.value, 10) : null;
-    }
-    handleSoilDepthChange(event) {
-        this.measurements.soilTreatmentDepthInches = event.target.value
-            ? parseFloat(event.target.value) : null;
-    }
-    handleStandingWaterChange(event) {
-        this.measurements.standingWaterSources = event.target.value
-            ? parseInt(event.target.value, 10) : null;
-    }
-    handleNozzlesChange(event) {
-        this.measurements.nozzlesInspected = event.target.value
-            ? parseInt(event.target.value, 10) : null;
-    }
-    handleSoilTempChange(event) {
-        this.measurements.soilTempF = event.target.value
-            ? parseFloat(event.target.value) : null;
-    }
-    handleWeedCoverageChange(event) {
-        this.measurements.weedCoveragePct = event.target.value
-            ? parseInt(event.target.value, 10) : null;
-    }
-
-    async handleSaveReadings() {
-        if (!this.validateMeasurements()) {
-            this.showAlert('Validation', 'Please enter the required walk-around measurements.');
-            return;
-        }
-        this.isSaving = true;
-        try {
-            const fields = { Id: this.assetId };
-            if (this.isPest) {
-                if (this.measurements.pestPressureScore != null) {
-                    fields[ASSET_PEST_PRESSURE.fieldApiName] = this.measurements.pestPressureScore;
-                }
-                if (this.measurements.conduciveConditions) {
-                    fields[ASSET_CONDUCIVE_CONDITIONS.fieldApiName] = this.measurements.conduciveConditions;
-                }
-                if (this.measurements.perimeterLinearFeet != null) {
-                    fields[ASSET_PERIMETER_LF.fieldApiName] = this.measurements.perimeterLinearFeet;
-                }
-            } else if (this.isTermite) {
-                if (this.measurements.baitStationsActive != null) {
-                    fields[ASSET_STATION_COUNT.fieldApiName] = this.measurements.baitStationsActive;
-                }
-                fields[ASSET_STATION_LAST_INSPECT.fieldApiName] = new Date().toISOString();
-            } else if (this.isMosquito) {
-                if (this.measurements.standingWaterSources != null) {
-                    fields[ASSET_STANDING_WATER.fieldApiName] = this.measurements.standingWaterSources;
-                }
-                if (this.measurements.nozzlesInspected != null) {
-                    fields[ASSET_NOZZLE_COUNT.fieldApiName] = this.measurements.nozzlesInspected;
-                }
-            } else if (this.isLawn) {
-                if (this.measurements.soilTempF != null) {
-                    fields[ASSET_SOIL_TEMP.fieldApiName] = this.measurements.soilTempF;
-                }
-            }
-            await updateRecord({ fields });
-            this.showAlert('Saved', 'Walk-around readings saved.');
-            this.dispatchStepComplete();
-        } catch (error) {
-            console.error('[SiteStep] Error saving readings:', JSON.stringify(error));
-            this.showAlert('Error', `Failed to save readings: ${error?.body?.message || error?.message || ''}`);
-        } finally {
-            this.isSaving = false;
-        }
-    }
-
-    validateMeasurements() {
-        if (this.isPest) {
-            return this.measurements.pestPressureScore !== null;
-        }
-        if (this.isTermite) {
-            return this.measurements.baitStationsActive !== null;
-        }
-        if (this.isMosquito) {
-            return this.measurements.standingWaterSources !== null;
-        }
-        if (this.isLawn) {
-            return this.measurements.soilTempF !== null;
-        }
-        return true;
-    }
+    // Walk-Around measurement handlers + handleSaveReadings have moved to
+    // masseyFlowWorkStep (Treatment Execution). The Site step now only owns
+    // door-arrival surfaces (upsell coach, identification, photos).
 
     async loadPropertyHistory() {
         if (!this.assetId) return;

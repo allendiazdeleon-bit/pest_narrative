@@ -111,117 +111,32 @@
     font-weight: 600;
     color: var(--upsell-text-strong);
     line-height: 1.2;
-}
-
-/* Score badge color bands -------------------------------------------------- */
-
-.score-badge {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.25rem;
-    padding: 0.125rem 0.5rem;
-    border-radius: 999px;
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-}
-
-.score-label {
-    opacity: 0.85;
-}
-
-.score-value {
-    font-size: 0.8125rem;
-    font-weight: 700;
-}
-
-.score-green {
-    background: rgba(46, 132, 74, 0.12);
-    color: var(--upsell-green);
-    border: 1px solid rgba(46, 132, 74, 0.4);
-}
-
-.score-amber {
-    background: rgba(201, 142, 21, 0.14);
-    color: var(--upsell-amber);
-    border: 1px solid rgba(201, 142, 21, 0.4);
-}
-
-.score-red {
-    background: rgba(194, 57, 52, 0.12);
-    color: var(--upsell-red);
-    border: 1px solid rgba(194, 57, 52, 0.4);
-}
-
-/* Annual value ------------------------------------------------------------- */
-
-.rec-value {
-    margin: 0.25rem 0;
-    font-size: 0.8125rem;
-    color: var(--upsell-text-strong);
-}
-
-.rec-value-label {
-    color: var(--upsell-text-weak);
-    margin-right: 0.25rem;
-}
-
-.rec-value-amount {
-    font-weight: 700;
-}
-
-/* Reason chips ------------------------------------------------------------- */
-
-.rec-reasons {
-    margin: 0.375rem 0;
-}
-
-.rec-reasons-heading {
-    display: block;
-    font-size: 0.625rem;
-    color: var(--upsell-text-weak);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: 0.25rem;
-}
-
-.rec-chip-row {
-    list-style: none;
-    margin: 0;
-    padding: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem;
+    align-items: baseline;
+    gap: 0.5rem;
 }
 
-.rec-chip {
-    background: var(--upsell-row-hover);
+.rec-line-name {
+    font-weight: 700;
+}
+
+/* Subdued inline annual-value — sits next to the service-line name. */
+.rec-line-value {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--upsell-text-weak);
+}
+
+/* One-line human reason prose, replaces the SCREAMING_SNAKE chip row. */
+.rec-reason-prose {
+    margin: 0.125rem 0 0.375rem 0;
+    font-size: 0.8125rem;
+    line-height: 1.35;
     color: var(--upsell-text-strong);
-    font-size: 0.6875rem;
-    padding: 0.125rem 0.5rem;
-    border-radius: 999px;
-    border: 1px solid var(--upsell-card-border);
 }
 
 /* Talk-track --------------------------------------------------------------- */
-
-.talk-toggle {
-    display: inline-block;
-    margin: 0.25rem 0;
-    padding: 0.25rem 0.5rem;
-    background: transparent;
-    border: 1px dashed var(--upsell-card-border);
-    border-radius: 0.25rem;
-    color: var(--upsell-brand);
-    font-size: 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.talk-toggle:hover {
-    background: var(--upsell-row-hover);
-}
 
 .talk-track {
     background: rgba(46, 132, 74, 0.05);
@@ -229,53 +144,6 @@
     border-radius: 0.25rem;
     padding: 0.5rem 0.625rem;
     margin: 0.375rem 0;
-    position: relative;
-}
-
-.talk-track-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    margin-bottom: 0.25rem;
-}
-
-.talk-track-heading {
-    font-size: 0.625rem;
-    color: var(--upsell-text-weak);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-weight: 700;
-}
-
-/* Copy-to-clipboard button — visually obvious per design brief */
-.copy-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    background: var(--upsell-brand);
-    color: #ffffff;
-    border: none;
-    border-radius: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.6875rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    cursor: pointer;
-    min-height: 1.75rem;
-}
-
-.copy-btn:hover {
-    background: #145931;
-}
-
-.copy-icon {
-    --sds-c-icon-color-foreground-default: #ffffff;
-}
-
-.copy-flash {
-    font-weight: 700;
 }
 
 .talk-track-text {
@@ -284,6 +152,7 @@
     line-height: 1.4;
     color: var(--upsell-text-strong);
     white-space: pre-wrap;
+    font-style: italic;
 }
 
 /* Action buttons ----------------------------------------------------------- */
@@ -325,7 +194,8 @@
     background: #226637;
 }
 
-.action-btn.action-notnow {
+.action-btn.action-notnow,
+.action-btn.action-moveon {
     background: #ffffff;
     border-color: var(--upsell-amber);
     color: var(--upsell-amber);
@@ -375,31 +245,22 @@
     --sds-c-icon-color-foreground-default: var(--upsell-green);
 }
 
-/* Generate-Quote CTA + inline error --------------------------------------- */
-
-.quote-cta-row {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    margin-top: 0.5rem;
-}
+/* Generate-Quote CTA inline error ----------------------------------------- */
 
 .action-btn.action-quote {
-    background: #ffffff;
-    color: var(--upsell-brand);
+    background: var(--upsell-brand);
+    color: #ffffff;
     border: 1px solid var(--upsell-brand);
     font-weight: 700;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.375rem;
-    flex: 0 0 auto;
-    align-self: flex-start;
-    min-width: 9rem;
+    flex: 2 1 auto;
 }
 
 .action-btn.action-quote:hover:not(:disabled) {
-    background: rgba(46, 132, 74, 0.08);
+    background: #145931;
 }
 
 .action-btn.action-quote:disabled {
@@ -408,28 +269,37 @@
 }
 
 .quote-cta-spinner {
-    --lwc-spinnerColor: var(--upsell-brand);
+    --lwc-spinnerColor: #ffffff;
     position: relative;
     width: 0.875rem;
     height: 0.875rem;
 }
 
 .quote-error {
-    margin: 0;
+    margin: 0.25rem 0 0 0;
     font-size: 0.75rem;
     color: var(--upsell-red);
 }
 
 /* Quote panel ------------------------------------------------------------- */
+/*
+ * Always renders in the larger / presenter-friendly layout. The previous
+ * "Show on Tablet" toggle (and its smaller default styling) is gone — once
+ * a quote is generated, the tech can hand the device to the customer
+ * immediately.
+ */
 
 .quote-panel {
     margin-top: 0.625rem;
-    background: #ffffff;
-    border: 1px solid var(--upsell-card-border);
+    background: linear-gradient(180deg, #ffffff 0%, #f3faf5 100%);
+    border: 2px solid var(--upsell-brand);
     border-radius: 0.5rem;
-    padding: 1rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     position: relative;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .quote-panel-head {
@@ -442,7 +312,7 @@
 
 .quote-display-name {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.625rem;
     font-weight: 700;
     color: var(--upsell-text-strong);
     line-height: 1.2;
@@ -470,7 +340,7 @@
     align-items: baseline;
     justify-content: space-between;
     gap: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 1.125rem;
     color: var(--upsell-text-strong);
 }
 
@@ -499,7 +369,7 @@
 }
 
 .quote-headline-label {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--upsell-text-weak);
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -507,7 +377,7 @@
 }
 
 .quote-headline-value {
-    font-size: 2.25rem;
+    font-size: 3.5rem;
     font-weight: 800;
     color: #0f5c2f;
     line-height: 1;
@@ -537,10 +407,10 @@
 }
 
 .quote-inclusion-item {
-    font-size: 0.8125rem;
+    font-size: 1rem;
     color: var(--upsell-text-strong);
     line-height: 1.4;
-    margin: 0.125rem 0;
+    margin: 0.25rem 0;
 }
 
 .quote-warranty {
@@ -564,22 +434,9 @@
     color: var(--upsell-text-strong);
 }
 
-.quote-presenter-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+/* Post-quote action row inside the panel: [Customer said yes] [Not today] */
+.action-row-postquote {
     margin-top: 0.75rem;
-}
-
-.action-btn.action-presenter {
-    background: #ffffff;
-    border-color: var(--upsell-brand);
-    color: var(--upsell-brand);
-    font-weight: 600;
-}
-
-.action-btn.action-presenter:hover {
-    background: rgba(46, 132, 74, 0.08);
 }
 
 .action-btn.action-quoted-yes {
@@ -587,79 +444,13 @@
     border-color: var(--upsell-green);
     color: #ffffff;
     font-weight: 700;
-    flex: 1 1 auto;
+    flex: 2 1 auto;
+    font-size: 1rem;
+    min-height: 2.75rem;
 }
 
 .action-btn.action-quoted-yes:hover {
     background: #226637;
-}
-
-/* Presenter mode ---------------------------------------------------------- */
-/*
- * Toggled by .presenter-mode on the .rec-card root. Scales the quote panel
- * way up, hides the score badge + reasons + the standard action row, and
- * dims everything else. Optimized for handing the tablet to the customer.
- */
-
-.rec-card.presenter-mode {
-    background: linear-gradient(180deg, #ffffff 0%, #f3faf5 100%);
-    border-color: var(--upsell-brand);
-    border-width: 2px;
-    padding: 1.25rem 1rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.rec-card.presenter-mode .score-badge,
-.rec-card.presenter-mode .rec-reasons,
-.rec-card.presenter-mode .talk-toggle,
-.rec-card.presenter-mode .talk-track,
-.rec-card.presenter-mode .quote-cta-row,
-.rec-card.presenter-mode .action-row,
-.rec-card.presenter-mode .rec-value {
-    display: none;
-}
-
-.rec-card.presenter-mode .rec-line {
-    font-size: 1.5rem;
-    text-align: center;
-    margin-bottom: 0.5rem;
-}
-
-.rec-card.presenter-mode .quote-panel {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    padding: 1.5rem;
-}
-
-.rec-card.presenter-mode .quote-display-name {
-    font-size: 1.625rem;
-}
-
-.rec-card.presenter-mode .quote-line {
-    font-size: 1.125rem;
-}
-
-.rec-card.presenter-mode .quote-headline-value {
-    font-size: 3.5rem;
-}
-
-.rec-card.presenter-mode .quote-headline-label {
-    font-size: 0.875rem;
-}
-
-.rec-card.presenter-mode .quote-inclusion-item {
-    font-size: 1rem;
-    margin: 0.25rem 0;
-}
-
-.rec-card.presenter-mode .action-btn.action-presenter {
-    flex: 0 0 auto;
-}
-
-.rec-card.presenter-mode .action-btn.action-quoted-yes {
-    font-size: 1rem;
-    min-height: 2.75rem;
 }
 
 /* Mobile-first responsive tweaks ------------------------------------------- */
@@ -679,11 +470,15 @@
     }
 
     .quote-headline-value {
-        font-size: 2rem;
+        font-size: 2.5rem;
     }
 
     .quote-panel-head {
         flex-direction: column;
         gap: 0.25rem;
+    }
+
+    .quote-panel {
+        padding: 1rem;
     }
 }

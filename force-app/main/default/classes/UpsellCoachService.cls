@@ -28,6 +28,12 @@ public with sharing class UpsellCoachService {
         @AuraEnabled public List<String> reasonCodes;  // e.g., 'NEIGHBOR_BOUGHT_MOSQUITO'
         @AuraEnabled public String suggestedTalkTrack; // copy from Upsell_Talk_Track__mdt
         @AuraEnabled public Decimal estimatedAnnualValue;
+        // Anonymized neighbor signal — privacy-safe aggregates only.
+        // No names, no specific addresses. Just count + public street name +
+        // recency band. LWC substitutes these into talk-track tokens.
+        @AuraEnabled public Integer neighborCount;     // anonymized count on same Service_Group__c with this line
+        @AuraEnabled public String streetName;         // extracted from BillingStreet (public info)
+        @AuraEnabled public Integer monthsSinceNeighborSignup; // recency band (1, 3, 6, 12...)
     }
 
     // -------- Constants --------
@@ -91,6 +97,8 @@ public with sharing class UpsellCoachService {
         Integer neighborSignal = neighborMosquitoSignups(acct);
         Integer month = Date.today().month();
         Integer tenureDays = computeTenureDays(acct.CreatedDate);
+        // Anonymized neighbor tokens — street name + recency band.
+        String streetToken = extractStreetName(acct.BillingStreet);
 
         Map<String, UpsellRecommendation> byLine = new Map<String, UpsellRecommendation>();
 
@@ -98,6 +106,11 @@ public with sharing class UpsellCoachService {
             UpsellRecommendation rec = scoreLine(
                 line, existingLines, primary, neighborSignal, month, tenureDays
             );
+            // Hydrate anonymized neighbor tokens. Count + street only — no
+            // names, no addresses. Privacy-safe for use in the talk-track.
+            rec.neighborCount = neighborSignal;
+            rec.streetName = streetToken;
+            rec.monthsSinceNeighborSignup = neighborSignal > 0 ? 6 : null; // demo band
             byLine.put(line, rec);
         }
 
@@ -614,6 +627,23 @@ public with sharing class UpsellCoachService {
             return 0;
         }
         return Date.today().daysBetween(createdDate.date()) * -1;
+    }
+
+    /**
+     * Extract a privacy-safe street name from a BillingStreet field. Drops
+     * the house number; returns just the street identifier (e.g., "Maple Ave"
+     * from "1247 Maple Ave"). Street names are public; house numbers are not
+     * used in the customer-facing talk-track.
+     */
+    private static String extractStreetName(String billingStreet) {
+        if (String.isBlank(billingStreet)) return null;
+        // Drop the first token if it looks like a house number, keep the rest.
+        List<String> parts = billingStreet.trim().split('\\s+');
+        if (parts.isEmpty()) return null;
+        if (parts[0].isNumeric()) {
+            parts.remove(0);
+        }
+        return String.join(parts, ' ');
     }
 
     // -------- Internal: lead creation --------

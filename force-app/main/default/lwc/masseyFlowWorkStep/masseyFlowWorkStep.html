@@ -98,6 +98,103 @@
         </template>
     </div>
 
+    <!-- Findings & Observations — variant-aware Walk-Around capture.
+         Lives at the end of Treatment Execution (relocated from the Site step)
+         since the tech is recording what was found during the visit. -->
+    <div class="phase-card phase-findings">
+        <div class="phase-title">📋 {label.findingsHeading}</div>
+        <p class="reading-prompt">{label.readingPrompt}</p>
+
+        <!-- Pest Finding picker — Pest_Finding__c categorical capture.
+             Persists on change (no separate save) per the picker handler. -->
+        <div class="findings-grid">
+            <div class="findings-item">
+                <label for="pest-finding" class="input-label">{label.pestFinding}</label>
+                <select id="pest-finding" class="text-input" onchange={handlePestFindingChange}>
+                    <template for:each={pestFindingOptions} for:item="opt">
+                        <option key={opt.value} value={opt.value} selected={opt.selected}>
+                            {opt.label}
+                        </option>
+                    </template>
+                </select>
+            </div>
+        </div>
+
+        <!-- Pest (residential GoGreen): pressure score, conducive conditions, perimeter -->
+        <template lwc:if={isPest}>
+            <div class="findings-grid">
+                <div class="findings-item">
+                    <label for="pest-pressure" class="input-label">Pest Pressure Score (0-100)</label>
+                    <input id="pest-pressure" type="number" min="0" max="100" step="1"
+                           class="text-input" placeholder="35" onchange={handlePestPressureChange} />
+                </div>
+                <div class="findings-item">
+                    <label for="conducive" class="input-label">Conducive Conditions Observed</label>
+                    <input id="conducive" type="text" class="text-input"
+                           placeholder="e.g. wood-to-soil contact, mulch against foundation"
+                           onchange={handleConduciveChange} />
+                </div>
+                <div class="findings-item">
+                    <label for="perimeter" class="input-label">Treatment Perimeter (linear ft)</label>
+                    <input id="perimeter" type="number" min="0" step="1"
+                           class="text-input" placeholder="180" onchange={handlePerimeterChange} />
+                </div>
+            </div>
+        </template>
+
+        <!-- Termite: active bait stations + soil treatment depth -->
+        <template lwc:if={isTermite}>
+            <div class="findings-grid">
+                <div class="findings-item">
+                    <label for="bait-active" class="input-label">Active Bait Stations</label>
+                    <input id="bait-active" type="number" min="0" step="1"
+                           class="text-input" placeholder="4" onchange={handleBaitStationsChange} />
+                </div>
+                <div class="findings-item">
+                    <label for="soil-depth" class="input-label">Soil Treatment Depth (in)</label>
+                    <input id="soil-depth" type="number" min="0" step="0.5"
+                           class="text-input" placeholder="6.0" onchange={handleSoilDepthChange} />
+                </div>
+            </div>
+        </template>
+
+        <!-- Mosquito Hunter: standing water + nozzles -->
+        <template lwc:if={isMosquito}>
+            <div class="findings-grid">
+                <div class="findings-item">
+                    <label for="standing-water" class="input-label">Standing Water Sources</label>
+                    <input id="standing-water" type="number" min="0" step="1"
+                           class="text-input" placeholder="2" onchange={handleStandingWaterChange} />
+                </div>
+                <div class="findings-item">
+                    <label for="nozzles" class="input-label">Nozzles Inspected</label>
+                    <input id="nozzles" type="number" min="0" step="1"
+                           class="text-input" placeholder="22" onchange={handleNozzlesChange} />
+                </div>
+            </div>
+        </template>
+
+        <!-- Lawn Service: soil temperature + weed coverage -->
+        <template lwc:if={isLawn}>
+            <div class="findings-grid">
+                <div class="findings-item">
+                    <label for="soil-temp" class="input-label">Soil Temperature (°F)</label>
+                    <input id="soil-temp" type="number" step="0.1"
+                           class="text-input" placeholder="68.0" onchange={handleSoilTempChange} />
+                </div>
+                <div class="findings-item">
+                    <label for="weed-coverage" class="input-label">Weed Coverage (%)</label>
+                    <input id="weed-coverage" type="number" min="0" max="100" step="1"
+                           class="text-input" placeholder="12" onchange={handleWeedCoverageChange} />
+                </div>
+            </div>
+        </template>
+
+        <button class="findings-save-btn" onclick={handleSaveFindings} disabled={isSavingFindings}>
+            {saveFindingsLabel}
+        </button>
+    </div>
+
     <!-- Phase 3: Post-Treatment Verification -->
     <div class="phase-card phase-verify">
         <div class="phase-title">🔵 {phase3Title}</div>

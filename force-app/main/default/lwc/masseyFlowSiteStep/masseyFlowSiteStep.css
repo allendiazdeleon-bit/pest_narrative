@@ -224,3 +224,52 @@
 .btn-link.property-context-toggle:hover {
     text-decoration: underline;
 }
+
+/* Customer Alerts heads-up — top of Site step */
+.customer-alerts-card {
+  background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #d97706;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.15);
+}
+.customer-alerts-icon { font-size: 22px; line-height: 1.2; flex-shrink: 0; }
+.customer-alerts-body { flex: 1; }
+.customer-alerts-heading {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #7c2d12;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 4px;
+}
+.customer-alerts-text {
+  font-size: 15px;
+  color: #44260a;
+  margin: 0;
+  line-height: 1.45;
+  white-space: pre-line;
+}
+
+/* Property Identification — single inline line */
+.property-id-line {
+  margin: 8px 12px 12px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #475569;
+  background: #f8fafc;
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.property-id-name { font-weight: 600; color: #1e293b; }
+.property-id-sep { color: #94a3b8; }
+.property-id-svc { font-weight: 500; }
+.property-id-last { font-size: 13px; color: #64748b; }

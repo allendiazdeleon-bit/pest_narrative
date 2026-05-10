@@ -157,8 +157,24 @@
         <categories>MasseyFlow,Shared</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>Field reading prompt (site telemetry capture)</shortDescription>
-        <value>Note bait station activity, soil temp, and conducive conditions</value>
+        <shortDescription>Findings prompt shown above Walk-Around inputs (Work step)</shortDescription>
+        <value>Note what you observed during the visit — bait station activity, conducive conditions, soil temp, etc.</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_Findings_Section_Heading</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Section heading for Walk-Around Findings on Work step</shortDescription>
+        <value>Findings &amp; Observations</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_PestFinding_Label</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Label for Pest_Finding__c picker on Work step</shortDescription>
+        <value>Pest Finding</value>
     </labels>
     <labels>
         <fullName>MasseyFlow_RegulatoryDriver</fullName>
@@ -447,5 +463,93 @@
         <protected>false</protected>
         <shortDescription>Ambient empty state when no cluster events on this route</shortDescription>
         <value>No active cluster events for this route</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_SignOff_Heading</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Heading for the customer sign-off card on Summary step</shortDescription>
+        <value>Customer Sign-Off</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_SignOff_Choose_Home</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Sign-off path option: customer is on-site to sign tablet</shortDescription>
+        <value>Customer is here</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_SignOff_Choose_NotHome</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Sign-off path option: customer not home, leave door hanger</shortDescription>
+        <value>Customer not home</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_SignOff_Sign_Heading</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Heading for signature pad area</shortDescription>
+        <value>Sign here to confirm service</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_SignOff_Sign_Clear</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Clear / redo button on signature pad</shortDescription>
+        <value>Clear</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_SignOff_Sign_Save</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Save signature button on signature pad</shortDescription>
+        <value>Save signature</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_SignOff_Signed_Confirmation</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Confirmation pill text once signature is captured</shortDescription>
+        <value>Signed</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_SignOff_Hanger_CTA</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>CTA to capture photo of door hanger left at unattended home</shortDescription>
+        <value>Take photo of door hanger</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_SignOff_Hanger_Logged</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Confirmation pill text once door hanger photo is logged</shortDescription>
+        <value>Door hanger logged</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_SignOff_Change</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Reset link to switch between sign-off paths</shortDescription>
+        <value>Change selection</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_SignOff_Block_Complete</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Disabled-button label when sign-off must occur before completing</shortDescription>
+        <value>Sign-off required to complete</value>
     </labels>
 </CustomLabels>

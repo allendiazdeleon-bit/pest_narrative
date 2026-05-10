@@ -6,7 +6,7 @@
  * because their neighbors signed up.
  *
  * Surfaces in 3 places (per ARCHITECTURE_PROPOSAL § 11):
- *   1. Site step of orchestrator       — variant="compact" (top recommendation, talk-track collapsed)
+ *   1. Site step of orchestrator       — variant="compact" (top recommendation, talk-track always visible, single-action card)
  *   2. Summary step of orchestrator    — variant="full"    (all recommendations + capture buttons)
  *   3. Account standalone Quick Action — variant="full"    (Jordan / Ray view)
  *
@@ -52,8 +52,6 @@ import EXPAND_TALK_TRACK from '@salesforce/label/c.MasseyUpsell_Expand_TalkTrack
 import COLLAPSE_TALK_TRACK from '@salesforce/label/c.MasseyUpsell_Collapse_TalkTrack';
 import ACTION_GENERATE_QUOTE from '@salesforce/label/c.MasseyUpsell_Action_GenerateQuote';
 import ACTION_QUOTED_YES from '@salesforce/label/c.MasseyUpsell_Action_QuotedYes';
-import ACTION_SHOW_ON_TABLET from '@salesforce/label/c.MasseyUpsell_Action_ShowOnTablet';
-import ACTION_HIDE_TABLET from '@salesforce/label/c.MasseyUpsell_Action_HideTablet';
 import QUOTE_HEADING_ANNUAL_TOTAL from '@salesforce/label/c.MasseyUpsell_Quote_Heading_AnnualTotal';
 import QUOTE_HEADING_INSTALL from '@salesforce/label/c.MasseyUpsell_Quote_Heading_Install';
 import QUOTE_HEADING_MONTHLY from '@salesforce/label/c.MasseyUpsell_Quote_Heading_Monthly';
@@ -71,19 +69,37 @@ const OUTCOME_NOT_INTERESTED = 'NotInterested';
 const OUTCOME_NO_RESPONSE = 'NoResponse';
 const OUTCOME_QUOTED_YES = 'QuotedYes';
 
-// Score thresholds for the badge color band.
-//   green  >= 70  — confident pitch
-//   amber  40–69  — pitch with judgment
-//   red    < 40   — Apex would normally not surface, but we render gracefully if it does
-const SCORE_GREEN_FLOOR = 70;
-const SCORE_AMBER_FLOOR = 40;
-
-// Brief copy-confirmation flash duration.
-const COPY_FLASH_MS = 1500;
-
 // Headline count-up animation duration. ~900ms feels snappy without being
 // frantic; eases out so the final value lands cleanly.
 const COUNTUP_DURATION_MS = 900;
+
+// Reason-code → human prose mapping. Keep one sentence per code; the card
+// renders only the first reason inline so Maria reads ONE line, not a chip
+// row. Pest-pressure-related codes append a forecast tail to the prose so
+// the standalone Pest Pressure Forecast card can be retired from the Site
+// step (it competes with the upsell card for the tech's attention).
+const REASON_PROSE = {
+    NEIGHBOR_BOUGHT_MOSQUITO: 'Several neighbors on this street recently signed up.',
+    FL_TERMITE_SEASON_PEAK: 'Florida termite swarm season is starting.',
+    CONDUCIVE_CONDITIONS_FLAGGED: 'Conducive conditions observed on the property.',
+    LARGE_LOT_BIFEN_OPPORTUNITY: 'Larger-than-standard perimeter.',
+    MOSQUITO_TRAP_HIGH_CATCH: 'Mosquito trap catch is elevated this month.',
+    LAWN_DISEASE_SEEN: 'Lawn disease symptoms observed.',
+    EXISTING_PEST_CUSTOMER: 'Existing pest customer — bundle discount eligible.',
+    TERMITE_ONLY_NO_PEST: 'Has termite, not quarterly pest yet.',
+    OUTDOOR_FOCUSED_PROFILE: 'Outdoor-focused service profile.',
+    SENTRICON_UPGRADE_FROM_TERMIDOR: 'Liquid termite renewal coming up.'
+};
+
+// Reason codes that imply "pest pressure is elevated" — when one of these
+// appears we append a short forecast tail to the prose so the upsell card
+// absorbs the signal that used to live in a separate Pest Pressure card.
+const PRESSURE_PROSE_TAIL = ' Pest-pressure score is elevated.';
+const PRESSURE_REASON_CODES = new Set([
+    'CONDUCIVE_CONDITIONS_FLAGGED',
+    'MOSQUITO_TRAP_HIGH_CATCH',
+    'LAWN_DISEASE_SEEN'
+]);
 
 export default class MasseyUpsellCoach extends LightningElement {
     /** @type {string} Account Id — required */
@@ -102,18 +118,12 @@ export default class MasseyUpsellCoach extends LightningElement {
     @track _error;
     // serviceLine -> { outcome, leadId, quoteId, capturedAt } once captured locally.
     @track _captured = {};
-    // serviceLine that has its talk-track currently expanded (compact mode).
-    @track _expandedLine;
-    // serviceLine currently flashing "Copied" confirmation.
-    @track _copiedLine;
     // serviceLine -> QuoteEstimate DTO (idempotency cache; reused on second click).
     @track _quotes = {};
     // serviceLine currently waiting on a generateQuote() round-trip.
     @track _quoteLoading;
     // serviceLine -> error message when a generateQuote() call failed.
     @track _quoteErrors = {};
-    // serviceLine that is currently rendered in presenter ("Show on Tablet") mode.
-    @track _presenterLine;
     // serviceLine -> currently animated value for the headline count-up.
     @track _countupValues = {};
 
@@ -139,8 +149,6 @@ export default class MasseyUpsellCoach extends LightningElement {
         COLLAPSE_TALK_TRACK,
         ACTION_GENERATE_QUOTE,
         ACTION_QUOTED_YES,
-        ACTION_SHOW_ON_TABLET,
-        ACTION_HIDE_TABLET,
         QUOTE_HEADING_ANNUAL_TOTAL,
         QUOTE_HEADING_INSTALL,
         QUOTE_HEADING_MONTHLY,
@@ -195,11 +203,11 @@ export default class MasseyUpsellCoach extends LightningElement {
 
     /**
      * Decorate each recommendation for the template:
-     *  - score badge color class
+     *  - reason prose (single human sentence above the talk-track)
      *  - whether captured (and the confirmation copy)
-     *  - whether the talk-track is expanded (compact mode)
      *  - per-card key-stable button data
      *  - safe fallback for talk-track when MDT didn't return one
+     *  - quote panel state (loading, errors, computed display values)
      */
     get decoratedRecommendations() {
         if (!this.hasRecommendations) {
@@ -213,24 +221,28 @@ export default class MasseyUpsellCoach extends LightningElement {
 
     decorateOne(rec) {
         const captured = this._captured[rec.serviceLine];
-        const expanded = !this.isCompact || this._expandedLine === rec.serviceLine;
         const score = Number.isFinite(rec.score) ? rec.score : 0;
-        const talkTrack = rec.suggestedTalkTrack && rec.suggestedTalkTrack.trim().length > 0
+        // Talk-track + anonymized neighbor token substitution.
+        // Privacy-safe: count + public street name + recency band. No customer
+        // names, no specific addresses. Tokens used: {neighborCount} {streetName}
+        // {monthsSinceNeighborSignup}
+        let talkTrack = rec.suggestedTalkTrack && rec.suggestedTalkTrack.trim().length > 0
             ? rec.suggestedTalkTrack
             : this.label.TALK_TRACK_FALLBACK;
+        talkTrack = this.substituteNeighborTokens(talkTrack, rec);
 
-        let scoreBandClass = 'score-badge score-red';
-        if (score >= SCORE_GREEN_FLOOR) {
-            scoreBandClass = 'score-badge score-green';
-        } else if (score >= SCORE_AMBER_FLOOR) {
-            scoreBandClass = 'score-badge score-amber';
+        // Reason prose: pick the FIRST reason code, look up its human sentence,
+        // and append a pest-pressure tail when applicable. The chip row is
+        // intentionally gone — Maria has 5 seconds at the door, one sentence wins.
+        const reasonCodes = Array.isArray(rec.reasonCodes) ? rec.reasonCodes : [];
+        const primaryCode = reasonCodes.length > 0 ? reasonCodes[0] : null;
+        let reasonProse = primaryCode && REASON_PROSE[primaryCode]
+            ? REASON_PROSE[primaryCode]
+            : '';
+        if (reasonProse && reasonCodes.some((c) => PRESSURE_REASON_CODES.has(c))) {
+            // Folded the standalone Pest Pressure Forecast card into the prose.
+            reasonProse += PRESSURE_PROSE_TAIL;
         }
-
-        const reasonChips = (rec.reasonCodes || []).map((code, idx) => ({
-            key: `${rec.serviceLine}-reason-${idx}`,
-            // Reason codes are SCREAMING_SNAKE — humanize for display.
-            label: this.humanizeReason(code)
-        }));
 
         const annualValueDisplay = (rec.estimatedAnnualValue !== null
                                     && rec.estimatedAnnualValue !== undefined)
@@ -242,7 +254,6 @@ export default class MasseyUpsellCoach extends LightningElement {
         const hasQuote = !!quote;
         const quoteLoading = this._quoteLoading === rec.serviceLine;
         const quoteError = this._quoteErrors[rec.serviceLine];
-        const isPresenter = this._presenterLine === rec.serviceLine;
 
         let quotePanel = null;
         if (hasQuote) {
@@ -291,12 +302,10 @@ export default class MasseyUpsellCoach extends LightningElement {
             ? this.label.QUOTE_LOADING
             : this.label.ACTION_GENERATE_QUOTE;
 
-        const presenterToggleLabel = isPresenter
-            ? this.label.ACTION_HIDE_TABLET
-            : this.label.ACTION_SHOW_ON_TABLET;
-
-        // Root class for the rec card — adds presenter-mode hook when active.
-        const recCardClass = isPresenter ? 'rec-card presenter-mode' : 'rec-card';
+        // Root class for the rec card. The old presenter-mode toggle is gone —
+        // the quote panel always renders in the larger "presenter-friendly"
+        // styling so the tech can hand the device to the customer immediately.
+        const recCardClass = 'rec-card';
 
         // Capture confirmation copy varies by outcome.
         let capturedMessage = '';
@@ -314,23 +323,22 @@ export default class MasseyUpsellCoach extends LightningElement {
             key: rec.serviceLine,
             serviceLine: rec.serviceLine,
             score,
-            scoreBandClass,
-            reasonChips,
-            hasReasons: reasonChips.length > 0,
+            // Reason prose — single sentence above the talk-track. Replaces
+            // the old SCORE badge + REASON CODES chip row + collapsed/expanded
+            // toggle UX. One line of human signal, that's it.
+            reasonProse,
+            hasReasonProse: !!reasonProse,
             talkTrack,
             annualValueDisplay,
             hasAnnualValue: !!annualValueDisplay,
-            expanded,
-            // Compact-mode toggle visibility: always show the toggle in compact;
-            // full mode auto-expands and hides the toggle.
-            showToggle: this.isCompact,
-            toggleLabel: expanded ? this.label.COLLAPSE_TALK_TRACK : this.label.EXPAND_TALK_TRACK,
             // Capture state.
             captured: !!captured,
             notCaptured: !captured,
             capturedMessage,
-            // Copy-confirmation flash state.
-            copied: this._copiedLine === rec.serviceLine,
+            // Pre-quote action row only renders when the rec is unhandled AND
+            // no quote has been generated yet. Once a quote exists, the action
+            // row moves INTO the quote panel ([Customer said yes] [Not today]).
+            showPreQuoteActions: !captured && !hasQuote,
             // Stable button keys to avoid template warnings.
             yesKey: `${rec.serviceLine}-yes`,
             notNowKey: `${rec.serviceLine}-notnow`,
@@ -344,70 +352,11 @@ export default class MasseyUpsellCoach extends LightningElement {
             quoteError,
             hasQuoteError: !!quoteError,
             hasQuote,
-            quotePanel,
-            isPresenter,
-            presenterToggleLabel
+            quotePanel
         };
     }
 
     // ---- handlers ----
-
-    handleToggleTalkTrack(event) {
-        const line = event.currentTarget.dataset.line;
-        if (!line) {
-            return;
-        }
-        this._expandedLine = (this._expandedLine === line) ? undefined : line;
-    }
-
-    handleCopyTalkTrack(event) {
-        const line = event.currentTarget.dataset.line;
-        const text = event.currentTarget.dataset.text;
-        if (!text) {
-            return;
-        }
-        // Prefer the modern async clipboard API; fall back to a hidden textarea
-        // for environments (incl. some FSL Mobile webviews) that block it.
-        // Both paths are local-only — no network I/O — so they work offline.
-        const flash = () => {
-            this._copiedLine = line;
-            // eslint-disable-next-line @lwc/lwc/no-async-operation
-            setTimeout(() => {
-                if (this._copiedLine === line) {
-                    this._copiedLine = undefined;
-                }
-            }, COPY_FLASH_MS);
-        };
-        try {
-            if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(flash).catch(() => {
-                    this.copyFallback(text);
-                    flash();
-                });
-                return;
-            }
-        } catch (e) {
-            // fall through
-        }
-        this.copyFallback(text);
-        flash();
-    }
-
-    copyFallback(text) {
-        try {
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            ta.setAttribute('readonly', '');
-            ta.style.position = 'absolute';
-            ta.style.left = '-9999px';
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-        } catch (e) {
-            // Last-resort silent fail — copy is a presenter convenience, not load-bearing.
-        }
-    }
 
     handleCaptureYes(event) {
         this.captureOutcome(event.currentTarget.dataset.line, OUTCOME_YES);
@@ -510,14 +459,6 @@ export default class MasseyUpsellCoach extends LightningElement {
                     [serviceLine]: this.extractErrorMessage(err) || this.label.QUOTE_ERROR
                 };
             });
-    }
-
-    handleTogglePresenter(event) {
-        const line = event.currentTarget.dataset.line;
-        if (!line) {
-            return;
-        }
-        this._presenterLine = (this._presenterLine === line) ? undefined : line;
     }
 
     handleCaptureQuotedYes(event) {
@@ -654,19 +595,6 @@ export default class MasseyUpsellCoach extends LightningElement {
 
     // ---- helpers ----
 
-    humanizeReason(code) {
-        if (!code) {
-            return '';
-        }
-        // SCREAMING_SNAKE → Title Case With Spaces.
-        return String(code)
-            .toLowerCase()
-            .split('_')
-            .filter((p) => p.length > 0)
-            .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-            .join(' ');
-    }
-
     formatCurrency(num) {
         if (num === null || num === undefined) {
             return null;
@@ -681,6 +609,32 @@ export default class MasseyUpsellCoach extends LightningElement {
         } catch (e) {
             return '$' + Math.round(Number(num)).toString();
         }
+    }
+
+    /**
+     * Substitute privacy-safe neighbor tokens into the talk-track copy.
+     * Supported tokens: {neighborCount} {streetName} {monthsSinceNeighborSignup}
+     * Customer names + house numbers are NEVER used — those would breach
+     * customer-confidentiality. Anonymized aggregates only.
+     */
+    substituteNeighborTokens(template, rec) {
+        if (!template || template.indexOf('{') === -1) return template;
+        let out = template;
+        if (rec.neighborCount !== null && rec.neighborCount !== undefined) {
+            // Spell numbers 1-5 for readability; numeric otherwise.
+            const word = ['zero','one','two','three','four','five'][rec.neighborCount]
+                || String(rec.neighborCount);
+            out = out.split('{neighborCount}').join(word);
+        }
+        if (rec.streetName) {
+            out = out.split('{streetName}').join(rec.streetName);
+        }
+        if (rec.monthsSinceNeighborSignup) {
+            out = out.split('{monthsSinceNeighborSignup}').join(String(rec.monthsSinceNeighborSignup));
+        }
+        // Sanitize any remaining placeholders so they don't leak.
+        out = out.replace(/\{[A-Za-z_]+\}/g, '').replace(/\s+/g, ' ').trim();
+        return out;
     }
 
     extractErrorMessage(error) {

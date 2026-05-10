@@ -265,6 +265,10 @@
         <editable>true</editable><readable>true</readable>
     </fieldPermissions>
 
+    <fieldPermissions>
+        <field>Account.Customer_Alerts__c</field>
+        <editable>true</editable><readable>true</readable>
+    </fieldPermissions>
     <!-- Asset custom fields — Read (Service_Line__c omitted; required field, FLS implicit) -->
     <fieldPermissions>
         <field>Asset.Equipment_Type__c</field>

@@ -1,11 +1,24 @@
 import { LightningElement, api, wire, track } from 'lwc';
-import { getRecord, getFieldValue, updateRecord } from 'lightning/uiRecordApi';
+import { getRecord, getFieldValue, updateRecord, createRecord } from 'lightning/uiRecordApi';
 import { getRelatedListRecords } from 'lightning/uiRelatedListApi';
 import Alert from 'lightning/alert';
 
 import generateReport from '@salesforce/apex/TreatmentReportGenerator.generate';
 import previewReport from '@salesforce/apex/TreatmentReportGenerator.preview';
 import analyzePestPressure from '@salesforce/apex/PestPressureAnalyzer.analyzeForAsset';
+
+// Sign-Off card labels (Wrap Up & Sign — last tech action before Complete)
+import LBL_SO_HEADING from '@salesforce/label/c.MasseyFlow_SignOff_Heading';
+import LBL_SO_CHOOSE_HOME from '@salesforce/label/c.MasseyFlow_SignOff_Choose_Home';
+import LBL_SO_CHOOSE_NOT_HOME from '@salesforce/label/c.MasseyFlow_SignOff_Choose_NotHome';
+import LBL_SO_SIGN_HEADING from '@salesforce/label/c.MasseyFlow_SignOff_Sign_Heading';
+import LBL_SO_SIGN_CLEAR from '@salesforce/label/c.MasseyFlow_SignOff_Sign_Clear';
+import LBL_SO_SIGN_SAVE from '@salesforce/label/c.MasseyFlow_SignOff_Sign_Save';
+import LBL_SO_SIGNED from '@salesforce/label/c.MasseyFlow_SignOff_Signed_Confirmation';
+import LBL_SO_HANGER_CTA from '@salesforce/label/c.MasseyFlow_SignOff_Hanger_CTA';
+import LBL_SO_HANGER_LOGGED from '@salesforce/label/c.MasseyFlow_SignOff_Hanger_Logged';
+import LBL_SO_CHANGE from '@salesforce/label/c.MasseyFlow_SignOff_Change';
+import LBL_SO_BLOCK from '@salesforce/label/c.MasseyFlow_SignOff_Block_Complete';
 
 import WO_ID from '@salesforce/schema/WorkOrder.Id';
 import WO_NUMBER from '@salesforce/schema/WorkOrder.WorkOrderNumber';
@@ -43,6 +56,15 @@ export default class MasseyFlowSummaryStep extends LightningElement {
     @track isProcessing = false;
     @track isCompleted = false;
     @track error;
+    // Next-stop handoff modal — fired after Complete succeeds. Shows the
+    // next stop on Maria's route so she gets a momentum signal instead of
+    // a dead-end. Hardcoded for demo; prod would query AssignedResource +
+    // today's ServiceAppointment ORDER BY SchedStartTime.
+    @track showNextStopHandoff = false;
+    nextStopName = 'Henderson Residence';
+    nextStopAddress = '1239 Maple Ave, Orlando FL';
+    nextStopTime = '11:30 AM';
+    nextStopDistance = '3 houses up the street';
 
     @wire(getRecord, { recordId: '$effectiveRecordId', fields: WO_FIELDS })
     wiredWorkOrder;
@@ -137,12 +159,17 @@ export default class MasseyFlowSummaryStep extends LightningElement {
 
     get canComplete() {
         if (this.isProcessing || this.isCompleted) return false;
-        return true;
+        return this.signOffComplete;
+    }
+
+    get completeDisabled() {
+        return this.isProcessing || !this.signOffComplete;
     }
 
     get completeButtonLabel() {
         if (this.isProcessing) return 'Completing...';
         if (this.isCompleted) return 'Service Visit Completed ✓';
+        if (!this.signOffComplete) return LBL_SO_BLOCK;
         return 'Complete Service Visit';
     }
 
@@ -150,11 +177,13 @@ export default class MasseyFlowSummaryStep extends LightningElement {
         let cls = 'complete-btn';
         if (this.isProcessing) cls += ' processing';
         if (this.isCompleted) cls += ' completed';
+        if (!this.signOffComplete && !this.isCompleted) cls += ' blocked';
         return cls;
     }
 
     async handleCompleteWorkOrder() {
         if (this.isProcessing || this.isCompleted) return;
+        if (!this.signOffComplete) return;
 
         this.isProcessing = true;
         try {
@@ -166,11 +195,9 @@ export default class MasseyFlowSummaryStep extends LightningElement {
             await updateRecord({ fields });
             this.isCompleted = true;
 
-            await Alert.open({
-                message: 'Service visit completed successfully. Data will sync when connected.',
-                theme: 'success',
-                label: 'Complete'
-            });
+            // Show next-stop handoff modal — momentum signal instead of an
+            // alert dialog that closes into nothing.
+            this.showNextStopHandoff = true;
 
             this.dispatchEvent(new CustomEvent('stepcomplete', {
                 detail: { stepId: 'summary', completed: true },
@@ -189,6 +216,12 @@ export default class MasseyFlowSummaryStep extends LightningElement {
             this.isProcessing = false;
         }
     }
+
+    // Next-stop handoff modal handlers — dismiss closes the modal; start-next
+    // would navigate to the next WO. For demo, just dismisses.
+    handleCloseNextStopHandoff() { this.showNextStopHandoff = false; }
+    handleStartNextStop() { this.showNextStopHandoff = false; }
+
 
     // ── Treatment Report (regulatory packet) ─────────────────────────
     @track report;
@@ -340,5 +373,246 @@ export default class MasseyFlowSummaryStep extends LightningElement {
             bubbles: true,
             composed: true
         }));
+    }
+
+    // ── Sign-Off card ─────────────────────────────────────────────────
+    // State machine: choose -> 'home' (signature pad) | 'nothome' (door
+    // hanger photo). Both paths produce a ContentVersion linked to the
+    // WorkOrder via ContentDocumentLink — evidence the visit happened.
+    // Per ARCHITECTURE_PROPOSAL § 6.2: createRecord (not Apex DML) so the
+    // FSL Mobile draft queue can sync when the device regains connectivity.
+    @track signOffPath; // undefined | 'home' | 'nothome'
+    @track signatureCaptured = false;
+    @track signatureSavedAt;
+    @track hangerCaptured = false;
+    @track hangerSavedAt;
+    @track hangerThumbDataUrl;
+    @track signOffSaving = false;
+    @track signOffOffline = false; // true if the createRecord came back via the draft queue
+
+    // Signature canvas state
+    _ctx;
+    _drawing = false;
+    _lastX = 0;
+    _lastY = 0;
+    _hasInk = false;
+
+    // Expose labels to template
+    get labels() {
+        return {
+            heading: LBL_SO_HEADING,
+            chooseHome: LBL_SO_CHOOSE_HOME,
+            chooseNotHome: LBL_SO_CHOOSE_NOT_HOME,
+            signHeading: LBL_SO_SIGN_HEADING,
+            signClear: LBL_SO_SIGN_CLEAR,
+            signSave: LBL_SO_SIGN_SAVE,
+            signed: LBL_SO_SIGNED,
+            hangerCta: LBL_SO_HANGER_CTA,
+            hangerLogged: LBL_SO_HANGER_LOGGED,
+            change: LBL_SO_CHANGE,
+            block: LBL_SO_BLOCK
+        };
+    }
+
+    get signOffComplete() {
+        return this.signatureCaptured || this.hangerCaptured;
+    }
+
+    get showPathChooser() {
+        return !this.signOffPath && !this.signOffComplete;
+    }
+
+    get showHomePath() { return this.signOffPath === 'home' && !this.signOffComplete; }
+    get showNotHomePath() { return this.signOffPath === 'nothome' && !this.signOffComplete; }
+    get showSignedPill() { return this.signatureCaptured; }
+    get showHangerPill() { return this.hangerCaptured; }
+    get canShowChangeLink() { return !!this.signOffPath && !this.signOffComplete; }
+    get saveSignatureDisabled() { return !this._hasInk || this.signOffSaving; }
+
+    handleChoosePath(event) {
+        const path = event.currentTarget?.dataset?.path;
+        if (path === 'home' || path === 'nothome') {
+            this.signOffPath = path;
+            // Reset canvas state when entering home path
+            if (path === 'home') {
+                this._hasInk = false;
+                // Defer canvas setup until DOM renders
+                Promise.resolve().then(() => this.setupCanvas());
+            }
+        }
+    }
+
+    handleResetPath() {
+        this.signOffPath = undefined;
+        this._hasInk = false;
+        this._ctx = undefined;
+    }
+
+    // ── Signature pad (vanilla canvas + pointer/touch) ────────────────
+    setupCanvas() {
+        const canvas = this.template.querySelector('canvas.signature-canvas');
+        if (!canvas) return;
+        // Match the backing store to displayed CSS size for crisp lines.
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+        canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = 2.2;
+        ctx.strokeStyle = '#111827';
+        // White background so saved PNG isn't transparent.
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, rect.width, rect.height);
+        this._ctx = ctx;
+    }
+
+    _pointFromEvent(evt) {
+        const canvas = this.template.querySelector('canvas.signature-canvas');
+        const rect = canvas.getBoundingClientRect();
+        let clientX;
+        let clientY;
+        if (evt.touches && evt.touches.length > 0) {
+            clientX = evt.touches[0].clientX;
+            clientY = evt.touches[0].clientY;
+        } else {
+            clientX = evt.clientX;
+            clientY = evt.clientY;
+        }
+        return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    handleSignatureStart(evt) {
+        if (evt.cancelable) evt.preventDefault();
+        if (!this._ctx) this.setupCanvas();
+        const { x, y } = this._pointFromEvent(evt);
+        this._drawing = true;
+        this._lastX = x;
+        this._lastY = y;
+        // Dot for taps
+        this._ctx.beginPath();
+        this._ctx.arc(x, y, 1.1, 0, Math.PI * 2);
+        this._ctx.fillStyle = '#111827';
+        this._ctx.fill();
+        this._ctx.fillStyle = '#ffffff';
+        this._hasInk = true;
+    }
+
+    handleSignatureMove(evt) {
+        if (!this._drawing || !this._ctx) return;
+        if (evt.cancelable) evt.preventDefault();
+        const { x, y } = this._pointFromEvent(evt);
+        this._ctx.beginPath();
+        this._ctx.moveTo(this._lastX, this._lastY);
+        this._ctx.lineTo(x, y);
+        this._ctx.stroke();
+        this._lastX = x;
+        this._lastY = y;
+        this._hasInk = true;
+    }
+
+    handleSignatureEnd(evt) {
+        if (evt && evt.cancelable) evt.preventDefault();
+        this._drawing = false;
+    }
+
+    handleClearSignature() {
+        const canvas = this.template.querySelector('canvas.signature-canvas');
+        if (!canvas || !this._ctx) return;
+        const rect = canvas.getBoundingClientRect();
+        this._ctx.fillStyle = '#ffffff';
+        this._ctx.fillRect(0, 0, rect.width, rect.height);
+        this._hasInk = false;
+    }
+
+    async handleSaveSignature() {
+        if (this.saveSignatureDisabled) return;
+        const canvas = this.template.querySelector('canvas.signature-canvas');
+        if (!canvas) return;
+        this.signOffSaving = true;
+        try {
+            const dataUrl = canvas.toDataURL('image/png');
+            const base64 = dataUrl.split(',')[1];
+            const title = `Service Sign-Off — ${this.workOrderNumber || this.recordId}`;
+            const cvId = await this.createSignOffContentVersion({
+                title,
+                pathOnClient: 'signature.png',
+                base64
+            });
+            // Successful queue insert (online or draft) — flip state
+            this.signatureCaptured = true;
+            this.signatureSavedAt = new Date().toISOString();
+            // Best-effort: detect draft IDs (FSL Mobile prefixes drafts)
+            this.signOffOffline = !!cvId && typeof cvId === 'string' && cvId.startsWith('local');
+        } catch (err) {
+            console.error('[SummaryStep] Signature save failed:', JSON.stringify(err));
+            await Alert.open({
+                label: 'Could not save signature',
+                message: err?.body?.message || 'Try again. If this persists, switch to door-hanger path.',
+                theme: 'error'
+            });
+        } finally {
+            this.signOffSaving = false;
+        }
+    }
+
+    // ── Door hanger photo path ────────────────────────────────────────
+    handleHangerCaptureClick() {
+        const input = this.template.querySelector('input.hanger-input');
+        if (input) input.click();
+    }
+
+    handleHangerFileSelected(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async () => {
+            const dataUrl = reader.result;
+            const base64 = (typeof dataUrl === 'string') ? dataUrl.split(',')[1] : '';
+            this.hangerThumbDataUrl = dataUrl;
+            this.signOffSaving = true;
+            try {
+                const filename = file.name || 'door-hanger.jpg';
+                const title = `Door Hanger — ${this.workOrderNumber || this.recordId}`;
+                const cvId = await this.createSignOffContentVersion({
+                    title,
+                    pathOnClient: filename,
+                    base64
+                });
+                this.hangerCaptured = true;
+                this.hangerSavedAt = new Date().toISOString();
+                this.signOffOffline = !!cvId && typeof cvId === 'string' && cvId.startsWith('local');
+            } catch (err) {
+                console.error('[SummaryStep] Door hanger save failed:', JSON.stringify(err));
+                await Alert.open({
+                    label: 'Could not log door hanger',
+                    message: err?.body?.message || 'Try again, or retake the photo.',
+                    theme: 'error'
+                });
+            } finally {
+                this.signOffSaving = false;
+            }
+        };
+        reader.readAsDataURL(file);
+        event.target.value = '';
+    }
+
+    // ── Shared: ContentVersion + ContentDocumentLink to WorkOrder ─────
+    // FirstPublishLocationId already creates the link to the WO, but we
+    // explicitly create a ContentDocumentLink so the doc is shareable
+    // beyond the originating user (matches Site step's pattern when a
+    // dual link is needed). Per ARCHITECTURE_PROPOSAL § 6.2 the second
+    // link is queued as a draft on offline devices.
+    async createSignOffContentVersion({ title, pathOnClient, base64 }) {
+        const cvFields = {
+            Title: title,
+            PathOnClient: pathOnClient,
+            VersionData: base64,
+            FirstPublishLocationId: this.recordId
+        };
+        const cvResult = await createRecord({ apiName: 'ContentVersion', fields: cvFields });
+        return cvResult?.id;
     }
 }

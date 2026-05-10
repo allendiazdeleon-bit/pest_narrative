@@ -41,80 +41,34 @@
             <ul class="rec-list">
                 <template for:each={decoratedRecommendations} for:item="r">
                     <li key={r.key} class={r.recCardClass} data-line={r.serviceLine}>
+                        <!-- Service line + inline annual value. The old SCORE
+                             badge is intentionally gone — the card existing is
+                             the signal; Maria has 5 seconds, not 50. -->
                         <div class="rec-top">
-                            <h3 class="rec-line">{r.serviceLine}</h3>
-                            <span class={r.scoreBandClass} title={label.SCORE_LABEL}>
-                                <span class="score-label">{label.SCORE_LABEL}</span>
-                                <span class="score-value">{r.score}</span>
-                            </span>
+                            <h3 class="rec-line">
+                                <span class="rec-line-name">{r.serviceLine}</span>
+                                <template lwc:if={r.hasAnnualValue}>
+                                    <span class="rec-line-value">~{r.annualValueDisplay}/yr</span>
+                                </template>
+                            </h3>
                         </div>
 
-                        <template lwc:if={r.hasAnnualValue}>
-                            <p class="rec-value">
-                                <span class="rec-value-label">{label.ANNUAL_VALUE_LABEL}:</span>
-                                <span class="rec-value-amount">{r.annualValueDisplay}</span>
-                            </p>
+                        <!-- Reason as ONE line of human prose (replaces chip row). -->
+                        <template lwc:if={r.hasReasonProse}>
+                            <p class="rec-reason-prose">{r.reasonProse}</p>
                         </template>
 
-                        <template lwc:if={r.hasReasons}>
-                            <div class="rec-reasons">
-                                <span class="rec-reasons-heading">{label.REASONS_HEADING}</span>
-                                <ul class="rec-chip-row">
-                                    <template for:each={r.reasonChips} for:item="c">
-                                        <li key={c.key} class="rec-chip">{c.label}</li>
-                                    </template>
-                                </ul>
-                            </div>
-                        </template>
+                        <!-- Talk-track is always visible now (no toggle, no copy button). -->
+                        <section class="talk-track">
+                            <p class="talk-track-text">{r.talkTrack}</p>
+                        </section>
 
-                        <!-- Talk-track: collapsed by default in compact mode, always visible in full -->
-                        <template lwc:if={r.showToggle}>
-                            <button
-                                type="button"
-                                class="talk-toggle"
-                                data-line={r.serviceLine}
-                                onclick={handleToggleTalkTrack}
-                                aria-expanded={r.expanded}
-                            >
-                                {r.toggleLabel}
-                            </button>
-                        </template>
-
-                        <template lwc:if={r.expanded}>
-                            <section class="talk-track">
-                                <div class="talk-track-head">
-                                    <span class="talk-track-heading">{label.TALK_TRACK_HEADING}</span>
-                                    <button
-                                        type="button"
-                                        class="copy-btn"
-                                        data-line={r.serviceLine}
-                                        data-text={r.talkTrack}
-                                        onclick={handleCopyTalkTrack}
-                                        aria-label={label.ACTION_COPY}
-                                    >
-                                        <lightning-icon
-                                            icon-name="utility:copy_to_clipboard"
-                                            size="xx-small"
-                                            alternative-text={label.ACTION_COPY}
-                                            class="copy-icon"
-                                        ></lightning-icon>
-                                        <template lwc:if={r.copied}>
-                                            <span class="copy-flash">{label.COPIED_CONFIRMATION}</span>
-                                        </template>
-                                        <template lwc:else>
-                                            <span class="copy-label">{label.ACTION_COPY}</span>
-                                        </template>
-                                    </button>
-                                </div>
-                                <p class="talk-track-text">{r.talkTrack}</p>
-                            </section>
-                        </template>
-
-                        <!-- Generate Quote CTA — sits above the existing outcome row.
-                             Hidden once outcome captured. Disabled while in flight or
-                             once a quote is already cached for this line (idempotency). -->
-                        <template lwc:if={r.notCaptured}>
-                            <div class="quote-cta-row">
+                        <!-- Generate Quote CTA + Move On — single primary action row
+                             before any quote is generated. The standalone "Yes"
+                             button is gone; "Customer said yes" only surfaces inside
+                             the quote panel after generateQuote() resolves. -->
+                        <template lwc:if={r.showPreQuoteActions}>
+                            <div class="action-row action-row-prequote" data-variant={variant}>
                                 <button
                                     type="button"
                                     class="action-btn action-quote"
@@ -131,13 +85,51 @@
                                     </template>
                                     <span class="quote-cta-label">{r.generateQuoteLabel}</span>
                                 </button>
-                                <template lwc:if={r.hasQuoteError}>
-                                    <p class="quote-error" role="alert">{r.quoteError}</p>
+                                <template lwc:if={isFull}>
+                                    <button
+                                        type="button"
+                                        class="action-btn action-notnow"
+                                        data-line={r.serviceLine}
+                                        onclick={handleCaptureNotNow}
+                                    >
+                                        {label.ACTION_NOT_NOW}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="action-btn action-notint"
+                                        data-line={r.serviceLine}
+                                        onclick={handleCaptureNotInterested}
+                                    >
+                                        {label.ACTION_NOT_INTERESTED}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="action-btn action-noresp"
+                                        data-line={r.serviceLine}
+                                        onclick={handleCaptureNoResponse}
+                                    >
+                                        {label.ACTION_NO_RESPONSE}
+                                    </button>
+                                </template>
+                                <template lwc:else>
+                                    <button
+                                        type="button"
+                                        class="action-btn action-moveon"
+                                        data-line={r.serviceLine}
+                                        onclick={handleCaptureNotNow}
+                                    >
+                                        Move On
+                                    </button>
                                 </template>
                             </div>
+                            <template lwc:if={r.hasQuoteError}>
+                                <p class="quote-error" role="alert">{r.quoteError}</p>
+                            </template>
                         </template>
 
-                        <!-- Quote panel — expands once generateQuote() resolves -->
+                        <!-- Quote panel — expands once generateQuote() resolves.
+                             Always renders in the larger presenter-friendly layout
+                             (the old "Show on Tablet" toggle is gone). -->
                         <template lwc:if={r.hasQuote}>
                             <section class="quote-panel" data-line={r.serviceLine}>
                                 <header class="quote-panel-head">
@@ -191,16 +183,9 @@
                                     </p>
                                 </template>
 
-                                <div class="quote-presenter-row">
-                                    <button
-                                        type="button"
-                                        class="action-btn action-presenter"
-                                        data-line={r.serviceLine}
-                                        onclick={handleTogglePresenter}
-                                    >
-                                        {r.presenterToggleLabel}
-                                    </button>
-                                    <template lwc:if={r.notCaptured}>
+                                <!-- Post-quote action row: [Customer said yes] [Not today] -->
+                                <template lwc:if={r.notCaptured}>
+                                    <div class="action-row action-row-postquote">
                                         <button
                                             type="button"
                                             class="action-btn action-quoted-yes"
@@ -209,71 +194,24 @@
                                         >
                                             {label.ACTION_QUOTED_YES}
                                         </button>
-                                    </template>
-                                </div>
+                                        <button
+                                            type="button"
+                                            class="action-btn action-moveon"
+                                            data-line={r.serviceLine}
+                                            onclick={handleCaptureNotNow}
+                                        >
+                                            Not today
+                                        </button>
+                                    </div>
+                                </template>
                             </section>
                         </template>
 
-                        <!-- Capture-outcome buttons -->
+                        <!-- Captured confirmation pill -->
                         <template lwc:if={r.captured}>
                             <div class="captured-pill" role="status">
                                 <lightning-icon icon-name="utility:check" size="xx-small" alternative-text="captured" class="captured-icon"></lightning-icon>
                                 <span class="captured-text">{r.capturedMessage}</span>
-                            </div>
-                        </template>
-                        <template lwc:else>
-                            <!-- Compact variant: 2-button capture (Yes / Move On).
-                                 Full variant (Account standalone, Summary step):
-                                 4-button picker so Jordan/Ray can stamp the funnel value
-                                 with full context. The granular distinction lives where
-                                 a manager actually consumes it. -->
-                            <div class="action-row" data-variant={variant}>
-                                <button
-                                    type="button"
-                                    class="action-btn action-yes"
-                                    data-line={r.serviceLine}
-                                    onclick={handleCaptureYes}
-                                >
-                                    {label.ACTION_YES}
-                                </button>
-                                <template lwc:if={isFull}>
-                                    <button
-                                        type="button"
-                                        class="action-btn action-notnow"
-                                        data-line={r.serviceLine}
-                                        onclick={handleCaptureNotNow}
-                                    >
-                                        {label.ACTION_NOT_NOW}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="action-btn action-notint"
-                                        data-line={r.serviceLine}
-                                        onclick={handleCaptureNotInterested}
-                                    >
-                                        {label.ACTION_NOT_INTERESTED}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="action-btn action-noresp"
-                                        data-line={r.serviceLine}
-                                        onclick={handleCaptureNoResponse}
-                                    >
-                                        {label.ACTION_NO_RESPONSE}
-                                    </button>
-                                </template>
-                                <template lwc:else>
-                                    <!-- Compact: single "Move On" button maps to NotNow.
-                                         Tech can pitch later via Account record (full variant). -->
-                                    <button
-                                        type="button"
-                                        class="action-btn action-moveon"
-                                        data-line={r.serviceLine}
-                                        onclick={handleCaptureNotNow}
-                                    >
-                                        Move On
-                                    </button>
-                                </template>
                             </div>
                         </template>
                     </li>

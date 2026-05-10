@@ -158,6 +158,161 @@
 
 .complete-btn.processing { opacity: 0.7; cursor: wait; }
 .complete-btn.completed { background: #2E844A; cursor: default; }
+.complete-btn.blocked { background: #9ca3af; cursor: not-allowed; }
+.complete-btn:disabled { cursor: not-allowed; }
+
+/* ── Sign-Off card ──────────────────────────────────────────────── */
+.signoff-card .card-header { align-items: center; }
+
+.signoff-pill {
+    margin-left: auto;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(46, 132, 74, 0.15);
+    color: #2E844A;
+}
+
+.signoff-choices {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.signoff-choice {
+    flex: 1 1 140px;
+    min-height: 88px;
+    padding: 14px;
+    background: #fff;
+    border: 2px solid var(--c-border);
+    border-radius: var(--r);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--c-text);
+    cursor: pointer;
+}
+
+.signoff-choice:hover { border-color: var(--c-primary); }
+.signoff-choice-home { border-color: rgba(46, 125, 50, 0.4); }
+.signoff-choice-icon { font-size: 28px; }
+.signoff-choice-label { text-align: center; }
+
+.signoff-sign-heading {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c-text-mute);
+    margin-bottom: 8px;
+}
+
+.signature-pad-wrap {
+    width: 100%;
+    height: 280px;
+    border: 1px dashed #9ca3af;
+    border-radius: var(--r);
+    background: #ffffff;
+    overflow: hidden;
+    touch-action: none;
+}
+
+.signature-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+}
+
+.signoff-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.signoff-primary {
+    flex: 1;
+    padding: 12px;
+    min-height: 44px;
+    background: var(--c-primary);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.signoff-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.signoff-secondary {
+    flex: 0 0 auto;
+    padding: 12px 16px;
+    min-height: 44px;
+    background: #f3f4f6;
+    color: var(--c-text);
+    border: 1px solid var(--c-border);
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.signoff-hanger-cta {
+    width: 100%;
+    margin-top: 4px;
+}
+
+.btn-icon { margin-right: 6px; }
+
+.file-input-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.hanger-thumb {
+    width: 100%;
+    max-height: 220px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-top: 10px;
+    border: 1px solid var(--c-border);
+}
+
+.signoff-confirm {
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2E844A;
+}
+
+.signoff-offline {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--c-text-mute);
+}
+
+.signoff-change-link {
+    margin-top: 12px;
+    background: none;
+    border: none;
+    padding: 4px 0;
+    color: var(--c-primary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+}
 
 .error-banner {
     margin: 12px 16px;
@@ -173,3 +328,71 @@
 
 .error-icon { font-size: 18px; }
 .error-text { flex: 1; }
+
+/* Next-stop handoff modal — momentum signal on Complete */
+.next-stop-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 9000;
+  animation: fadeIn 180ms ease-out;
+}
+.next-stop-modal {
+  position: fixed; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(440px, 92vw);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 24px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.22), 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 9001;
+  text-align: center;
+  animation: scaleIn 200ms ease-out;
+}
+.next-stop-check {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 30px; font-weight: 700;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(16,185,129,0.35);
+}
+.next-stop-heading {
+  font-size: 19px; font-weight: 700; color: #064e3b; margin: 0 0 4px;
+}
+.next-stop-sub {
+  font-size: 14px; color: #475569; margin: 0 0 18px;
+}
+.next-stop-card {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 0 0 18px;
+  text-align: left;
+}
+.next-stop-card-label {
+  display: block; font-size: 11px; font-weight: 600;
+  color: #64748b; text-transform: uppercase; letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+.next-stop-time { font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 2px; }
+.next-stop-name { font-size: 15px; font-weight: 600; color: #1e293b; margin: 0 0 2px; }
+.next-stop-address { font-size: 13px; color: #475569; margin: 0 0 4px; }
+.next-stop-distance { font-size: 13px; color: #16a34a; margin: 0; font-style: italic; }
+.next-stop-actions { display: flex; gap: 10px; }
+.next-stop-btn-primary {
+  flex: 1;
+  background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 15px; font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(3,105,161,0.3);
+}
+.next-stop-btn-primary:active { transform: translateY(1px); }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { opacity: 0; transform: translate(-50%, -50%) scale(0.92); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
