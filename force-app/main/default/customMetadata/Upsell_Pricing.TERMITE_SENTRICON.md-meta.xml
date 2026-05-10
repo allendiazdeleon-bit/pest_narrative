@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Termite Sentricon AlwaysActive</label>
+    <protected>false</protected>
+    <values><field>Sku__c</field><value xsi:type="xsd:string">TERMITE_SENTRICON</value></values>
+    <values><field>Service_Line__c</field><value xsi:type="xsd:string">Termite</value></values>
+    <values><field>Display_Name__c</field><value xsi:type="xsd:string">Termite Sentricon AlwaysActive Protection</value></values>
+    <values><field>Install_Fee__c</field><value xsi:type="xsd:double">1200</value></values>
+    <values><field>Monthly_Service__c</field><value xsi:type="xsd:double">25</value></values>
+    <values><field>Annual_Y1_Estimate__c</field><value xsi:type="xsd:double">1500</value></values>
+    <values><field>Bundle_Discount_Pct__c</field><value xsi:type="xsd:double">10</value></values>
+    <values><field>Warranty_Description__c</field><value xsi:type="xsd:string">Lifetime renewable warranty, transferable to next homeowner</value></values>
+    <values><field>Inclusions__c</field><value xsi:type="xsd:string">• Sentricon AlwaysActive bait stations installed every 10 ft on perimeter
+• Quarterly station inspections + monitoring
+• Bait replenishment included
+• Full-structure termite damage warranty (up to $500K repair coverage)
+• Annual graphic inspection report for your records
+• Transferable to next homeowner at no fee</value></values>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>
+

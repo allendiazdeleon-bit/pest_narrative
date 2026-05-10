@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Warranty_Description__c</fullName>
+    <label>Warranty Description</label>
+    <type>Text</type>
+    <length>120</length>
+    <description>Warranty terms shown on the Quote (e.g., "Lifetime, transferable" or "1 year").</description>
+</CustomField>

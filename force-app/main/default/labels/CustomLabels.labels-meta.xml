@@ -328,4 +328,108 @@
         <shortDescription>Toggle button to collapse the expanded talk-track in compact variant</shortDescription>
         <value>Hide talk-track</value>
     </labels>
+    <labels>
+        <fullName>MasseyUpsell_Action_GenerateQuote</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>CTA on a recommendation card to pull live pricing into a quote panel</shortDescription>
+        <value>Generate Quote</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Action_QuotedYes</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Primary CTA in quote panel — capture customer yes against a quote</shortDescription>
+        <value>Capture Quoted Yes</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Action_ShowOnTablet</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Toggle quote panel into presenter mode optimized for handing to customer</shortDescription>
+        <value>Show on Tablet</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Action_HideTablet</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Exit the presenter-mode view of the quote panel</shortDescription>
+        <value>Exit Presenter Mode</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Quote_Heading_AnnualTotal</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Headline label for the year-1 total in the quote panel</shortDescription>
+        <value>Year-1 Total</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Quote_Heading_Install</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Line-item label for one-time install fee in the quote panel</shortDescription>
+        <value>Install</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Quote_Heading_Monthly</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Line-item label for the year-1 monthly service in the quote panel</shortDescription>
+        <value>Year-1 Monthly Service</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Quote_Heading_Discount</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Line-item label for the bundle savings in the quote panel</shortDescription>
+        <value>Bundle Discount</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Quote_Heading_Inclusions</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Heading for the bullet list of what is included in the quote</shortDescription>
+        <value>What&apos;s Included</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Quote_Heading_Warranty</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Heading prefix for the warranty line in the quote panel</shortDescription>
+        <value>Warranty</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Captured_QuotedYes</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Confirmation copy after capturing a Quoted Yes outcome</shortDescription>
+        <value>Captured: Quoted Yes — Jordan will follow up to close the sale.</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Quote_Loading</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Spinner / pending label shown while generateQuote is in flight</shortDescription>
+        <value>Pulling pricing…</value>
+    </labels>
+    <labels>
+        <fullName>MasseyUpsell_Quote_Error</fullName>
+        <categories>MasseyFlow,Upsell</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Inline error when generateQuote fails (offline or other)</shortDescription>
+        <value>Could not generate quote. Try again or escalate.</value>
+    </labels>
 </CustomLabels>

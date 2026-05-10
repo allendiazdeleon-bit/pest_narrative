@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Mosquito Hunter Perimeter System</label>
+    <protected>false</protected>
+    <values><field>Sku__c</field><value xsi:type="xsd:string">MOSQUITO_HUNTER</value></values>
+    <values><field>Service_Line__c</field><value xsi:type="xsd:string">Mosquito</value></values>
+    <values><field>Display_Name__c</field><value xsi:type="xsd:string">Mosquito Hunter Perimeter Misting System</value></values>
+    <values><field>Install_Fee__c</field><value xsi:type="xsd:double">425</value></values>
+    <values><field>Monthly_Service__c</field><value xsi:type="xsd:double">48</value></values>
+    <values><field>Annual_Y1_Estimate__c</field><value xsi:type="xsd:double">1001</value></values>
+    <values><field>Bundle_Discount_Pct__c</field><value xsi:type="xsd:double">10</value></values>
+    <values><field>Warranty_Description__c</field><value xsi:type="xsd:string">1-year hardware warranty + lifetime workmanship</value></values>
+    <values><field>Inclusions__c</field><value xsi:type="xsd:string">• Perimeter misting system: ~30 nozzles around yard, eaves, deck
+• Wi-Fi controller with smartphone app + scheduling
+• Monthly larvicide / adulticide refill (Aqua-Reslin / Altosid)
+• Quarterly nozzle inspection + cleaning
+• 1-year hardware warranty on controller, pump, lines
+• System winterization (Nov–Mar) included</value></values>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>
+

@@ -224,6 +224,38 @@
     </objectPermissions>
 
     <!-- Apex Class Access — all 39 pest classes -->
+    <!-- Quote / Pricebook objects for upsell quoting -->
+    <objectPermissions>
+        <object>Opportunity</object>
+        <allowRead>true</allowRead><allowCreate>true</allowCreate><allowEdit>true</allowEdit>
+        <allowDelete>true</allowDelete><modifyAllRecords>false</modifyAllRecords><viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <object>Quote</object>
+        <allowRead>true</allowRead><allowCreate>true</allowCreate><allowEdit>true</allowEdit>
+        <allowDelete>true</allowDelete><modifyAllRecords>false</modifyAllRecords><viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <object>QuoteLineItem</object>
+        <allowRead>true</allowRead><allowCreate>true</allowCreate><allowEdit>true</allowEdit>
+        <allowDelete>true</allowDelete><modifyAllRecords>false</modifyAllRecords><viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <object>Product2</object>
+        <allowRead>true</allowRead><allowCreate>true</allowCreate><allowEdit>true</allowEdit>
+        <allowDelete>false</allowDelete><modifyAllRecords>false</modifyAllRecords><viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <object>Pricebook2</object>
+        <allowRead>true</allowRead><allowCreate>true</allowCreate><allowEdit>true</allowEdit>
+        <allowDelete>false</allowDelete><modifyAllRecords>false</modifyAllRecords><viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <object>PricebookEntry</object>
+        <allowRead>true</allowRead><allowCreate>true</allowCreate><allowEdit>true</allowEdit>
+        <allowDelete>false</allowDelete><modifyAllRecords>false</modifyAllRecords><viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+
     <classAccesses>
         <apexClass>AppointmentBooker</apexClass>
         <enabled>true</enabled>

@@ -9,6 +9,7 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value><fullName>YES</fullName><default>false</default><label>Yes</label></value>
+            <value><fullName>QUOTED_YES</fullName><default>false</default><label>Quoted Yes</label></value>
             <value><fullName>NO</fullName><default>false</default><label>Not Interested</label></value>
             <value><fullName>NOT_NOW</fullName><default>false</default><label>Not Now</label></value>
             <value><fullName>NO_REPLY</fullName><default>true</default><label>No Response</label></value>

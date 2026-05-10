@@ -28,7 +28,8 @@
 import { LightningElement, api, wire, track } from 'lwc';
 import { createRecord, updateRecord } from 'lightning/uiRecordApi';
 import recommend from '@salesforce/apex/UpsellCoachService.recommend';
-import captureOutcomeApex from '@salesforce/apex/UpsellCoachService.captureOutcome';
+import generateQuote from '@salesforce/apex/UpsellCoachService.generateQuote';
+import captureOutcomeWithQuote from '@salesforce/apex/UpsellCoachService.captureOutcomeWithQuote';
 
 import HEADING from '@salesforce/label/c.MasseyUpsell_Heading';
 import EMPTY_ALL_LINES from '@salesforce/label/c.MasseyUpsell_Empty_AllLines';
@@ -49,12 +50,26 @@ import ANNUAL_VALUE_LABEL from '@salesforce/label/c.MasseyUpsell_AnnualValue_Lab
 import SCORE_LABEL from '@salesforce/label/c.MasseyUpsell_Score_Label';
 import EXPAND_TALK_TRACK from '@salesforce/label/c.MasseyUpsell_Expand_TalkTrack';
 import COLLAPSE_TALK_TRACK from '@salesforce/label/c.MasseyUpsell_Collapse_TalkTrack';
+import ACTION_GENERATE_QUOTE from '@salesforce/label/c.MasseyUpsell_Action_GenerateQuote';
+import ACTION_QUOTED_YES from '@salesforce/label/c.MasseyUpsell_Action_QuotedYes';
+import ACTION_SHOW_ON_TABLET from '@salesforce/label/c.MasseyUpsell_Action_ShowOnTablet';
+import ACTION_HIDE_TABLET from '@salesforce/label/c.MasseyUpsell_Action_HideTablet';
+import QUOTE_HEADING_ANNUAL_TOTAL from '@salesforce/label/c.MasseyUpsell_Quote_Heading_AnnualTotal';
+import QUOTE_HEADING_INSTALL from '@salesforce/label/c.MasseyUpsell_Quote_Heading_Install';
+import QUOTE_HEADING_MONTHLY from '@salesforce/label/c.MasseyUpsell_Quote_Heading_Monthly';
+import QUOTE_HEADING_DISCOUNT from '@salesforce/label/c.MasseyUpsell_Quote_Heading_Discount';
+import QUOTE_HEADING_INCLUSIONS from '@salesforce/label/c.MasseyUpsell_Quote_Heading_Inclusions';
+import QUOTE_HEADING_WARRANTY from '@salesforce/label/c.MasseyUpsell_Quote_Heading_Warranty';
+import CAPTURED_QUOTED_YES from '@salesforce/label/c.MasseyUpsell_Captured_QuotedYes';
+import QUOTE_LOADING from '@salesforce/label/c.MasseyUpsell_Quote_Loading';
+import QUOTE_ERROR from '@salesforce/label/c.MasseyUpsell_Quote_Error';
 
 // Outcome enum — must match UpsellCoachService.cls validation set exactly.
 const OUTCOME_YES = 'Yes';
 const OUTCOME_NOT_NOW = 'NotNow';
 const OUTCOME_NOT_INTERESTED = 'NotInterested';
 const OUTCOME_NO_RESPONSE = 'NoResponse';
+const OUTCOME_QUOTED_YES = 'QuotedYes';
 
 // Score thresholds for the badge color band.
 //   green  >= 70  — confident pitch
@@ -65,6 +80,10 @@ const SCORE_AMBER_FLOOR = 40;
 
 // Brief copy-confirmation flash duration.
 const COPY_FLASH_MS = 1500;
+
+// Headline count-up animation duration. ~900ms feels snappy without being
+// frantic; eases out so the final value lands cleanly.
+const COUNTUP_DURATION_MS = 900;
 
 export default class MasseyUpsellCoach extends LightningElement {
     /** @type {string} Account Id — required */
@@ -81,12 +100,22 @@ export default class MasseyUpsellCoach extends LightningElement {
     @track _recommendations = [];
     @track _loaded = false;
     @track _error;
-    // serviceLine -> { outcome, leadId, capturedAt } once captured locally.
+    // serviceLine -> { outcome, leadId, quoteId, capturedAt } once captured locally.
     @track _captured = {};
     // serviceLine that has its talk-track currently expanded (compact mode).
     @track _expandedLine;
     // serviceLine currently flashing "Copied" confirmation.
     @track _copiedLine;
+    // serviceLine -> QuoteEstimate DTO (idempotency cache; reused on second click).
+    @track _quotes = {};
+    // serviceLine currently waiting on a generateQuote() round-trip.
+    @track _quoteLoading;
+    // serviceLine -> error message when a generateQuote() call failed.
+    @track _quoteErrors = {};
+    // serviceLine that is currently rendered in presenter ("Show on Tablet") mode.
+    @track _presenterLine;
+    // serviceLine -> currently animated value for the headline count-up.
+    @track _countupValues = {};
 
     label = {
         HEADING,
@@ -107,7 +136,20 @@ export default class MasseyUpsellCoach extends LightningElement {
         ANNUAL_VALUE_LABEL,
         SCORE_LABEL,
         EXPAND_TALK_TRACK,
-        COLLAPSE_TALK_TRACK
+        COLLAPSE_TALK_TRACK,
+        ACTION_GENERATE_QUOTE,
+        ACTION_QUOTED_YES,
+        ACTION_SHOW_ON_TABLET,
+        ACTION_HIDE_TABLET,
+        QUOTE_HEADING_ANNUAL_TOTAL,
+        QUOTE_HEADING_INSTALL,
+        QUOTE_HEADING_MONTHLY,
+        QUOTE_HEADING_DISCOUNT,
+        QUOTE_HEADING_INCLUSIONS,
+        QUOTE_HEADING_WARRANTY,
+        CAPTURED_QUOTED_YES,
+        QUOTE_LOADING,
+        QUOTE_ERROR
     };
 
     // ---- wire ----
@@ -195,6 +237,79 @@ export default class MasseyUpsellCoach extends LightningElement {
             ? this.formatCurrency(rec.estimatedAnnualValue)
             : null;
 
+        // ---- quote panel state ----
+        const quote = this._quotes[rec.serviceLine];
+        const hasQuote = !!quote;
+        const quoteLoading = this._quoteLoading === rec.serviceLine;
+        const quoteError = this._quoteErrors[rec.serviceLine];
+        const isPresenter = this._presenterLine === rec.serviceLine;
+
+        let quotePanel = null;
+        if (hasQuote) {
+            const monthly = Number(quote.monthlyService) || 0;
+            const installFee = Number(quote.installFee) || 0;
+            const annualSubtotal = Number(quote.annualY1Subtotal) || 0;
+            const annualTotal = Number(quote.annualY1Total) || 0;
+            const discountAmount = Number(quote.bundleDiscountAmount) || 0;
+            const discountPct = Number(quote.bundleDiscountPct) || 0;
+            const animatedRaw = this._countupValues[rec.serviceLine];
+            const animatedValue = (animatedRaw === undefined || animatedRaw === null)
+                ? annualTotal
+                : animatedRaw;
+
+            // Inclusions: split on newline OR bullet char, drop empties.
+            const inclusionItems = (quote.inclusions || '')
+                .split(/\r?\n|•/)
+                .map((s) => s.trim())
+                .filter((s) => s.length > 0)
+                .map((text, idx) => ({
+                    key: `${rec.serviceLine}-incl-${idx}`,
+                    text
+                }));
+
+            quotePanel = {
+                quoteId: quote.quoteId,
+                quoteNumber: quote.quoteNumber,
+                displayName: quote.displayName || rec.serviceLine,
+                hasInstall: installFee > 0,
+                installDisplay: this.formatCurrency(installFee),
+                monthlyDisplay: this.formatCurrency(monthly),
+                monthlyAnnualDisplay: this.formatCurrency(monthly * 12),
+                annualSubtotalDisplay: this.formatCurrency(annualSubtotal),
+                bundleApplied: !!quote.bundleApplied,
+                discountPctDisplay: discountPct ? Math.round(discountPct) + '%' : '',
+                discountAmountDisplay: this.formatCurrency(discountAmount),
+                annualTotalDisplay: this.formatCurrency(animatedValue),
+                annualTotalRaw: annualTotal,
+                inclusionItems,
+                hasInclusions: inclusionItems.length > 0,
+                warrantyText: quote.warrantyDescription || ''
+            };
+        }
+
+        const generateQuoteLabel = quoteLoading
+            ? this.label.QUOTE_LOADING
+            : this.label.ACTION_GENERATE_QUOTE;
+
+        const presenterToggleLabel = isPresenter
+            ? this.label.ACTION_HIDE_TABLET
+            : this.label.ACTION_SHOW_ON_TABLET;
+
+        // Root class for the rec card — adds presenter-mode hook when active.
+        const recCardClass = isPresenter ? 'rec-card presenter-mode' : 'rec-card';
+
+        // Capture confirmation copy varies by outcome.
+        let capturedMessage = '';
+        if (captured) {
+            if (captured.outcome === OUTCOME_QUOTED_YES) {
+                capturedMessage = this.label.CAPTURED_QUOTED_YES;
+            } else if (captured.outcome === OUTCOME_YES) {
+                capturedMessage = this.label.CAPTURED_YES;
+            } else {
+                capturedMessage = this.label.CAPTURED_GENERIC;
+            }
+        }
+
         return {
             key: rec.serviceLine,
             serviceLine: rec.serviceLine,
@@ -212,16 +327,26 @@ export default class MasseyUpsellCoach extends LightningElement {
             toggleLabel: expanded ? this.label.COLLAPSE_TALK_TRACK : this.label.EXPAND_TALK_TRACK,
             // Capture state.
             captured: !!captured,
-            capturedMessage: captured
-                ? (captured.outcome === OUTCOME_YES ? this.label.CAPTURED_YES : this.label.CAPTURED_GENERIC)
-                : '',
+            notCaptured: !captured,
+            capturedMessage,
             // Copy-confirmation flash state.
             copied: this._copiedLine === rec.serviceLine,
             // Stable button keys to avoid template warnings.
             yesKey: `${rec.serviceLine}-yes`,
             notNowKey: `${rec.serviceLine}-notnow`,
             notInterestedKey: `${rec.serviceLine}-notint`,
-            noResponseKey: `${rec.serviceLine}-noresp`
+            noResponseKey: `${rec.serviceLine}-noresp`,
+            // Quote-panel surface.
+            recCardClass,
+            generateQuoteLabel,
+            quoteLoading,
+            quoteDisabled: quoteLoading || hasQuote,
+            quoteError,
+            hasQuoteError: !!quoteError,
+            hasQuote,
+            quotePanel,
+            isPresenter,
+            presenterToggleLabel
         };
     }
 
@@ -306,40 +431,114 @@ export default class MasseyUpsellCoach extends LightningElement {
      * Offline path (Apex throws): write a draft Lead via createRecord and
      * queue an Account update via updateRecord — both flow through the FSL
      * Mobile draft queue and sync on reconnect.
+     *
+     * If a quote has been generated for this service line, we pass its quoteId
+     * through so the Apex layer can mark the Quote Accepted on Yes/QuotedYes.
      */
     captureOutcome(serviceLine, outcome) {
         if (!serviceLine || !outcome || !this.accountId) {
             return;
         }
+        const quote = this._quotes[serviceLine];
+        const quoteId = quote ? quote.quoteId : null;
+
         // Optimistic local capture — render the confirmation immediately so
         // the tech can move on. We reconcile leadId after the apex/draft path resolves.
         this._captured = {
             ...this._captured,
-            [serviceLine]: { outcome, leadId: null, capturedAt: Date.now() }
+            [serviceLine]: { outcome, leadId: null, quoteId, capturedAt: Date.now() }
         };
 
-        captureOutcomeApex({ accountId: this.accountId, serviceLine, outcome })
+        captureOutcomeWithQuote({
+            accountId: this.accountId,
+            serviceLine,
+            outcome,
+            quoteId
+        })
             .then((leadId) => {
                 this._captured = {
                     ...this._captured,
-                    [serviceLine]: { outcome, leadId, capturedAt: Date.now() }
+                    [serviceLine]: { outcome, leadId, quoteId, capturedAt: Date.now() }
                 };
-                this.fireOutcomeCaptured(serviceLine, outcome, leadId);
+                this.fireOutcomeCaptured(serviceLine, outcome, leadId, quoteId);
             })
             .catch(() => {
                 // Offline (or any apex failure): fall back to draft writes.
-                this.captureOutcomeOffline(serviceLine, outcome);
+                // We can't reach the Quote object offline, but the Lead + Account
+                // stamp still go through the platform draft queue.
+                this.captureOutcomeOffline(serviceLine, outcome, quoteId);
             });
+    }
+
+    // ---- quote panel handlers ----
+
+    handleGenerateQuote(event) {
+        const serviceLine = event.currentTarget.dataset.line;
+        if (!serviceLine || !this.accountId) {
+            return;
+        }
+        // Idempotency: if we already have a quote in cache, don't re-fetch —
+        // the Apex method is idempotent but we save a round-trip.
+        if (this._quotes[serviceLine]) {
+            return;
+        }
+        this._quoteLoading = serviceLine;
+        // Clear any prior error for this line.
+        if (this._quoteErrors[serviceLine]) {
+            const next = { ...this._quoteErrors };
+            delete next[serviceLine];
+            this._quoteErrors = next;
+        }
+
+        generateQuote({ accountId: this.accountId, serviceLine })
+            .then((estimate) => {
+                if (!estimate) {
+                    throw new Error('Empty quote response');
+                }
+                this._quotes = {
+                    ...this._quotes,
+                    [serviceLine]: estimate
+                };
+                this._quoteLoading = undefined;
+                // Kick off the count-up animation on the headline number.
+                this.animateCountUp(serviceLine, Number(estimate.annualY1Total) || 0);
+            })
+            .catch((err) => {
+                this._quoteLoading = undefined;
+                this._quoteErrors = {
+                    ...this._quoteErrors,
+                    [serviceLine]: this.extractErrorMessage(err) || this.label.QUOTE_ERROR
+                };
+            });
+    }
+
+    handleTogglePresenter(event) {
+        const line = event.currentTarget.dataset.line;
+        if (!line) {
+            return;
+        }
+        this._presenterLine = (this._presenterLine === line) ? undefined : line;
+    }
+
+    handleCaptureQuotedYes(event) {
+        const serviceLine = event.currentTarget.dataset.line;
+        if (!serviceLine) {
+            return;
+        }
+        // Routes through captureOutcome which already pulls quoteId from the cache.
+        this.captureOutcome(serviceLine, OUTCOME_QUOTED_YES);
     }
 
     /**
      * Offline fallback. Mirrors UpsellCoachService.captureOutcome's side effects
      * via uiRecordApi:
      *   1. Stamp Account.Last_Upsell_* fields  → updateRecord (draft)
-     *   2. If Yes, spawn a draft Lead          → createRecord (draft)
+     *   2. If Yes / QuotedYes, spawn a draft Lead → createRecord (draft)
      * Both are enqueued in the platform draft queue and sync when online.
+     * Note: offline we cannot mark the Quote Accepted (no Quote object via UI
+     * API). The quoteId is still threaded through the event for callers.
      */
-    captureOutcomeOffline(serviceLine, outcome) {
+    captureOutcomeOffline(serviceLine, outcome, quoteId) {
         const nowIso = new Date().toISOString();
 
         // 1. Account stamp — best effort; if this fails we still try to spawn the Lead.
@@ -354,8 +553,9 @@ export default class MasseyUpsellCoach extends LightningElement {
             // Non-fatal — the draft will retry when online.
         });
 
-        if (outcome !== OUTCOME_YES) {
-            this.fireOutcomeCaptured(serviceLine, outcome, null);
+        const isYes = (outcome === OUTCOME_YES || outcome === OUTCOME_QUOTED_YES);
+        if (!isYes) {
+            this.fireOutcomeCaptured(serviceLine, outcome, null, quoteId);
             return;
         }
 
@@ -372,6 +572,7 @@ export default class MasseyUpsellCoach extends LightningElement {
                 Description:
                     'Upsell pitch captured offline. Service line: ' + serviceLine
                     + '. Source Account: ' + this.accountId
+                    + (quoteId ? ('. Linked Quote: ' + quoteId) : '')
                     + '. Talk-track suggested while tech was on-site. Follow up via outbound call queue.'
             }
         };
@@ -381,29 +582,74 @@ export default class MasseyUpsellCoach extends LightningElement {
                 const leadId = rec && rec.id ? rec.id : null;
                 this._captured = {
                     ...this._captured,
-                    [serviceLine]: { outcome, leadId, capturedAt: Date.now() }
+                    [serviceLine]: { outcome, leadId, quoteId, capturedAt: Date.now() }
                 };
-                this.fireOutcomeCaptured(serviceLine, outcome, leadId);
+                this.fireOutcomeCaptured(serviceLine, outcome, leadId, quoteId);
             })
             .catch(() => {
                 // Even the draft create failed — surface the error but keep the
                 // optimistic captured state so the tech sees their action persisted.
                 this._error = this.label.ERROR_LOAD;
-                this.fireOutcomeCaptured(serviceLine, outcome, null);
+                this.fireOutcomeCaptured(serviceLine, outcome, null, quoteId);
             });
     }
 
-    fireOutcomeCaptured(serviceLine, outcome, leadId) {
+    fireOutcomeCaptured(serviceLine, outcome, leadId, quoteId) {
         this.dispatchEvent(new CustomEvent('outcomecaptured', {
             detail: {
                 accountId: this.accountId,
                 serviceLine,
                 outcome,
-                leadId
+                leadId,
+                quoteId: quoteId || null
             },
             bubbles: true,
             composed: true
         }));
+    }
+
+    // ---- count-up animation ----
+
+    /**
+     * Animate the headline annual-total from 0 → target over ~COUNTUP_DURATION_MS.
+     * Uses requestAnimationFrame with an ease-out cubic. Writes the current
+     * value to _countupValues[serviceLine] which the template re-renders via
+     * decorateOne(). Cancels gracefully if the component is torn down.
+     */
+    animateCountUp(serviceLine, target) {
+        if (!serviceLine) {
+            return;
+        }
+        if (!target || target <= 0) {
+            this._countupValues = { ...this._countupValues, [serviceLine]: 0 };
+            return;
+        }
+        const start = (typeof performance !== 'undefined' && performance.now)
+            ? performance.now()
+            : Date.now();
+        const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+        const tick = (now) => {
+            const elapsed = now - start;
+            const t = Math.min(1, elapsed / COUNTUP_DURATION_MS);
+            const eased = easeOutCubic(t);
+            const value = Math.round(target * eased);
+            this._countupValues = {
+                ...this._countupValues,
+                [serviceLine]: value
+            };
+            if (t < 1) {
+                // eslint-disable-next-line @lwc/lwc/no-async-operation
+                requestAnimationFrame(tick);
+            } else {
+                this._countupValues = {
+                    ...this._countupValues,
+                    [serviceLine]: target
+                };
+            }
+        };
+        // eslint-disable-next-line @lwc/lwc/no-async-operation
+        requestAnimationFrame(tick);
     }
 
     // ---- helpers ----

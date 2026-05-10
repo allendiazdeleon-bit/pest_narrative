@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Termite Liquid (Termidor)</label>
+    <protected>false</protected>
+    <values><field>Sku__c</field><value xsi:type="xsd:string">TERMITE_LIQUID</value></values>
+    <values><field>Service_Line__c</field><value xsi:type="xsd:string">Termite</value></values>
+    <values><field>Display_Name__c</field><value xsi:type="xsd:string">Termite Liquid Soil Treatment (Termidor SC)</value></values>
+    <values><field>Install_Fee__c</field><value xsi:type="xsd:double">1800</value></values>
+    <values><field>Monthly_Service__c</field><value xsi:type="xsd:double">0</value></values>
+    <values><field>Annual_Y1_Estimate__c</field><value xsi:type="xsd:double">1800</value></values>
+    <values><field>Bundle_Discount_Pct__c</field><value xsi:type="xsd:double">10</value></values>
+    <values><field>Warranty_Description__c</field><value xsi:type="xsd:string">5-year renewable warranty (annual inspection required)</value></values>
+    <values><field>Inclusions__c</field><value xsi:type="xsd:string">• Termidor SC continuous soil barrier around full structure perimeter
+• Trench-and-treat method: 4-inch trench + 1.5-inch foundation drill at 12-inch intervals
+• Foam injection into wall voids where termites have prior activity
+• Full-structure termite damage warranty (up to $250K repair coverage)
+• Annual re-inspection for warranty renewal</value></values>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>
+

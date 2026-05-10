@@ -375,6 +375,293 @@
     --sds-c-icon-color-foreground-default: var(--upsell-green);
 }
 
+/* Generate-Quote CTA + inline error --------------------------------------- */
+
+.quote-cta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+}
+
+.action-btn.action-quote {
+    background: #ffffff;
+    color: var(--upsell-brand);
+    border: 1px solid var(--upsell-brand);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    flex: 0 0 auto;
+    align-self: flex-start;
+    min-width: 9rem;
+}
+
+.action-btn.action-quote:hover:not(:disabled) {
+    background: rgba(46, 132, 74, 0.08);
+}
+
+.action-btn.action-quote:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.quote-cta-spinner {
+    --lwc-spinnerColor: var(--upsell-brand);
+    position: relative;
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+.quote-error {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--upsell-red);
+}
+
+/* Quote panel ------------------------------------------------------------- */
+
+.quote-panel {
+    margin-top: 0.625rem;
+    background: #ffffff;
+    border: 1px solid var(--upsell-card-border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    position: relative;
+}
+
+.quote-panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.quote-display-name {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--upsell-text-strong);
+    line-height: 1.2;
+}
+
+.quote-number {
+    font-size: 0.6875rem;
+    color: var(--upsell-text-weak);
+    font-family: 'Courier New', monospace;
+    flex-shrink: 0;
+    padding-top: 0.25rem;
+}
+
+.quote-line-items {
+    list-style: none;
+    margin: 0.5rem 0 0.75rem 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.quote-line {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--upsell-text-strong);
+}
+
+.quote-line-label {
+    color: var(--upsell-text-weak);
+}
+
+.quote-line-value {
+    font-weight: 600;
+}
+
+.quote-line-discount .quote-line-label,
+.quote-line-discount .quote-line-value {
+    color: var(--upsell-green);
+    font-weight: 700;
+}
+
+.quote-headline {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--upsell-card-border);
+}
+
+.quote-headline-label {
+    font-size: 0.75rem;
+    color: var(--upsell-text-weak);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 700;
+}
+
+.quote-headline-value {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #0f5c2f;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.quote-inclusions {
+    margin-top: 0.5rem;
+}
+
+.quote-section-heading {
+    display: block;
+    font-size: 0.6875rem;
+    color: var(--upsell-text-weak);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.quote-inclusion-list {
+    list-style: disc;
+    margin: 0;
+    padding-left: 1.25rem;
+    max-height: 9rem;
+    overflow-y: auto;
+}
+
+.quote-inclusion-item {
+    font-size: 0.8125rem;
+    color: var(--upsell-text-strong);
+    line-height: 1.4;
+    margin: 0.125rem 0;
+}
+
+.quote-warranty {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.75rem;
+    color: var(--upsell-text-weak);
+    line-height: 1.4;
+}
+
+.quote-warranty-label {
+    font-weight: 700;
+    color: var(--upsell-text-weak);
+    margin-right: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.625rem;
+}
+
+.quote-warranty-text {
+    font-style: italic;
+    color: var(--upsell-text-strong);
+}
+
+.quote-presenter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.action-btn.action-presenter {
+    background: #ffffff;
+    border-color: var(--upsell-brand);
+    color: var(--upsell-brand);
+    font-weight: 600;
+}
+
+.action-btn.action-presenter:hover {
+    background: rgba(46, 132, 74, 0.08);
+}
+
+.action-btn.action-quoted-yes {
+    background: var(--upsell-green);
+    border-color: var(--upsell-green);
+    color: #ffffff;
+    font-weight: 700;
+    flex: 1 1 auto;
+}
+
+.action-btn.action-quoted-yes:hover {
+    background: #226637;
+}
+
+/* Presenter mode ---------------------------------------------------------- */
+/*
+ * Toggled by .presenter-mode on the .rec-card root. Scales the quote panel
+ * way up, hides the score badge + reasons + the standard action row, and
+ * dims everything else. Optimized for handing the tablet to the customer.
+ */
+
+.rec-card.presenter-mode {
+    background: linear-gradient(180deg, #ffffff 0%, #f3faf5 100%);
+    border-color: var(--upsell-brand);
+    border-width: 2px;
+    padding: 1.25rem 1rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.rec-card.presenter-mode .score-badge,
+.rec-card.presenter-mode .rec-reasons,
+.rec-card.presenter-mode .talk-toggle,
+.rec-card.presenter-mode .talk-track,
+.rec-card.presenter-mode .quote-cta-row,
+.rec-card.presenter-mode .action-row,
+.rec-card.presenter-mode .rec-value {
+    display: none;
+}
+
+.rec-card.presenter-mode .rec-line {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.rec-card.presenter-mode .quote-panel {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 1.5rem;
+}
+
+.rec-card.presenter-mode .quote-display-name {
+    font-size: 1.625rem;
+}
+
+.rec-card.presenter-mode .quote-line {
+    font-size: 1.125rem;
+}
+
+.rec-card.presenter-mode .quote-headline-value {
+    font-size: 3.5rem;
+}
+
+.rec-card.presenter-mode .quote-headline-label {
+    font-size: 0.875rem;
+}
+
+.rec-card.presenter-mode .quote-inclusion-item {
+    font-size: 1rem;
+    margin: 0.25rem 0;
+}
+
+.rec-card.presenter-mode .action-btn.action-presenter {
+    flex: 0 0 auto;
+}
+
+.rec-card.presenter-mode .action-btn.action-quoted-yes {
+    font-size: 1rem;
+    min-height: 2.75rem;
+}
+
 /* Mobile-first responsive tweaks ------------------------------------------- */
 
 @media (max-width: 480px) {
@@ -389,5 +676,14 @@
 
     .action-btn {
         width: 100%;
+    }
+
+    .quote-headline-value {
+        font-size: 2rem;
+    }
+
+    .quote-panel-head {
+        flex-direction: column;
+        gap: 0.25rem;
     }
 }

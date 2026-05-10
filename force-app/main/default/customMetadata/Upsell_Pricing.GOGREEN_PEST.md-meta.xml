@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>GoGreen Quarterly Pest</label>
+    <protected>false</protected>
+    <values><field>Sku__c</field><value xsi:type="xsd:string">GOGREEN_PEST</value></values>
+    <values><field>Service_Line__c</field><value xsi:type="xsd:string">Pest</value></values>
+    <values><field>Display_Name__c</field><value xsi:type="xsd:string">GoGreen Quarterly Pest Service</value></values>
+    <values><field>Install_Fee__c</field><value xsi:type="xsd:double">0</value></values>
+    <values><field>Monthly_Service__c</field><value xsi:type="xsd:double">43</value></values>
+    <values><field>Annual_Y1_Estimate__c</field><value xsi:type="xsd:double">516</value></values>
+    <values><field>Bundle_Discount_Pct__c</field><value xsi:type="xsd:double">0</value></values>
+    <values><field>Warranty_Description__c</field><value xsi:type="xsd:string">Re-service guarantee between visits</value></values>
+    <values><field>Inclusions__c</field><value xsi:type="xsd:string">• 4 quarterly service visits per year (or every 90 days)
+• Full perimeter spray + foundation, eaves, weep holes
+• Interior treatment as needed (cobweb sweep, baseboard, attic access)
+• Targeted ant baiting (sugar / carpenter / ghost / fire)
+• Roach, silverfish, earwig, spider control
+• Free re-service if pests return between visits</value></values>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>
+

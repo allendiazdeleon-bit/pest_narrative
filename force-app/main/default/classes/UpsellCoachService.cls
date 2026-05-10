@@ -120,6 +120,16 @@ public with sharing class UpsellCoachService {
      */
     @AuraEnabled
     public static Id captureOutcome(Id accountId, String serviceLine, String outcome) {
+        return captureOutcomeWithQuote(accountId, serviceLine, outcome, null);
+    }
+
+    /**
+     * Same as captureOutcome but also marks an existing Quote as Accepted on
+     * outcome='Yes' or 'QuotedYes'. The masseyUpsellCoach LWC calls this
+     * variant after generateQuote().
+     */
+    @AuraEnabled
+    public static Id captureOutcomeWithQuote(Id accountId, String serviceLine, String outcome, Id quoteId) {
         if (accountId == null) {
             throw new AuraHandledException('Account Id is required.');
         }
@@ -151,13 +161,227 @@ public with sharing class UpsellCoachService {
         );
         update as user stamp;
 
-        if (outcome != 'Yes') {
+        Boolean isYes = (outcome == 'Yes' || outcome == 'QuotedYes');
+
+        // Mark the Quote accepted if one was attached and customer said yes.
+        if (isYes && quoteId != null) {
+            try {
+                Quote q = new Quote(Id = quoteId, Status = 'Accepted');
+                update q;
+            } catch (Exception e) {
+                System.debug(LoggingLevel.WARN, 'Quote update skipped: ' + e.getMessage());
+            }
+        }
+
+        if (!isYes) {
             return null;
         }
 
         Lead l = buildLeadFromAccount(acct, serviceLine);
+        if (quoteId != null) {
+            l.Description = (l.Description == null ? '' : l.Description + '\n\n')
+                + 'Linked Quote: ' + quoteId;
+        }
         insert as user l;
         return l.Id;
+    }
+
+    // -------- Quote generation --------
+
+    public class QuoteEstimate {
+        @AuraEnabled public Id quoteId;
+        @AuraEnabled public String quoteNumber;
+        @AuraEnabled public String displayName;        // e.g., "Mosquito Hunter Perimeter Misting System"
+        @AuraEnabled public String sku;                // e.g., "MOSQUITO_HUNTER"
+        @AuraEnabled public String serviceLine;
+        @AuraEnabled public Decimal installFee;
+        @AuraEnabled public Decimal monthlyService;
+        @AuraEnabled public Decimal annualY1Subtotal;  // before discount
+        @AuraEnabled public Decimal bundleDiscountPct; // 0–100
+        @AuraEnabled public Decimal bundleDiscountAmount; // negative absolute amount
+        @AuraEnabled public Decimal annualY1Total;     // after discount
+        @AuraEnabled public Boolean bundleApplied;
+        @AuraEnabled public String inclusions;
+        @AuraEnabled public String warrantyDescription;
+    }
+
+    /**
+     * Generate (or reuse) a Quote for an Account + service line. Reads pricing
+     * from Upsell_Pricing__mdt, applies the bundle discount if the Account
+     * already has another Massey service line on Eligible_Upsells__c, and
+     * persists a real Quote + QuoteLineItems anchored to a back-staged
+     * Opportunity. Returns a flat estimate DTO for the LWC to render.
+     *
+     * Idempotent — finds an existing Draft/Presented Quote for this Account+Sku
+     * before creating a new one.
+     */
+    @AuraEnabled
+    public static QuoteEstimate generateQuote(Id accountId, String serviceLine) {
+        if (accountId == null) throw new AuraHandledException('Account Id is required.');
+        if (String.isBlank(serviceLine) || !ALL_LINES.contains(serviceLine)) {
+            throw new AuraHandledException('Service line must be one of Pest, Termite, Mosquito, Lawn.');
+        }
+
+        // Default SKU per service line (Termite defaults to Sentricon).
+        String sku = defaultSkuForLine(serviceLine);
+
+        Upsell_Pricing__mdt pricing;
+        for (Upsell_Pricing__mdt p : [SELECT Sku__c, Service_Line__c, Display_Name__c,
+                                             Install_Fee__c, Monthly_Service__c,
+                                             Annual_Y1_Estimate__c, Bundle_Discount_Pct__c,
+                                             Inclusions__c, Warranty_Description__c, Active__c
+                                      FROM Upsell_Pricing__mdt
+                                      WHERE Sku__c = :sku AND Active__c = true
+                                      LIMIT 1]) {
+            pricing = p;
+        }
+        if (pricing == null) {
+            throw new AuraHandledException('No pricing found for SKU ' + sku + '.');
+        }
+
+        // Bundle: customer already has at least one Massey line.
+        Account acct = [SELECT Id, Name, Eligible_Upsells__c, OwnerId
+                        FROM Account WHERE Id = :accountId LIMIT 1];
+        Set<String> alreadyHas = currentLinesForAccount(acct);
+        Boolean bundleApplies = (pricing.Bundle_Discount_Pct__c != null
+                                 && pricing.Bundle_Discount_Pct__c > 0
+                                 && !alreadyHas.isEmpty());
+
+        Decimal installFee = pricing.Install_Fee__c == null ? 0 : pricing.Install_Fee__c;
+        Decimal monthly = pricing.Monthly_Service__c == null ? 0 : pricing.Monthly_Service__c;
+        Decimal annualSubtotal = installFee + (monthly * 12);
+        Decimal discountPct = bundleApplies ? pricing.Bundle_Discount_Pct__c : 0;
+        Decimal discountAmount = bundleApplies ? (annualSubtotal * discountPct / 100).setScale(2) : 0;
+        Decimal annualTotal = annualSubtotal - discountAmount;
+
+        // 1. Find or create Opportunity
+        String oppName = '[MSY-DEMO] Upsell — ' + pricing.Display_Name__c + ' — ' + acct.Name;
+        Opportunity opp;
+        for (Opportunity o : [SELECT Id, Name FROM Opportunity
+                              WHERE Name = :oppName AND AccountId = :accountId LIMIT 1]) {
+            opp = o;
+        }
+        if (opp == null) {
+            opp = new Opportunity(
+                Name = oppName,
+                AccountId = accountId,
+                StageName = 'Qualification',
+                CloseDate = Date.today().addDays(30),
+                Amount = annualTotal
+            );
+            insert opp;
+        }
+
+        // 2. Find pricebook + product entries
+        Pricebook2 masseyPb;
+        for (Pricebook2 pb : [SELECT Id FROM Pricebook2
+                              WHERE Name = 'Massey Pest Pricebook' AND IsActive = true LIMIT 1]) {
+            masseyPb = pb;
+        }
+        if (masseyPb == null) {
+            // Fall back to standard pricebook.
+            masseyPb = [SELECT Id FROM Pricebook2 WHERE IsStandard = true LIMIT 1];
+        }
+
+        Map<String, PricebookEntry> pbeByCode = new Map<String, PricebookEntry>();
+        for (PricebookEntry pbe : [SELECT Id, Product2.ProductCode, UnitPrice
+                                   FROM PricebookEntry
+                                   WHERE Pricebook2Id = :masseyPb.Id
+                                   AND Product2.ProductCode IN (:sku + '_INSTALL', :sku + '_MONTHLY', 'BUNDLE_DISCOUNT')
+                                   AND IsActive = true]) {
+            pbeByCode.put(pbe.Product2.ProductCode, pbe);
+        }
+
+        // 3. Find or create Quote
+        String quoteName = pricing.Display_Name__c + ' — ' + acct.Name;
+        Quote q;
+        for (Quote existing : [SELECT Id, QuoteNumber, Name, Status FROM Quote
+                               WHERE OpportunityId = :opp.Id
+                               AND Name = :quoteName
+                               AND Status IN ('Draft', 'Presented', 'Needs Review')
+                               LIMIT 1]) {
+            q = existing;
+        }
+        if (q == null) {
+            q = new Quote(
+                Name = quoteName,
+                OpportunityId = opp.Id,
+                Pricebook2Id = masseyPb.Id,
+                Status = 'Presented',
+                ExpirationDate = Date.today().addDays(30),
+                Description = pricing.Inclusions__c
+            );
+            insert q;
+            // Re-query to pick up QuoteNumber
+            q = [SELECT Id, QuoteNumber, Name, Status FROM Quote WHERE Id = :q.Id LIMIT 1];
+
+            // Create QLIs only on first create (existing quote keeps its lines).
+            List<QuoteLineItem> qlis = new List<QuoteLineItem>();
+            if (installFee > 0 && pbeByCode.containsKey(sku + '_INSTALL')) {
+                PricebookEntry pbe = pbeByCode.get(sku + '_INSTALL');
+                qlis.add(new QuoteLineItem(
+                    QuoteId = q.Id, PricebookEntryId = pbe.Id,
+                    Quantity = 1, UnitPrice = installFee,
+                    Description = 'One-time install / setup'
+                ));
+            }
+            if (monthly > 0 && pbeByCode.containsKey(sku + '_MONTHLY')) {
+                PricebookEntry pbe = pbeByCode.get(sku + '_MONTHLY');
+                qlis.add(new QuoteLineItem(
+                    QuoteId = q.Id, PricebookEntryId = pbe.Id,
+                    Quantity = 12, UnitPrice = monthly,
+                    Description = 'Year 1 monthly service (12 months)'
+                ));
+            }
+            if (bundleApplies && pbeByCode.containsKey('BUNDLE_DISCOUNT')) {
+                PricebookEntry pbe = pbeByCode.get('BUNDLE_DISCOUNT');
+                qlis.add(new QuoteLineItem(
+                    QuoteId = q.Id, PricebookEntryId = pbe.Id,
+                    Quantity = 1, UnitPrice = -1 * discountAmount,
+                    Description = 'Existing-customer bundle discount (' + discountPct + '%)'
+                ));
+            }
+            if (!qlis.isEmpty()) insert qlis;
+        }
+
+        QuoteEstimate est = new QuoteEstimate();
+        est.quoteId = q.Id;
+        est.quoteNumber = q.QuoteNumber;
+        est.displayName = pricing.Display_Name__c;
+        est.sku = sku;
+        est.serviceLine = serviceLine;
+        est.installFee = installFee;
+        est.monthlyService = monthly;
+        est.annualY1Subtotal = annualSubtotal;
+        est.bundleDiscountPct = discountPct;
+        est.bundleDiscountAmount = discountAmount;
+        est.annualY1Total = annualTotal;
+        est.bundleApplied = bundleApplies;
+        est.inclusions = pricing.Inclusions__c;
+        est.warrantyDescription = pricing.Warranty_Description__c;
+        return est;
+    }
+
+    private static String defaultSkuForLine(String line) {
+        if (line == 'Pest') return 'GOGREEN_PEST';
+        if (line == 'Termite') return 'TERMITE_SENTRICON';
+        if (line == 'Mosquito') return 'MOSQUITO_HUNTER';
+        if (line == 'Lawn') return 'LAWN_CARE';
+        return 'GOGREEN_PEST';
+    }
+
+    private static Set<String> currentLinesForAccount(Account a) {
+        // Eligible_Upsells__c is the COMPLEMENT (what they don't have).
+        // Compute "what they DO have" = ALL_LINES \ Eligible_Upsells__c.
+        Set<String> eligible = new Set<String>();
+        if (String.isNotBlank(a.Eligible_Upsells__c)) {
+            for (String s : a.Eligible_Upsells__c.split(';')) {
+                eligible.add(s.trim());
+            }
+        }
+        Set<String> currentLines = new Set<String>(ALL_LINES);
+        currentLines.removeAll(eligible);
+        return currentLines;
     }
 
     // -------- Internal: scoring --------

@@ -40,7 +40,7 @@
         <template lwc:else>
             <ul class="rec-list">
                 <template for:each={decoratedRecommendations} for:item="r">
-                    <li key={r.key} class="rec-card" data-line={r.serviceLine}>
+                    <li key={r.key} class={r.recCardClass} data-line={r.serviceLine}>
                         <div class="rec-top">
                             <h3 class="rec-line">{r.serviceLine}</h3>
                             <span class={r.scoreBandClass} title={label.SCORE_LABEL}>
@@ -107,6 +107,110 @@
                                     </button>
                                 </div>
                                 <p class="talk-track-text">{r.talkTrack}</p>
+                            </section>
+                        </template>
+
+                        <!-- Generate Quote CTA — sits above the existing outcome row.
+                             Hidden once outcome captured. Disabled while in flight or
+                             once a quote is already cached for this line (idempotency). -->
+                        <template lwc:if={r.notCaptured}>
+                            <div class="quote-cta-row">
+                                <button
+                                    type="button"
+                                    class="action-btn action-quote"
+                                    data-line={r.serviceLine}
+                                    onclick={handleGenerateQuote}
+                                    disabled={r.quoteDisabled}
+                                >
+                                    <template lwc:if={r.quoteLoading}>
+                                        <lightning-spinner
+                                            alternative-text={label.QUOTE_LOADING}
+                                            size="x-small"
+                                            class="quote-cta-spinner"
+                                        ></lightning-spinner>
+                                    </template>
+                                    <span class="quote-cta-label">{r.generateQuoteLabel}</span>
+                                </button>
+                                <template lwc:if={r.hasQuoteError}>
+                                    <p class="quote-error" role="alert">{r.quoteError}</p>
+                                </template>
+                            </div>
+                        </template>
+
+                        <!-- Quote panel — expands once generateQuote() resolves -->
+                        <template lwc:if={r.hasQuote}>
+                            <section class="quote-panel" data-line={r.serviceLine}>
+                                <header class="quote-panel-head">
+                                    <h4 class="quote-display-name">{r.quotePanel.displayName}</h4>
+                                    <span class="quote-number" title="Quote #">{r.quotePanel.quoteNumber}</span>
+                                </header>
+
+                                <ul class="quote-line-items">
+                                    <template lwc:if={r.quotePanel.hasInstall}>
+                                        <li class="quote-line">
+                                            <span class="quote-line-label">{label.QUOTE_HEADING_INSTALL}</span>
+                                            <span class="quote-line-value">{r.quotePanel.installDisplay}</span>
+                                        </li>
+                                    </template>
+                                    <li class="quote-line">
+                                        <span class="quote-line-label">{label.QUOTE_HEADING_MONTHLY}</span>
+                                        <span class="quote-line-value">
+                                            {r.quotePanel.monthlyDisplay}/mo &times; 12 = {r.quotePanel.monthlyAnnualDisplay}
+                                        </span>
+                                    </li>
+                                    <template lwc:if={r.quotePanel.bundleApplied}>
+                                        <li class="quote-line quote-line-discount">
+                                            <span class="quote-line-label">{label.QUOTE_HEADING_DISCOUNT}</span>
+                                            <span class="quote-line-value">
+                                                -{r.quotePanel.discountAmountDisplay} ({r.quotePanel.discountPctDisplay})
+                                            </span>
+                                        </li>
+                                    </template>
+                                </ul>
+
+                                <div class="quote-headline">
+                                    <span class="quote-headline-label">{label.QUOTE_HEADING_ANNUAL_TOTAL}</span>
+                                    <span class="quote-headline-value">{r.quotePanel.annualTotalDisplay}</span>
+                                </div>
+
+                                <template lwc:if={r.quotePanel.hasInclusions}>
+                                    <div class="quote-inclusions">
+                                        <span class="quote-section-heading">{label.QUOTE_HEADING_INCLUSIONS}</span>
+                                        <ul class="quote-inclusion-list">
+                                            <template for:each={r.quotePanel.inclusionItems} for:item="i">
+                                                <li key={i.key} class="quote-inclusion-item">{i.text}</li>
+                                            </template>
+                                        </ul>
+                                    </div>
+                                </template>
+
+                                <template lwc:if={r.quotePanel.warrantyText}>
+                                    <p class="quote-warranty">
+                                        <span class="quote-warranty-label">{label.QUOTE_HEADING_WARRANTY}:</span>
+                                        <em class="quote-warranty-text">{r.quotePanel.warrantyText}</em>
+                                    </p>
+                                </template>
+
+                                <div class="quote-presenter-row">
+                                    <button
+                                        type="button"
+                                        class="action-btn action-presenter"
+                                        data-line={r.serviceLine}
+                                        onclick={handleTogglePresenter}
+                                    >
+                                        {r.presenterToggleLabel}
+                                    </button>
+                                    <template lwc:if={r.notCaptured}>
+                                        <button
+                                            type="button"
+                                            class="action-btn action-quoted-yes"
+                                            data-line={r.serviceLine}
+                                            onclick={handleCaptureQuotedYes}
+                                        >
+                                            {label.ACTION_QUOTED_YES}
+                                        </button>
+                                    </template>
+                                </div>
                             </section>
                         </template>
 

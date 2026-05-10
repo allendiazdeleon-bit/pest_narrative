@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Inclusions__c</fullName>
+    <label>Inclusions</label>
+    <type>LongTextArea</type>
+    <length>1000</length>
+    <visibleLines>4</visibleLines>
+    <description>What's included in the service. Bulleted plain text shown on the Quote.</description>
+</CustomField>
