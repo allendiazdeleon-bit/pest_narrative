@@ -340,6 +340,42 @@
         <editable>false</editable><readable>true</readable>
     </fieldPermissions>
 
+    <fieldPermissions>
+        <field>Asset.Bait_Station_Count__c</field>
+        <editable>false</editable><readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Asset.Larvicide_Product__c</field>
+        <editable>false</editable><readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Asset.Last_Fertilizer_Date__c</field>
+        <editable>false</editable><readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Asset.Last_Station_Inspection__c</field>
+        <editable>false</editable><readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Asset.Nozzle_Count__c</field>
+        <editable>false</editable><readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Asset.Soil_Treatment_Product__c</field>
+        <editable>false</editable><readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Asset.Standing_Water_Sources__c</field>
+        <editable>false</editable><readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Asset.Treatment_Perimeter_LinearFt__c</field>
+        <editable>false</editable><readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <field>Asset.Turf_Type__c</field>
+        <editable>false</editable><readable>true</readable>
+    </fieldPermissions>
     <!-- WorkOrder custom fields — Read+Edit -->
     <fieldPermissions>
         <field>WorkOrder.Current_Step__c</field>
