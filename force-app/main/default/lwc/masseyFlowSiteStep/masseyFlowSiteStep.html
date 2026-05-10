@@ -1,5 +1,16 @@
 <template>
     <div class="site-step-container">
+        <!-- Upsell Coach — TOP of Site step (the marquee moment for Maria/Bennett scene 5).
+             Renders before any data the tech captures DURING the visit so she sees the
+             pitch recommendation immediately when she opens the step at the door. -->
+        <template lwc:if={accountId}>
+            <c-massey-upsell-coach
+                account-id={accountId}
+                variant="compact"
+                onoutcomecaptured={handleUpsellOutcome}
+            ></c-massey-upsell-coach>
+        </template>
+
         <!-- Property Identification Section -->
         <div class="card-section">
             <h2 class="section-title">Property Identification</h2>
@@ -10,27 +21,11 @@
                     <span class="info-value">{displayName}</span>
                 </div>
                 <div class="info-item">
-                    <label class="info-label">Account ID</label>
-                    <span class="info-value">{displaySerialNumber}</span>
-                </div>
-                <div class="info-item">
                     <label class="info-label">Service Line</label>
                     <span class="info-value">{serviceLine}</span>
                 </div>
                 <div class="info-item">
-                    <label class="info-label">Latitude</label>
-                    <span class="info-value">{displayLatitude}</span>
-                </div>
-                <div class="info-item">
-                    <label class="info-label">Longitude</label>
-                    <span class="info-value">{displayLongitude}</span>
-                </div>
-                <div class="info-item">
-                    <label class="info-label">NFC Tag ID</label>
-                    <span class="info-value">{displayNfcTagId}</span>
-                </div>
-                <div class="info-item">
-                    <label class="info-label">Last Service Visit</label>
+                    <label class="info-label">Last Visit</label>
                     <span class="info-value">{displayLastTreatment}</span>
                 </div>
 
@@ -95,6 +90,28 @@
                 Scan NFC Tag (Sentricon / Mosquito Controller)
             </button>
         </div>
+
+        <!-- Property Context — embeds the (preserved) Service Impact LWC
+             inline whenever a cluster incident is linked to this WO. For the
+             95% non-cluster visits this card is hidden entirely so the
+             walk-around stays focused on the property in front of the tech. -->
+        <template lwc:if={showPropertyContext}>
+            <div class={propertyContextClass}>
+                <div class="property-context-head">
+                    <h2 class="section-title">{label.propertyContext}</h2>
+                    <button
+                        class="btn-link property-context-toggle"
+                        type="button"
+                        onclick={handleTogglePropertyContext}>
+                        {propertyContextToggleLabel}
+                    </button>
+                </div>
+                <c-massey-flow-service-impact-step
+                    record-id={recordId}
+                    work-order={workOrder}>
+                </c-massey-flow-service-impact-step>
+            </div>
+        </template>
 
         <!-- AI Pest Pressure Forecast -->
         <template lwc:if={hasPressureForecastCard}>
@@ -223,17 +240,16 @@
                                     </div>
                                 </template>
                                 <template lwc:elseif={photo.analysis}>
+                                    <!-- AI Vision result — trimmed to actionable
+                                         signal only. Confidence % + Re-run button
+                                         removed (presenter chrome that field techs
+                                         ignore after first sighting). -->
                                     <div class="ai-card">
                                         <div class="ai-card-head">
-                                            <span class="ai-badge">AI VISION</span>
                                             <span class={photo.analysis.severityClass}>{photo.analysis.severity}</span>
-                                            <span class="ai-confidence">{photo.analysis.confidencePct}% confidence</span>
                                         </div>
                                         <div class="ai-title">{photo.analysis.title}</div>
                                         <div class="ai-desc">{photo.analysis.description}</div>
-                                        <button class="ai-rerun" data-id={photo.id} onclick={handleReanalyze}>
-                                            Re-run analysis
-                                        </button>
                                     </div>
                                 </template>
                                 <template lwc:else>
@@ -259,16 +275,6 @@
             ></c-massey-flow-nfc-scanner>
         </template>
 
-        <!-- Embedded Upsell Coach — marquee surface (P5.6, parallel agent) -->
-        <!-- The compact variant is rendered here mid-flow so the tech sees
-             attach-rate suggestions while still walking the property. The
-             `outcomecaptured` event is forwarded to the orchestrator. -->
-        <template lwc:if={accountId}>
-            <c-massey-upsell-coach
-                account-id={accountId}
-                variant="compact"
-                onoutcomecaptured={handleUpsellOutcome}
-            ></c-massey-upsell-coach>
-        </template>
+        <!-- (Upsell coach moved to TOP of Site step — see lines 5-12 above.) -->
     </div>
 </template>

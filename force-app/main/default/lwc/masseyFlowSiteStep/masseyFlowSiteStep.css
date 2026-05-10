@@ -194,3 +194,33 @@
     font-size: 13px;
     color: var(--c-text-mute);
 }
+
+/* ── Property Context inline card (collapsed Service Impact step) ─────── */
+.property-context {
+    border-left: 3px solid #2E7D32;
+    background: #f6faf7;
+    max-height: 360px;
+    overflow: hidden;
+    position: relative;
+}
+.property-context.property-context-expanded {
+    max-height: none;
+}
+.property-context-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+.btn-link.property-context-toggle {
+    background: transparent;
+    border: 0;
+    color: #2E7D32;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+.btn-link.property-context-toggle:hover {
+    text-decoration: underline;
+}

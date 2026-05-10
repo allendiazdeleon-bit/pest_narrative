@@ -13,6 +13,11 @@ import LBL_ISOLATION from '@salesforce/label/c.MasseyFlow_IsolationAction';
 // WorkOrder schema imports
 import WO_ASSET_ID from '@salesforce/schema/WorkOrder.AssetId';
 import WO_ACCOUNT_ID from '@salesforce/schema/WorkOrder.AccountId';
+import WO_LINKED_INCIDENT from '@salesforce/schema/WorkOrder.Linked_Incident__c';
+
+// Property Context card heading — surfaced inline (replaces the dedicated
+// Service Impact step for the 5% cluster-dispatch case).
+import LBL_PROPERTY_CONTEXT from '@salesforce/label/c.MasseyFlow_PropertyContext_Heading';
 
 // Asset (Property) shared schema imports — pest fields per P1.1
 import ASSET_NAME from '@salesforce/schema/Asset.Name';
@@ -66,11 +71,14 @@ export default class MasseyFlowSiteStep extends LightningElement {
 
     label = {
         readingPrompt: LBL_READING_PROMPT,
-        perimeter: LBL_ISOLATION
+        perimeter: LBL_ISOLATION,
+        propertyContext: LBL_PROPERTY_CONTEXT
     };
 
     @track assetId;
     @track assetData = {};
+    @track linkedIncidentId = null;
+    @track propertyContextExpanded = false;
 
     // Live measurements captured during the walk-around. Each service line
     // populates its own subset; the rest stay null.
@@ -112,7 +120,7 @@ export default class MasseyFlowSiteStep extends LightningElement {
         return this.isSaving ? 'Saving...' : 'Save Walk-Around';
     }
 
-    @wire(getRecord, { recordId: '$recordId', fields: [WO_ASSET_ID, WO_ACCOUNT_ID] })
+    @wire(getRecord, { recordId: '$recordId', fields: [WO_ASSET_ID, WO_ACCOUNT_ID, WO_LINKED_INCIDENT] })
     wiredWorkOrder({ data, error }) {
         if (data) {
             const assetRef = getFieldValue(data, WO_ASSET_ID);
@@ -121,10 +129,38 @@ export default class MasseyFlowSiteStep extends LightningElement {
             if (!this.accountId) {
                 this.accountId = getFieldValue(data, WO_ACCOUNT_ID);
             }
+            // Drives the inline Property Context card (Service Impact embed).
+            this.linkedIncidentId = getFieldValue(data, WO_LINKED_INCIDENT) || null;
         } else if (error) {
             console.error('[SiteStep] Error loading WorkOrder:', JSON.stringify(error));
             this.showAlert('Error', 'Failed to fetch WorkOrder details.');
         }
+    }
+
+    // Property Context card visibility — lean: only show when a cluster
+    // incident is linked. Marquee Maria/Bennett scenes (95% of visits) skip
+    // the card entirely so the walk-around stays focused.
+    get hasLinkedIncident() {
+        return !!this.linkedIncidentId;
+    }
+
+    get showPropertyContext() {
+        return this.hasLinkedIncident;
+    }
+
+    get propertyContextClass() {
+        return this.propertyContextExpanded
+            ? 'card-section property-context property-context-expanded'
+            : 'card-section property-context';
+    }
+
+    get propertyContextToggleLabel() {
+        return this.propertyContextExpanded ? 'Collapse' : 'Open in full view';
+    }
+
+    handleTogglePropertyContext(event) {
+        event.stopPropagation();
+        this.propertyContextExpanded = !this.propertyContextExpanded;
     }
 
     @wire(getRecord, { recordId: '$assetId', fields: ASSET_FIELDS })

@@ -29,14 +29,14 @@
     <template lwc:if={lockButtonDisabled}>
         <div class="warning-banner">
             <span>&#9888;&#65039;</span>
-            <span>All life-critical items must be verified before proceeding.</span>
+            <span>Confirm PPE + chemical sign-off before starting the visit.</span>
         </div>
     </template>
 
     <!-- Life-Critical Section: PPE, license, EPA reg #, RUP attestation -->
     <template lwc:if={hasCriticalSteps}>
         <div class={criticalSectionClass}>
-            <div class={criticalTitleClass}>Life-Critical Items</div>
+            <div class={criticalTitleClass}>PPE &amp; Chemical Sign-Off</div>
             <div>
                 <template for:each={criticalSteps} for:item="item">
                     <div key={item.id} class={item.itemClass}>
@@ -51,7 +51,7 @@
                         <div class={item.textClass}>
                             <div>{item.name}</div>
                             <template lwc:if={item.showBlocksGate}>
-                                <div class="critical-label">REQUIRED &mdash; blocks gate</div>
+                                <div class="critical-label">Required before next step</div>
                             </template>
                         </div>
                     </div>
@@ -63,7 +63,7 @@
     <!-- Site Safety Section: pets, kids on property, treatment perimeter -->
     <template lwc:if={hasSiteSteps}>
         <div class={siteSectionClass}>
-            <div class={siteTitleClass}>Site Safety</div>
+            <div class={siteTitleClass}>Property Check</div>
             <div>
                 <template for:each={siteSteps} for:item="item">
                     <div key={item.id} class={item.itemClass}>
@@ -95,7 +95,7 @@
     <!-- Administrative Section: applicator license check, EPA reg # logged -->
     <template lwc:if={hasAdminSteps}>
         <div class={adminSectionClass}>
-            <div class={adminTitleClass}>Administrative</div>
+            <div class={adminTitleClass}>Compliance Logging</div>
             <div>
                 <template for:each={adminSteps} for:item="item">
                     <div key={item.id} class={item.itemClass}>

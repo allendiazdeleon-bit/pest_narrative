@@ -9,6 +9,13 @@
   <!-- Main flow -->
   <template lwc:if={isReady}>
     <div class="flow-container">
+      <!-- Stop counter banner — gives Maria a sense of momentum + day cadence.
+           Hardcoded for demo; production would derive from AssignedResource +
+           today's ServiceAppointments. -->
+      <div class="stop-counter-banner">
+        <span class="stop-counter-text">Stop 4 of 9 today &middot; on schedule</span>
+      </div>
+
       <!-- Step Header -->
       <c-massey-flow-step-header
         current-step-index={currentStepIndex}
@@ -88,18 +95,11 @@
           </c-massey-flow-work-step>
         </template>
 
-        <!-- Step 4: Service Impact -->
+        <!-- Step 4: Wrap Up & Sign (with full Upsell Coach) -->
+        <!-- Service Impact step (was index 4) was collapsed into the Site
+             step's Property Context card; the LWC is still embedded inline
+             when a cluster incident is linked. -->
         <template lwc:if={isStep4}>
-          <c-massey-flow-service-impact-step
-            record-id={recordId}
-            work-order={workOrderData}
-            onstepcomplete={handleStepComplete}
-            onstepdatasave={handleStepDataSave}>
-          </c-massey-flow-service-impact-step>
-        </template>
-
-        <!-- Step 5: Verify & Close (with full Upsell Coach) -->
-        <template lwc:if={isStep5}>
           <c-massey-flow-summary-step
             record-id={recordId}
             work-order={workOrderData}

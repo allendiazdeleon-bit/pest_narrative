@@ -222,6 +222,11 @@
                             </div>
                         </template>
                         <template lwc:else>
+                            <!-- Compact variant: 2-button capture (Yes / Move On).
+                                 Full variant (Account standalone, Summary step):
+                                 4-button picker so Jordan/Ray can stamp the funnel value
+                                 with full context. The granular distinction lives where
+                                 a manager actually consumes it. -->
                             <div class="action-row" data-variant={variant}>
                                 <button
                                     type="button"
@@ -231,24 +236,23 @@
                                 >
                                     {label.ACTION_YES}
                                 </button>
-                                <button
-                                    type="button"
-                                    class="action-btn action-notnow"
-                                    data-line={r.serviceLine}
-                                    onclick={handleCaptureNotNow}
-                                >
-                                    {label.ACTION_NOT_NOW}
-                                </button>
-                                <button
-                                    type="button"
-                                    class="action-btn action-notint"
-                                    data-line={r.serviceLine}
-                                    onclick={handleCaptureNotInterested}
-                                >
-                                    {label.ACTION_NOT_INTERESTED}
-                                </button>
-                                <!-- "No Response" only in full variant — compact stays minimal -->
                                 <template lwc:if={isFull}>
+                                    <button
+                                        type="button"
+                                        class="action-btn action-notnow"
+                                        data-line={r.serviceLine}
+                                        onclick={handleCaptureNotNow}
+                                    >
+                                        {label.ACTION_NOT_NOW}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="action-btn action-notint"
+                                        data-line={r.serviceLine}
+                                        onclick={handleCaptureNotInterested}
+                                    >
+                                        {label.ACTION_NOT_INTERESTED}
+                                    </button>
                                     <button
                                         type="button"
                                         class="action-btn action-noresp"
@@ -256,6 +260,18 @@
                                         onclick={handleCaptureNoResponse}
                                     >
                                         {label.ACTION_NO_RESPONSE}
+                                    </button>
+                                </template>
+                                <template lwc:else>
+                                    <!-- Compact: single "Move On" button maps to NotNow.
+                                         Tech can pitch later via Account record (full variant). -->
+                                    <button
+                                        type="button"
+                                        class="action-btn action-moveon"
+                                        data-line={r.serviceLine}
+                                        onclick={handleCaptureNotNow}
+                                    >
+                                        Move On
                                     </button>
                                 </template>
                             </div>

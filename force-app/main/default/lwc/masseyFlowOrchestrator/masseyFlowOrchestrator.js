@@ -16,6 +16,7 @@ import WO_SAFETY_STATUS from '@salesforce/schema/WorkOrder.Safety_Gate_Status__c
 import WO_SAFETY_PASSED from '@salesforce/schema/WorkOrder.Safety_Gate_Passed_At__c';
 import WO_PEST_FINDING from '@salesforce/schema/WorkOrder.Pest_Finding__c';
 import WO_LINKED_INCIDENT from '@salesforce/schema/WorkOrder.Linked_Incident__c';
+import WO_WORKTYPE_NAME from '@salesforce/schema/WorkOrder.WorkType.Name';
 
 // getRelatedListRecords requires string field references, NOT schema tokens
 const WORKSTEP_FIELDS = [
@@ -29,17 +30,32 @@ const WORKSTEP_FIELDS = [
 const WORKORDER_FIELDS = [
   WO_ID, WO_NUMBER, WO_STATUS, WO_ASSET_ID, WO_ACCOUNT_ID, WO_CURRENT_STEP,
   WO_FLOW_STARTED, WO_FLOW_COMPLETED, WO_SAFETY_STATUS,
-  WO_SAFETY_PASSED, WO_PEST_FINDING, WO_LINKED_INCIDENT
+  WO_SAFETY_PASSED, WO_PEST_FINDING, WO_LINKED_INCIDENT, WO_WORKTYPE_NAME
 ];
 
-// 6 phases of the Massey field-service treatment flow.
+// Solo Work Types — Crew & Route step auto-skips for these. Tom's surge
+// area treatment + Sentricon Install + Termite Liquid + Wasp Removal stay
+// crew-aware (these are the WTs where the step adds value).
+const SOLO_WORK_TYPES = new Set([
+  'Quarterly Pest Service',
+  'Pest Inspection (New)',
+  'Termite Inspection (Booster)',
+  'Sentricon Service',
+  'Mosquito System Service'
+]);
+
+// 5 phases of the Massey field-service treatment flow.
+// Service Impact (formerly index 4) was collapsed into the Site step's
+// Property Context card — only ~5% of pest visits have a linked cluster
+// incident, so the dedicated step was presenter engineering. The
+// `masseyFlowServiceImpactStep` LWC is preserved and embedded inline by
+// the Site step when WorkOrder.Linked_Incident__c is populated.
 const STEP_LABELS = [
-  'Pre-Visit Safety',
+  'Pre-Visit Check',
   'Crew & Route',
   'Property Walk-Around',
-  'Treatment Execution',
-  'Service Impact',
-  'Verify & Close'
+  'Apply Treatment',
+  'Wrap Up & Sign'
 ];
 
 // Maps each flow step index to the Step_Category__c values on WorkStep records.
@@ -49,11 +65,10 @@ const STEP_CATEGORY_MAP = {
   1: [],  // Crew & Route — no WorkSteps
   2: ['Hazard'],
   3: ['Work_DeEnergize', 'Work_Execute', 'Work_ReEnergize'],
-  4: [],  // Service Impact — no WorkSteps
-  5: []   // Verify & Close — no WorkSteps
+  4: []   // Verify & Close — no WorkSteps
 };
 
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 5;
 
 export default class MasseyFlowOrchestrator extends LightningElement {
   @api recordId;
@@ -158,12 +173,11 @@ export default class MasseyFlowOrchestrator extends LightningElement {
   get isStep2() { return this.currentStepIndex === 2; }
   get isStep3() { return this.currentStepIndex === 3; }
   get isStep4() { return this.currentStepIndex === 4; }
-  get isStep5() { return this.currentStepIndex === 5; }
 
   get stepMenuItems() {
     // Pest-flavored step icons: shield (safety), people (crew), pin (property),
-    // spray-bottle (treatment), broadcast (cluster), check (close-out).
-    const icons = ['🛡️', '👥', '📍', '🧪', '📡', '✅'];
+    // spray-bottle (treatment), check (close-out).
+    const icons = ['🛡️', '👥', '📍', '🧪', '✅'];
     return STEP_LABELS.map((label, index) => {
       const categories = STEP_CATEGORY_MAP[index] || [];
       const categorySteps = this.workSteps.filter(w => categories.includes(w.Step_Category__c));
@@ -235,6 +249,10 @@ export default class MasseyFlowOrchestrator extends LightningElement {
   handleBack() {
     if (!this.isFirstStep) {
       this.currentStepIndex--;
+      // Skip Crew & Route (idx 1) on the way back too if solo Work Type
+      if (this.currentStepIndex === 1 && this._isSoloWorkType()) {
+        this.currentStepIndex--;
+      }
       this.updateCurrentStep();
     }
   }
@@ -246,6 +264,11 @@ export default class MasseyFlowOrchestrator extends LightningElement {
     }
     if (!this.isLastStep) {
       this.currentStepIndex++;
+      // Skip Crew & Route (idx 1) for solo Work Types — Maria's quarterly
+      // route doesn't need a crew step (one tech, one truck).
+      if (this.currentStepIndex === 1 && this._isSoloWorkType()) {
+        this.currentStepIndex++;
+      }
       this.updateCurrentStep();
     }
   }
@@ -258,6 +281,11 @@ export default class MasseyFlowOrchestrator extends LightningElement {
       return true;
     }
     return false;
+  }
+
+  _isSoloWorkType() {
+    const wtName = getFieldValue(this.workOrderData, WO_WORKTYPE_NAME);
+    return SOLO_WORK_TYPES.has(wtName);
   }
 
   // PRIVATE METHODS

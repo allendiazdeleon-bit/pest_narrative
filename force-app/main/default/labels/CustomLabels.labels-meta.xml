@@ -432,4 +432,20 @@
         <shortDescription>Inline error when generateQuote fails (offline or other)</shortDescription>
         <value>Could not generate quote. Try again or escalate.</value>
     </labels>
+    <labels>
+        <fullName>MasseyFlow_PropertyContext_Heading</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Heading for inline Property Context card on Site step</shortDescription>
+        <value>Property Context</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_PropertyContext_NoEvents</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Ambient empty state when no cluster events on this route</shortDescription>
+        <value>No active cluster events for this route</value>
+    </labels>
 </CustomLabels>
