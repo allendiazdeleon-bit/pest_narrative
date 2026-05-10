@@ -1,138 +1,207 @@
 <template>
   <div class="chem-panel">
-    <div class="chem-head">
-      <div class="chem-title">
-        <span class="chem-icon">🧪</span>
-        <span>Chemical Application &amp; RUP Attestation</span>
+
+    <!-- ============================================================ -->
+    <!-- SIMPLE MODE — solo-tech, 1-tap pest spray (Maria's quarterly) -->
+    <!-- ============================================================ -->
+    <template lwc:if={isSimpleMode}>
+      <div class="chem-head">
+        <div class="chem-title">
+          <span class="chem-icon">🧪</span>
+          <span>Chemical Applied</span>
+        </div>
       </div>
-      <button class="chem-add-toggle" onclick={handleToggleAdd}>{addButtonLabel}</button>
-    </div>
 
-    <div class="chem-driver">{label.regulatoryDriver}</div>
+      <!-- ✓ Applied confirmation pill — replaces the form after save -->
+      <template lwc:if={simpleConfirmed}>
+        <div class="chem-applied-pill">
+          <span class="chem-applied-check">✓</span>
+          <span class="chem-applied-text">
+            Applied — {simpleApp.product} · {simpleApp.applicationPoint}
+          </span>
+        </div>
+      </template>
 
-    <template lwc:if={hasSummary}>
-      <div class={gateBannerClass}>{gateBannerText}</div>
+      <!-- 1-card form, ~5 fields + 1 button -->
+      <template lwc:if={simpleConfirmedInverse}>
+        <div class="chem-simple-card">
+          <lightning-combobox
+            label="Product applied"
+            value={simpleProduct}
+            options={productOptions}
+            onchange={handleSimpleProduct}
+            variant="standard">
+          </lightning-combobox>
 
-      <template lwc:if={hasRecords}>
-        <div class="chem-progress-track">
-          <div class="chem-progress-fill" style={progressBarStyle}></div>
+          <lightning-combobox
+            label="Where"
+            value={simpleApplicationPoint}
+            options={applicationPointOptions}
+            onchange={handleSimplePoint}
+            variant="standard">
+          </lightning-combobox>
+
+          <lightning-input
+            label="EPA Reg #"
+            value={simpleEpaRegNumber}
+            readonly>
+          </lightning-input>
+
+          <lightning-input
+            label="Applicator License"
+            value={simpleApplicatorLicense}
+            readonly>
+          </lightning-input>
+
+          <button class="chem-simple-confirm"
+                  onclick={handleSimpleConfirm}
+                  disabled={simpleConfirmDisabled}>
+            {simpleConfirmLabel}
+          </button>
         </div>
       </template>
     </template>
 
-    <!-- Add chemical application form -->
-    <template lwc:if={addOpen}>
-      <div class="chem-add">
-        <template lwc:if={hasSuggestions}>
-          <div class="chem-suggestions-label">AI suggestions for this Service Visit:</div>
-          <div class="chem-suggestions">
-            <template for:each={suggestions} for:item="s" for:index="idx">
-              <button key={s.applicationPoint} type="button" class="chem-suggestion"
-                      data-idx={idx} onclick={handleApplySuggestion}>
-                <strong>{s.product}</strong> · {s.applicationPoint}
-              </button>
-            </template>
+    <!-- ============================================================ -->
+    <!-- FULL MODE — crew/RUP work types (Termite Liquid, ULV, etc.)  -->
+    <!-- Preserved verbatim from the prior state-machine UX.          -->
+    <!-- ============================================================ -->
+    <template lwc:if={isFullMode}>
+      <div class="chem-head">
+        <div class="chem-title">
+          <span class="chem-icon">🧪</span>
+          <span>Chemical Application &amp; RUP Attestation</span>
+        </div>
+        <button class="chem-add-toggle" onclick={handleToggleAdd}>{addButtonLabel}</button>
+      </div>
+
+      <div class="chem-driver">{label.regulatoryDriver}</div>
+
+      <template lwc:if={hasSummary}>
+        <div class={gateBannerClass}>{gateBannerText}</div>
+
+        <template lwc:if={hasRecords}>
+          <div class="chem-progress-track">
+            <div class="chem-progress-fill" style={progressBarStyle}></div>
           </div>
         </template>
+      </template>
 
-        <lightning-combobox
-          label="Product"
-          value={newApp.product}
-          options={productOptions}
-          onchange={handleNewProduct}
-          variant="standard">
-        </lightning-combobox>
-        <lightning-input label="Application point"
-                         value={newApp.applicationPoint}
-                         onchange={handleNewPoint}
-                         placeholder="e.g. Perimeter foundation, west elevation 0-3 ft"
-                         required>
-        </lightning-input>
-        <lightning-input label="EPA Reg #"
-                         value={newApp.epaRegNumber}
-                         onchange={handleNewEpa}
-                         placeholder="e.g. 432-1265"
-                         required>
-        </lightning-input>
-        <lightning-input label="Applicator License #"
-                         value={newApp.applicatorLicense}
-                         onchange={handleNewLicense}
-                         placeholder="e.g. JE-12087 (FL Dept. of Agriculture)"
-                         required>
-        </lightning-input>
-
-        <!-- RUP attestation gate — required for restricted-use pesticides -->
-        <template lwc:if={rupAttestationRequired}>
-            <div class="rup-attest-block">
-                <lightning-input
-                    type="checkbox"
-                    label="I attest that I am a certified applicator and this Restricted-Use Pesticide is being applied per label, per state regulation, and with all required PPE."
-                    checked={newApp.rupAttested}
-                    onchange={handleRupAttest}>
-                </lightning-input>
+      <!-- Add chemical application form -->
+      <template lwc:if={addOpen}>
+        <div class="chem-add">
+          <template lwc:if={hasSuggestions}>
+            <div class="chem-suggestions-label">AI suggestions for this Service Visit:</div>
+            <div class="chem-suggestions">
+              <template for:each={suggestions} for:item="s" for:index="idx">
+                <button key={s.applicationPoint} type="button" class="chem-suggestion"
+                        data-idx={idx} onclick={handleApplySuggestion}>
+                  <strong>{s.product}</strong> · {s.applicationPoint}
+                </button>
+              </template>
             </div>
-        </template>
+          </template>
 
-        <lightning-input label="Notes"
-                         value={newApp.notes}
-                         onchange={handleNewNotes}>
-        </lightning-input>
-        <button class="chem-save" onclick={handleSaveNew} disabled={canSaveNewInverse}>
-          Save chemical application
-        </button>
-      </div>
-    </template>
+          <lightning-combobox
+            label="Product"
+            value={newApp.product}
+            options={productOptions}
+            onchange={handleNewProduct}
+            variant="standard">
+          </lightning-combobox>
+          <lightning-input label="Application point"
+                           value={newApp.applicationPoint}
+                           onchange={handleNewPoint}
+                           placeholder="e.g. Perimeter foundation, west elevation 0-3 ft"
+                           required>
+          </lightning-input>
+          <lightning-input label="EPA Reg #"
+                           value={newApp.epaRegNumber}
+                           onchange={handleNewEpa}
+                           placeholder="e.g. 432-1265"
+                           required>
+          </lightning-input>
+          <lightning-input label="Applicator License #"
+                           value={newApp.applicatorLicense}
+                           onchange={handleNewLicense}
+                           placeholder="e.g. JE-12087 (FL Dept. of Agriculture)"
+                           required>
+          </lightning-input>
 
-    <!-- Records list -->
-    <template lwc:if={hasRecords}>
-      <div class="chem-list">
-        <template for:each={summary.records} for:item="r">
-          <div key={r.id} class="chem-row">
-            <div class="chem-row-head">
-              <span class={r.statusClass}>{r.status}</span>
-              <span class="chem-product">{r.product}</span>
-              <span class="chem-name">{r.name}</span>
-            </div>
-            <div class="chem-point">{r.applicationPoint}</div>
-            <div class="chem-tag">EPA Reg #: <strong>{r.epaRegNumber}</strong> &middot; Applicator License: <strong>{r.applicatorLicense}</strong></div>
+          <!-- RUP attestation gate — required for restricted-use pesticides -->
+          <template lwc:if={rupAttestationRequired}>
+              <div class="rup-attest-block">
+                  <lightning-input
+                      type="checkbox"
+                      label="I attest that I am a certified applicator and this Restricted-Use Pesticide is being applied per label, per state regulation, and with all required PPE."
+                      checked={newApp.rupAttested}
+                      onchange={handleRupAttest}>
+                  </lightning-input>
+              </div>
+          </template>
 
-            <template lwc:if={r.mixedByName}>
-              <div class="chem-meta">
-                <span>Mixed by <strong>{r.mixedByName}</strong></span>
-                <template lwc:if={r.verifiedByName}>
-                  <span> · Verified by <strong>{r.verifiedByName}</strong></span>
+          <lightning-input label="Notes"
+                           value={newApp.notes}
+                           onchange={handleNewNotes}>
+          </lightning-input>
+          <button class="chem-save" onclick={handleSaveNew} disabled={canSaveNewInverse}>
+            Save chemical application
+          </button>
+        </div>
+      </template>
+
+      <!-- Records list -->
+      <template lwc:if={hasRecords}>
+        <div class="chem-list">
+          <template for:each={summary.records} for:item="r">
+            <div key={r.id} class="chem-row">
+              <div class="chem-row-head">
+                <span class={r.statusClass}>{r.status}</span>
+                <span class="chem-product">{r.product}</span>
+                <span class="chem-name">{r.name}</span>
+              </div>
+              <div class="chem-point">{r.applicationPoint}</div>
+              <div class="chem-tag">EPA Reg #: <strong>{r.epaRegNumber}</strong> &middot; Applicator License: <strong>{r.applicatorLicense}</strong></div>
+
+              <template lwc:if={r.mixedByName}>
+                <div class="chem-meta">
+                  <span>Mixed by <strong>{r.mixedByName}</strong></span>
+                  <template lwc:if={r.verifiedByName}>
+                    <span> · Verified by <strong>{r.verifiedByName}</strong></span>
+                  </template>
+                </div>
+              </template>
+
+              <div class="chem-actions">
+                <template lwc:if={r.isPending}>
+                  <button class="chem-act chem-act-mix" data-id={r.id} onclick={handleMarkMixed}>
+                    📷 Mark Mixed (with photo)
+                  </button>
+                  <button class="chem-act chem-act-skip" data-id={r.id} onclick={handleSkipPhoto}>
+                    Skip photo
+                  </button>
+                  <input type="file" accept="image/*" capture="environment"
+                         class="chem-photo-input" data-id={r.id}
+                         onchange={handlePhotoSelected} />
+                </template>
+
+                <template lwc:if={r.isMixed}>
+                  <button class="chem-act chem-act-verify" data-id={r.id} onclick={handleMarkVerified}>
+                    ✓ Verify (second tech)
+                  </button>
+                </template>
+
+                <template lwc:if={r.isVerified}>
+                  <button class="chem-act chem-act-finalize" data-id={r.id} onclick={handleMarkFinalized}>
+                    Finalize (treatment complete)
+                  </button>
                 </template>
               </div>
-            </template>
-
-            <div class="chem-actions">
-              <template lwc:if={r.isPending}>
-                <button class="chem-act chem-act-mix" data-id={r.id} onclick={handleMarkMixed}>
-                  📷 Mark Mixed (with photo)
-                </button>
-                <button class="chem-act chem-act-skip" data-id={r.id} onclick={handleSkipPhoto}>
-                  Skip photo
-                </button>
-                <input type="file" accept="image/*" capture="environment"
-                       class="chem-photo-input" data-id={r.id}
-                       onchange={handlePhotoSelected} />
-              </template>
-
-              <template lwc:if={r.isMixed}>
-                <button class="chem-act chem-act-verify" data-id={r.id} onclick={handleMarkVerified}>
-                  ✓ Verify (second tech)
-                </button>
-              </template>
-
-              <template lwc:if={r.isVerified}>
-                <button class="chem-act chem-act-finalize" data-id={r.id} onclick={handleMarkFinalized}>
-                  Finalize (treatment complete)
-                </button>
-              </template>
             </div>
-          </div>
-        </template>
-      </div>
+          </template>
+        </div>
+      </template>
     </template>
+
   </div>
 </template>

@@ -180,3 +180,59 @@
     color: var(--color-text-secondary);
     font-size: 13px;
 }
+
+/* Pre-Visit Risk Briefing — tech-friendly chips */
+.risk-briefing-card {
+  margin: 12px;
+  padding: 14px 14px 10px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.risk-briefing-head {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 10px;
+}
+.risk-briefing-badge {
+  display: inline-block;
+  background: #0369a1; color: #ffffff;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.6px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 4px;
+  flex-shrink: 0;
+}
+.risk-briefing-headline {
+  font-size: 14px; color: #1e293b;
+  margin: 0; line-height: 1.4; font-weight: 500;
+}
+.risk-chip-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+.risk-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+.risk-chip-ok { border-color: #86efac; background: #f0fdf4; }
+.risk-chip-warning { border-color: #fcd34d; background: #fffbeb; }
+.risk-chip-critical { border-color: #fca5a5; background: #fef2f2; }
+.risk-chip-icon {
+  font-size: 22px; line-height: 1; flex-shrink: 0;
+}
+.risk-chip-body {
+  display: flex; flex-direction: column;
+}
+.risk-chip-label {
+  font-size: 10px; font-weight: 700;
+  color: #64748b; text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.risk-chip-value {
+  font-size: 13px; font-weight: 600; color: #0f172a;
+  line-height: 1.25;
+}

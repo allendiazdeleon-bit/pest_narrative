@@ -1,15 +1,25 @@
 <template>
-    <!-- AI Pre-Visit Risk Briefing -->
+    <!-- Pre-Visit Risk Briefing — tech-friendly visual chips instead of the
+         generic AI insight card. Weather / Pets / Hazards / History each
+         render as a bold icon + value badge with severity-colored ring. -->
     <template lwc:if={hasRiskBriefing}>
-        <c-ai-insight-card
-            title="Pre-Visit Risk Briefing"
-            summary={riskBriefingSummary}
-            severity={riskBriefingSeverity}
-            confidence={riskBriefingConfidence}
-            source={riskBriefingSource}
-            timestamp={riskBriefingTimestamp}
-            details={riskBriefingDetails}
-        ></c-ai-insight-card>
+        <div class="risk-briefing-card">
+            <div class="risk-briefing-head">
+                <span class="risk-briefing-badge">Pre-Visit Briefing</span>
+                <p class="risk-briefing-headline">{riskBriefingHeadline}</p>
+            </div>
+            <div class="risk-chip-row">
+                <template for:each={riskChips} for:item="c">
+                    <div key={c.key} class={c.chipClass}>
+                        <span class="risk-chip-icon">{c.icon}</span>
+                        <div class="risk-chip-body">
+                            <span class="risk-chip-label">{c.label}</span>
+                            <span class="risk-chip-value">{c.value}</span>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
     </template>
 
     <!-- Safety Gate Header — PPE + Restricted-Use Pesticide attestation -->

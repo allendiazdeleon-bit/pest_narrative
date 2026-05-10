@@ -552,4 +552,60 @@
         <shortDescription>Disabled-button label when sign-off must occur before completing</shortDescription>
         <value>Sign-off required to complete</value>
     </labels>
+    <labels>
+        <fullName>MasseyFlow_DocLog_Heading</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Heading for the Documentation Logged mini-card on Summary</shortDescription>
+        <value>Documentation Logged</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_DocLog_EPA_Done</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DocLog row when EPA Reg # has been captured for the visit</shortDescription>
+        <value>EPA Reg # captured</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_DocLog_EPA_Missing</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DocLog row when EPA Reg # is still missing for the visit</shortDescription>
+        <value>EPA Reg # not yet captured</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_DocLog_License_Done</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DocLog row when applicator license has been recorded</shortDescription>
+        <value>Applicator license recorded</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_DocLog_License_Missing</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DocLog row when applicator license is still missing</shortDescription>
+        <value>Applicator license not yet recorded</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_DocLog_Signoff_Done</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DocLog row when customer sign-off (signature or hanger) is logged</shortDescription>
+        <value>Customer sign-off complete</value>
+    </labels>
+    <labels>
+        <fullName>MasseyFlow_DocLog_Signoff_Pending</fullName>
+        <categories>MasseyFlow,Shared</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DocLog row when customer sign-off is still pending on Summary</shortDescription>
+        <value>Customer sign-off pending — see below</value>
+    </labels>
 </CustomLabels>

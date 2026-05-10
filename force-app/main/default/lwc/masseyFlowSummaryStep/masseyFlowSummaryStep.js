@@ -3,9 +3,16 @@ import { getRecord, getFieldValue, updateRecord, createRecord } from 'lightning/
 import { getRelatedListRecords } from 'lightning/uiRelatedListApi';
 import Alert from 'lightning/alert';
 
-import generateReport from '@salesforce/apex/TreatmentReportGenerator.generate';
-import previewReport from '@salesforce/apex/TreatmentReportGenerator.preview';
 import analyzePestPressure from '@salesforce/apex/PestPressureAnalyzer.analyzeForAsset';
+
+// DocLog mini-card labels (replaces legacy Treatment Report Package card)
+import LBL_DOCLOG_HEADING from '@salesforce/label/c.MasseyFlow_DocLog_Heading';
+import LBL_DOCLOG_EPA_DONE from '@salesforce/label/c.MasseyFlow_DocLog_EPA_Done';
+import LBL_DOCLOG_EPA_MISSING from '@salesforce/label/c.MasseyFlow_DocLog_EPA_Missing';
+import LBL_DOCLOG_LICENSE_DONE from '@salesforce/label/c.MasseyFlow_DocLog_License_Done';
+import LBL_DOCLOG_LICENSE_MISSING from '@salesforce/label/c.MasseyFlow_DocLog_License_Missing';
+import LBL_DOCLOG_SIGNOFF_DONE from '@salesforce/label/c.MasseyFlow_DocLog_Signoff_Done';
+import LBL_DOCLOG_SIGNOFF_PENDING from '@salesforce/label/c.MasseyFlow_DocLog_Signoff_Pending';
 
 // Sign-Off card labels (Wrap Up & Sign — last tech action before Complete)
 import LBL_SO_HEADING from '@salesforce/label/c.MasseyFlow_SignOff_Heading';
@@ -35,6 +42,10 @@ import WO_LINKED_INCIDENT from '@salesforce/schema/WorkOrder.Linked_Incident__c'
 
 import ASSET_NAME from '@salesforce/schema/Asset.Name';
 import ASSET_SERVICE_LINE from '@salesforce/schema/Asset.Service_Line__c';
+
+import ACCT_LAST_UPSELL_OUTCOME from '@salesforce/schema/Account.Last_Upsell_Outcome__c';
+import ACCT_LAST_UPSELL_LINE from '@salesforce/schema/Account.Last_Upsell_Service_Line__c';
+import ACCT_LAST_UPSELL_PITCHED from '@salesforce/schema/Account.Last_Upsell_Pitched__c';
 
 import INC_NUMBER from '@salesforce/schema/Incident.IncidentNumber';
 import INC_PRIORITY from '@salesforce/schema/Incident.Priority';
@@ -74,6 +85,46 @@ export default class MasseyFlowSummaryStep extends LightningElement {
 
     @wire(getRecord, { recordId: '$linkedIncidentId', fields: [INC_NUMBER, INC_PRIORITY, INC_STATUS] })
     wiredIncident;
+
+    @wire(getRecord, { recordId: '$effectiveAccountId', fields: [ACCT_LAST_UPSELL_OUTCOME, ACCT_LAST_UPSELL_LINE, ACCT_LAST_UPSELL_PITCHED] })
+    wiredAccountUpsellState;
+
+    // Upsell dedup: if the tech already captured an outcome in Site step, show
+    // a small recap card on Summary instead of re-rendering the full pitch UI.
+    // Maria already pitched — don't re-prompt her at close-out.
+    get upsellOutcome() {
+        return this.wiredAccountUpsellState?.data
+            ? getFieldValue(this.wiredAccountUpsellState.data, ACCT_LAST_UPSELL_OUTCOME)
+            : null;
+    }
+    get upsellPitchedLine() {
+        return this.wiredAccountUpsellState?.data
+            ? getFieldValue(this.wiredAccountUpsellState.data, ACCT_LAST_UPSELL_LINE)
+            : null;
+    }
+    get upsellAlreadyCaptured() { return !!this.upsellOutcome; }
+    get showFullUpsellCoach() { return !this.upsellAlreadyCaptured; }
+    get upsellRecapText() {
+        const line = this.upsellPitchedLine || 'service';
+        const outcome = this.upsellOutcome;
+        if (outcome === 'Yes' || outcome === 'QuotedYes') {
+            return `Pitched ${line} — customer said yes. Jordan will follow up to close.`;
+        }
+        if (outcome === 'NotNow') return `Pitched ${line} — customer asked to revisit later.`;
+        if (outcome === 'NotInterested') return `Pitched ${line} — customer not interested today.`;
+        if (outcome === 'NoResponse') return `Pitched ${line} — no clear response captured.`;
+        return `Pitched ${line}.`;
+    }
+    get upsellRecapIconClass() {
+        if (this.upsellOutcome === 'Yes' || this.upsellOutcome === 'QuotedYes') return 'upsell-recap-icon upsell-recap-ok';
+        if (this.upsellOutcome === 'NotInterested') return 'upsell-recap-icon upsell-recap-red';
+        return 'upsell-recap-icon upsell-recap-amber';
+    }
+    get upsellRecapIcon() {
+        if (this.upsellOutcome === 'Yes' || this.upsellOutcome === 'QuotedYes') return '✓';
+        if (this.upsellOutcome === 'NotInterested') return '✗';
+        return '—';
+    }
 
     get effectiveRecordId() { return this.recordId; }
 
@@ -223,69 +274,72 @@ export default class MasseyFlowSummaryStep extends LightningElement {
     handleStartNextStop() { this.showNextStopHandoff = false; }
 
 
-    // ── Treatment Report (regulatory packet) ─────────────────────────
+    // ── Documentation Logged mini-card ────────────────────────────────
+    // Replaces the legacy Treatment Report Package card. Three checks:
+    // EPA Reg # captured, Applicator License recorded, Customer sign-off.
+    // EPA + License are sourced from the LOTO_Records (Chemical Application
+    // Log) related list on the WorkOrder. Sign-off is local LWC state.
+    //
+    // The handleGenerateReport stub + report state are intentionally kept
+    // (unused) below to avoid breaking any external references — see stub.
+    @track _lotoRecords = [];
+
+    @wire(getRelatedListRecords, {
+        parentRecordId: '$recordId',
+        relatedListId: 'LOTO_Records__r',
+        fields: ['LOTO_Record__c.Id', 'LOTO_Record__c.EPA_Reg_Number__c', 'LOTO_Record__c.Applicator_License__c'],
+        pageSize: 50
+    })
+    wiredSummaryLOTO({ data }) {
+        if (data) this._lotoRecords = data.records || [];
+    }
+
+    get docLogHasEPA() {
+        return this._lotoRecords.some((r) => {
+            const v = r?.fields?.EPA_Reg_Number__c?.value;
+            return typeof v === 'string' && v.trim().length > 0;
+        });
+    }
+
+    get docLogHasLicense() {
+        return this._lotoRecords.some((r) => {
+            const v = r?.fields?.Applicator_License__c?.value;
+            return typeof v === 'string' && v.trim().length > 0;
+        });
+    }
+
+    get docLogHasSignOff() { return this.signOffComplete; }
+
+    get docLogAllGreen() {
+        return this.docLogHasEPA && this.docLogHasLicense && this.docLogHasSignOff;
+    }
+
+    // Row text/icons
+    get epaRowText() { return this.docLogHasEPA ? LBL_DOCLOG_EPA_DONE : LBL_DOCLOG_EPA_MISSING; }
+    get licenseRowText() { return this.docLogHasLicense ? LBL_DOCLOG_LICENSE_DONE : LBL_DOCLOG_LICENSE_MISSING; }
+    get signoffRowText() { return this.docLogHasSignOff ? LBL_DOCLOG_SIGNOFF_DONE : LBL_DOCLOG_SIGNOFF_PENDING; }
+
+    get epaRowIcon() { return this.docLogHasEPA ? '✓' : '✗'; }
+    get licenseRowIcon() { return this.docLogHasLicense ? '✓' : '✗'; }
+    get signoffRowIcon() { return this.docLogHasSignOff ? '✓' : '✗'; }
+
+    get epaRowIconClass() { return this.docLogHasEPA ? 'doclog-icon doclog-icon-pass' : 'doclog-icon doclog-icon-fail'; }
+    get licenseRowIconClass() { return this.docLogHasLicense ? 'doclog-icon doclog-icon-pass' : 'doclog-icon doclog-icon-fail'; }
+    get signoffRowIconClass() { return this.docLogHasSignOff ? 'doclog-icon doclog-icon-pass' : 'doclog-icon doclog-icon-fail'; }
+
+    // ── Legacy report stubs (kept for compatibility; no longer wired) ──
+    // The Treatment Report Package card was removed in favor of the
+    // lightweight DocLog card above. These stubs are intentionally left
+    // so any external references (e.g., orchestrator) don't break.
     @track report;
     @track generatingReport = false;
 
-    @wire(previewReport, { workOrderId: '$recordId' })
-    wiredReportPreview({ data }) {
-        if (data) this.report = this.decorateReport(data);
-    }
+    get hasReport() { return false; }
 
-    decorateReport(c) {
-        return {
-            ...c,
-            checks: (c.checks || []).map((chk) => ({
-                ...chk,
-                statusClass: this.reportStatusClass(chk.status),
-                statusIcon: this.reportStatusIcon(chk.status)
-            })),
-            readyClass: c.readyToFile ? 'compliance-ready compliance-ready-yes' : 'compliance-ready compliance-ready-no'
-        };
-    }
+    get generateButtonLabel() { return 'Treatment Report'; }
+    get generateDisabled() { return true; }
 
-    reportStatusClass(s) {
-        if (s === 'Pass') return 'comp-status comp-status-pass';
-        if (s === 'Warn') return 'comp-status comp-status-warn';
-        if (s === 'Fail') return 'comp-status comp-status-fail';
-        return 'comp-status comp-status-na';
-    }
-
-    reportStatusIcon(s) {
-        if (s === 'Pass') return '✓';
-        if (s === 'Warn') return '⚠';
-        if (s === 'Fail') return '✗';
-        return '—';
-    }
-
-    get hasReport() { return !!this.report; }
-
-    get generateButtonLabel() {
-        if (this.generatingReport) return 'Generating…';
-        if (this.report && this.report.packageContentVersionId) return 'Treatment Report generated ✓';
-        return 'Generate Treatment Report';
-    }
-
-    get generateDisabled() {
-        return this.generatingReport || (this.report && !!this.report.packageContentVersionId);
-    }
-
-    async handleGenerateReport() {
-        if (this.generatingReport) return;
-        this.generatingReport = true;
-        try {
-            const c = await generateReport({ workOrderId: this.recordId });
-            this.report = this.decorateReport(c);
-            await Alert.open({
-                label: 'Treatment Report generated',
-                message: `Saved as a File on this Service Visit. ${c.readyToFile ? 'Ready to share with the customer.' : 'Review warnings before sharing.'}`
-            });
-        } catch (e) {
-            await Alert.open({ label: 'Could not generate', message: e?.body?.message || JSON.stringify(e) });
-        } finally {
-            this.generatingReport = false;
-        }
-    }
+    handleGenerateReport() { /* no-op: legacy stub */ }
 
     // ── AI Visit Quality + Pest Pressure deltas (T7-A close-out) ─────
     @track _hazardCount = 0;
@@ -328,7 +382,7 @@ export default class MasseyFlowSummaryStep extends LightningElement {
     get visitQualityTitle() { return 'Visit Quality Score'; }
 
     get visitQualitySummary() {
-        return 'Strong execution — all safety items complete, RUP attestation logged, photos captured, treatment report ready. Property released after Re-Entry Interval.';
+        return 'Strong execution — all safety items complete, RUP attestation logged, photos captured, EPA + applicator license documented. Property released after Re-Entry Interval.';
     }
 
     get visitQualityDetails() {
@@ -341,7 +395,7 @@ export default class MasseyFlowSummaryStep extends LightningElement {
     }
 
     get visitQualityConfidence() { return 96; }
-    get visitQualitySource() { return 'TreatmentReportGenerator (close-out heuristic)'; }
+    get visitQualitySource() { return 'masseyFlow close-out heuristic'; }
     get insightTimestamp() { return this._insightTimestamp || new Date().toISOString(); }
 
     // ── Property Pressure Impact card ──
@@ -410,7 +464,8 @@ export default class MasseyFlowSummaryStep extends LightningElement {
             hangerCta: LBL_SO_HANGER_CTA,
             hangerLogged: LBL_SO_HANGER_LOGGED,
             change: LBL_SO_CHANGE,
-            block: LBL_SO_BLOCK
+            block: LBL_SO_BLOCK,
+            docLogHeading: LBL_DOCLOG_HEADING
         };
     }
 

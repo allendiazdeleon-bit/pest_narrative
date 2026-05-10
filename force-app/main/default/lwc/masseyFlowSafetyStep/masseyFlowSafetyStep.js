@@ -526,6 +526,47 @@ export default class MasseyFlowSafetyStep extends LightningElement {
         ];
     }
 
+    // Decorated risk chips — renders as bold visual badges with icons + colors
+    // instead of the generic AI insight card's small caps key-value list.
+    get riskChips() {
+        if (!this.riskBriefing) return [];
+        const weather = this.riskBriefing.weatherRisk || 'Unknown';
+        const pets = this.riskBriefing.petsOnProperty || 'None';
+        const hazards = this.riskBriefing.nearbyHazards ?? 0;
+        const history = this.riskBriefing.assetHistoryRisk || 'Low';
+        // Map values to icons + severity class
+        const weatherIcon = /rain|storm/i.test(weather) ? '🌧️'
+            : /cloud/i.test(weather) ? '⛅'
+            : /sun|clear/i.test(weather) ? '☀️'
+            : '🌤️';
+        const petsIcon = /dog/i.test(pets) ? '🐕'
+            : /cat/i.test(pets) ? '🐈'
+            : pets && pets !== 'None' && pets !== 'Unknown' ? '🐾' : '✓';
+        const hazardsIcon = hazards > 0 ? '⚠️' : '✓';
+        const historyIcon = history === 'High' ? '🔴' : history === 'Medium' ? '🟡' : '🟢';
+        const chip = (icon, label, value, severity) => ({
+            key: label,
+            icon,
+            label,
+            value,
+            chipClass: 'risk-chip risk-chip-' + severity
+        });
+        const weatherSev = /rain|storm/i.test(weather) ? 'warning' : 'ok';
+        const petsSev = pets && pets !== 'None' && pets !== 'Unknown' ? 'warning' : 'ok';
+        const hazardsSev = hazards > 0 ? 'critical' : 'ok';
+        const historySev = history === 'High' ? 'critical' : history === 'Medium' ? 'warning' : 'ok';
+        return [
+            chip(weatherIcon, 'Weather', weather, weatherSev),
+            chip(petsIcon, 'Pets', pets, petsSev),
+            chip(hazardsIcon, 'Hazards', hazards + ' nearby', hazardsSev),
+            chip(historyIcon, 'History', history, historySev)
+        ];
+    }
+
+    get riskBriefingHeadline() {
+        return this.riskBriefing ? (this.riskBriefing.summary || 'Pre-visit briefing') : '';
+    }
+
     get riskBriefingConfidence() {
         return this.riskBriefing ? this.riskBriefing.confidence : 80;
     }

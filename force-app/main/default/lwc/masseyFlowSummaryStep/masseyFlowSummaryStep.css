@@ -87,60 +87,62 @@
 .badge-orange { background: rgba(245, 158, 11, 0.15); color: #B45309; }
 .badge-red { background: rgba(220, 38, 38, 0.15); color: #B91C1C; }
 
-.compliance-ready {
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 700;
+/* ── Documentation Logged mini-card ─────────────────────────────── */
+.doclog-card {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.doclog-pill {
     margin-left: auto;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
 }
 
-.compliance-ready-yes { background: rgba(46, 132, 74, 0.15); color: #2E844A; }
-.compliance-ready-no { background: rgba(245, 158, 11, 0.15); color: #B45309; }
+.doclog-pill-green { background: rgba(46, 132, 74, 0.15); color: #2E844A; }
+.doclog-pill-amber { background: rgba(245, 158, 11, 0.15); color: #B45309; }
 
-.compliance-summary-text { font-size: 13px; color: var(--c-text-mute); margin-bottom: 12px; line-height: 1.5; }
-
-.compliance-checks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-
-.comp-check {
+.doclog-rows {
     display: flex;
-    gap: 8px;
-    padding: 8px;
-    background: #f9fafb;
-    border-radius: 4px;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.comp-status {
+.doclog-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 32px;
+    padding: 4px 0;
+    font-size: 13px;
+    border-bottom: 1px solid var(--c-border);
+}
+
+.doclog-row:last-child { border-bottom: none; }
+
+.doclog-icon {
+    flex: 0 0 18px;
+    width: 18px;
+    text-align: center;
     font-size: 14px;
     font-weight: 700;
-    min-width: 20px;
+    line-height: 1;
 }
 
-.comp-status-pass { color: #2E844A; }
-.comp-status-warn { color: #B45309; }
-.comp-status-fail { color: #B91C1C; }
-.comp-status-na { color: var(--c-text-mute); }
+.doclog-icon-pass { color: #2E844A; }
+.doclog-icon-fail { color: #B91C1C; }
 
-.comp-check-meta { flex: 1; }
-.comp-req { font-weight: 600; font-size: 13px; }
-.comp-detail { font-size: 12px; color: var(--c-text-mute); margin-top: 2px; }
-.comp-evidence { font-size: 11px; color: var(--c-text-mute); font-style: italic; margin-top: 2px; }
-
-.compliance-generate {
-    width: 100%;
-    padding: 10px;
-    background: var(--c-primary);
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    min-height: 40px;
+.doclog-row-text {
+    flex: 1;
+    color: var(--c-text);
 }
-
-.compliance-generate:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .complete-btn {
     margin: 16px;
@@ -396,3 +398,19 @@
 .next-stop-btn-primary:active { transform: translateY(1px); }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes scaleIn { from { opacity: 0; transform: translate(-50%, -50%) scale(0.92); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+
+/* Upsell recap card — replaces the full upsell coach on Summary when
+   Maria already captured an outcome on Site step. Single-line status. */
+.upsell-recap-card .card-header { gap: 10px; }
+.upsell-recap-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  font-size: 16px; font-weight: 700;
+  flex-shrink: 0;
+}
+.upsell-recap-ok { background: #dcfce7; color: #15803d; }
+.upsell-recap-amber { background: #fef3c7; color: #b45309; }
+.upsell-recap-red { background: #fee2e2; color: #b91c1c; }
+.upsell-recap-text {
+  margin: 8px 0 0; font-size: 14px; color: #334155; line-height: 1.5;
+}

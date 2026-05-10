@@ -88,37 +88,37 @@
         </template>
       </div>
 
-      <!-- Treatment Report (regulatory packet) -->
-      <template lwc:if={hasReport}>
-        <div class="summary-card compliance-card">
-          <div class="card-header">
-            <span class="card-icon">📑</span>
-            <span class="card-title">Treatment Report Package</span>
-            <span class={report.readyClass}>
-              <template lwc:if={report.readyToFile}>Ready to share</template>
-              <template lwc:else>Review warnings</template>
-            </span>
-          </div>
-          <div class="compliance-summary-text">{report.summary}</div>
-          <div class="compliance-checks">
-            <template for:each={report.checks} for:item="c">
-              <div key={c.requirement} class="comp-check">
-                <span class={c.statusClass}>{c.statusIcon}</span>
-                <div class="comp-check-meta">
-                  <div class="comp-req">{c.requirement}</div>
-                  <div class="comp-detail">{c.detail}</div>
-                  <template lwc:if={c.evidence}>
-                    <div class="comp-evidence">Evidence: {c.evidence}</div>
-                  </template>
-                </div>
-              </div>
-            </template>
-          </div>
-          <button class="compliance-generate" onclick={handleGenerateReport} disabled={generateDisabled}>
-            {generateButtonLabel}
-          </button>
+      <!-- Documentation Logged — pest visit recordkeeping (3 checks).
+           Replaces the legacy Treatment Report Package card. The actual
+           regulatory paperwork for a quarterly pest visit is just: EPA
+           Reg # logged, applicator license logged, and customer sign-off
+           captured. No multi-page packet, no "generate" step. -->
+      <div class="summary-card doclog-card">
+        <div class="card-header">
+          <span class="card-icon">&#x1F4CB;</span>
+          <span class="card-title">{labels.docLogHeading}</span>
+          <template lwc:if={docLogAllGreen}>
+            <span class="doclog-pill doclog-pill-green">&#x2713;</span>
+          </template>
+          <template lwc:else>
+            <span class="doclog-pill doclog-pill-amber">&#x21;</span>
+          </template>
         </div>
-      </template>
+        <div class="doclog-rows">
+          <div class="doclog-row">
+            <span class={epaRowIconClass}>{epaRowIcon}</span>
+            <span class="doclog-row-text">{epaRowText}</span>
+          </div>
+          <div class="doclog-row">
+            <span class={licenseRowIconClass}>{licenseRowIcon}</span>
+            <span class="doclog-row-text">{licenseRowText}</span>
+          </div>
+          <div class="doclog-row">
+            <span class={signoffRowIconClass}>{signoffRowIcon}</span>
+            <span class="doclog-row-text">{signoffRowText}</span>
+          </div>
+        </div>
+      </div>
 
       <!-- AI Visit Quality Score -->
       <c-ai-insight-card
@@ -136,13 +136,27 @@
            Summary surface it competed with the Visit Quality card. One AI
            card on close-out. -->
 
-      <!-- Embedded Upsell Coach (full variant) — close-out attach-rate moment -->
-      <template lwc:if={effectiveAccountId}>
-        <c-massey-upsell-coach
-          account-id={effectiveAccountId}
-          variant="full"
-          onoutcomecaptured={handleUpsellOutcome}
-        ></c-massey-upsell-coach>
+      <!-- Upsell coach OR recap card.
+           If Maria already captured an outcome in Site step, show a small
+           recap card instead of re-rendering the full pitch UI (don't
+           re-prompt at close-out — she already did the work). -->
+      <template lwc:if={upsellAlreadyCaptured}>
+        <div class="summary-card upsell-recap-card">
+          <div class="card-header">
+            <span class={upsellRecapIconClass}>{upsellRecapIcon}</span>
+            <span class="card-title">Upsell Pitch</span>
+          </div>
+          <p class="upsell-recap-text">{upsellRecapText}</p>
+        </div>
+      </template>
+      <template lwc:if={showFullUpsellCoach}>
+        <template lwc:if={effectiveAccountId}>
+          <c-massey-upsell-coach
+            account-id={effectiveAccountId}
+            variant="full"
+            onoutcomecaptured={handleUpsellOutcome}
+          ></c-massey-upsell-coach>
+        </template>
       </template>
 
       <!-- Sign-Off card — last action before Complete. Two paths:

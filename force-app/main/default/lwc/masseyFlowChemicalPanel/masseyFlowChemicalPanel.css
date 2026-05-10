@@ -175,3 +175,58 @@
 .chem-act-finalize { background: #4b5563; color: #fff; border-color: #4b5563; }
 
 .chem-photo-input { display: none; }
+
+/* ── Simple mode (1-tap) ─────────────────────────────────────────── */
+
+.chem-simple-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 6px;
+    margin-top: 6px;
+}
+
+.chem-simple-confirm {
+    margin-top: 4px;
+    width: 100%;
+    background: var(--c-primary);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    min-height: 48px;
+}
+
+.chem-simple-confirm:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.chem-applied-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: rgba(46, 132, 74, 0.12);
+    border: 1px solid rgba(46, 132, 74, 0.3);
+    border-radius: 8px;
+    margin-top: 6px;
+}
+
+.chem-applied-check {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2E844A;
+    line-height: 1;
+}
+
+.chem-applied-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--c-text);
+}
