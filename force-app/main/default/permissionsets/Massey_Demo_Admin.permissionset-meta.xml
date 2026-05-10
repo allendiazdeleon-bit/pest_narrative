@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <label>Massey Demo Admin</label>
-    <description>Catch-all permission set for the demo presenter. Read+Create+Edit+Delete on every object the demo touches and Read+Edit on every custom field, plus access to all 39 pest Apex classes. Does NOT grant ModifyAllData or CustomizeApplication — global system access remains with the org's setup user.</description>
+    <description>Catch-all for the demo presenter. R/W on demo objects + custom fields + all pest Apex classes. No ModifyAllData / CustomizeApplication.</description>
     <hasActivationRequired>false</hasActivationRequired>
 
     <!-- User Permission: ViewSetup so the presenter can navigate Setup if needed during demo -->

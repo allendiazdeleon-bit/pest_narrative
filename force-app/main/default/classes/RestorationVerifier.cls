@@ -17,7 +17,7 @@
  *
  * DEMO ONLY: there is no real bait-station / sensor integration. Status,
  * currentValue, and lastReadingAt are SYNTHESIZED deterministically from
- * Asset metadata (Id hash, Last_Sensor_Reading__c, Is_Pest_Pressure_Candidate__c)
+ * Asset metadata (Id hash, Last_Treatment_DateTime__c, Is_Pest_Pressure_Candidate__c)
  * and the WorkType narrative. Real org Assets are queried — only the
  * readings are faked.
  *
@@ -145,7 +145,7 @@ public with sharing class RestorationVerifier {
 
         List<Asset> assets = [
             SELECT Id, Name, Service_Line__c,
-                   Last_Sensor_Reading__c, Is_Pest_Pressure_Candidate__c,
+                   Last_Treatment_DateTime__c, Is_Pest_Pressure_Candidate__c,
                    AccountId, Account.Name,
                    City, State, PostalCode, Street
             FROM Asset
@@ -185,7 +185,7 @@ public with sharing class RestorationVerifier {
         mc.expectedMetric = 'Pest Pressure ' + PRESSURE_NORMAL_LOW + ' to ' + PRESSURE_NORMAL_HIGH;
 
         DateTime lastReading = null;
-        try { lastReading = (DateTime) a.get('Last_Sensor_Reading__c'); } catch (Exception e) {}
+        try { lastReading = (DateTime) a.get('Last_Treatment_DateTime__c'); } catch (Exception e) {}
         if (lastReading != null) {
             mc.lastReadingAt = lastReading;
         } else {

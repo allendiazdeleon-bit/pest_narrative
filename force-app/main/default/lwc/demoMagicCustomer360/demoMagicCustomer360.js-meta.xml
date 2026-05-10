@@ -3,7 +3,7 @@
     <apiVersion>62.0</apiVersion>
     <isExposed>true</isExposed>
     <masterLabel>Customer 360</masterLabel>
-    <description>Unified Massey customer view: pest service history, Property Asset states (bait stations, soil temp, conducive conditions), recent Cases, recent Work Orders by service line, and upsell history (Last_Upsell_Service_Line__c, Last_Upsell_Outcome__c, Upsell_Score__c). Used on the Service Console (Account) and embedded in the massey-portal Experience Cloud site.</description>
+    <description>Unified Massey customer view: pest service history, Property Asset states, recent Cases + WOs by service line, and upsell history. Used on Service Console (Account) and massey-portal.</description>
     <targets>
         <target>lightning__RecordPage</target>
         <target>lightningCommunity__Default</target>

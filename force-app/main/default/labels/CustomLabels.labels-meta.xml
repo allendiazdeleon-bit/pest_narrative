@@ -53,7 +53,7 @@
         <categories>MasseyFlow,Shared</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>Display label for Work_DeEnergize step category (API name preserved per Decision #20)</shortDescription>
+        <shortDescription>Display label for Work_DeEnergize step category</shortDescription>
         <value>Pre-Treatment Setup</value>
     </labels>
     <labels>
@@ -61,7 +61,7 @@
         <categories>MasseyFlow,Shared</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>Display label for Work_ReEnergize step category (API name preserved per Decision #20)</shortDescription>
+        <shortDescription>Display label for Work_ReEnergize step category</shortDescription>
         <value>Post-Treatment Verification</value>
     </labels>
     <labels>
@@ -101,7 +101,7 @@
         <categories>MasseyFlow,Shared</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>Display label for the cluster / route group identifier on Incident (API name preserved per Decision #20) — e.g., ZIP-32828-Mosquito</shortDescription>
+        <shortDescription>Cluster / route group identifier on Incident (e.g., ZIP-32828-Mosquito)</shortDescription>
         <value>Cluster Identifier</value>
     </labels>
     <labels>
@@ -109,7 +109,7 @@
         <categories>MasseyFlow,Shared</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>Display label for Incident.Affected_Customers__c (API name preserved per Decision #20) — property count for this cluster</shortDescription>
+        <shortDescription>Property count for this cluster (Incident.Affected_Customers__c)</shortDescription>
         <value>Affected Properties</value>
     </labels>
     <labels>
@@ -117,7 +117,7 @@
         <categories>MasseyFlow,Shared</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>Display label for Incident.Outage_Latitude__c (API name preserved per Decision #20)</shortDescription>
+        <shortDescription>Cluster latitude (Incident.Outage_Latitude__c)</shortDescription>
         <value>Cluster Latitude</value>
     </labels>
     <labels>
@@ -125,7 +125,7 @@
         <categories>MasseyFlow,Shared</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>Display label for Incident.Outage_Longitude__c (API name preserved per Decision #20)</shortDescription>
+        <shortDescription>Cluster longitude (Incident.Outage_Longitude__c)</shortDescription>
         <value>Cluster Longitude</value>
     </labels>
     <labels>
@@ -165,7 +165,7 @@
         <categories>MasseyFlow,Shared</categories>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>Compliance driver — EPA / state applicator licensing for restricted-use pesticide application</shortDescription>
+        <shortDescription>EPA / state applicator licensing driver</shortDescription>
         <value>EPA Reg # + Applicator License Logging</value>
     </labels>
     <labels>

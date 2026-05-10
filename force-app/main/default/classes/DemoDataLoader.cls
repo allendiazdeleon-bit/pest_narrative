@@ -202,16 +202,16 @@ public with sharing class DemoDataLoader {
         DateTime cutoff = DateTime.now().addDays(-daysAgo);
         List<Asset> assets;
         try {
-            assets = [SELECT Id, Last_Sensor_Reading__c FROM Asset
+            assets = [SELECT Id, Last_Treatment_DateTime__c FROM Asset
                        WHERE SerialNumber LIKE :(ASSET_SERIAL_PREFIX + '%') LIMIT 5000];
         } catch (Exception e) {
-            return 'Last_Sensor_Reading__c field not deployed yet — skipping.';
+            return 'Last_Treatment_DateTime__c field not deployed yet — skipping.';
         }
         for (Asset a : assets) {
-            try { a.put('Last_Sensor_Reading__c', cutoff); } catch (Exception e) {}
+            try { a.put('Last_Treatment_DateTime__c', cutoff); } catch (Exception e) {}
         }
         if (!assets.isEmpty()) update assets;
-        return 'Shifted ' + assets.size() + ' Asset Last_Sensor_Reading__c values to ' + cutoff + '.';
+        return 'Shifted ' + assets.size() + ' Asset Last_Treatment_DateTime__c values to ' + cutoff + '.';
     }
 
     /**
@@ -251,10 +251,10 @@ public with sharing class DemoDataLoader {
             if (!cases.isEmpty()) update cases;
         }
 
-        List<Incident> incs = [SELECT Id, StatusCode FROM Incident
+        List<Incident> incs = [SELECT Id, Status FROM Incident
                                 WHERE Subject LIKE 'Mosquito Surge%'];
         for (Incident i : incs) {
-            if (i.StatusCode == 'New' || i.StatusCode == 'Draft') { i.StatusCode = 'Active'; count++; }
+            if (i.Status == 'New' || i.Status == 'Draft') { i.Status = 'Active'; count++; }
         }
         if (!incs.isEmpty()) update incs;
         return 'Activated ' + count + ' cluster records.';
@@ -335,7 +335,7 @@ public with sharing class DemoDataLoader {
             try { asset.put('Service_Group__c', isCluster ? 'ZIP-32828-MOSQUITO' : 'ZIP-' + ZIPS[Math.mod(i, ZIPS.size())]); } catch (Exception e) {}
             try { asset.put('NFC_Tag_Id__c', 'NFC-' + String.valueOf(2000000 + i)); } catch (Exception e) {}
             try { asset.put('Is_Pest_Pressure_Candidate__c', isCandidate); } catch (Exception e) {}
-            try { asset.put('Last_Sensor_Reading__c', DateTime.now().addMinutes(-Math.mod(i, 30))); } catch (Exception e) {}
+            try { asset.put('Last_Treatment_DateTime__c', DateTime.now().addMinutes(-Math.mod(i, 30))); } catch (Exception e) {}
 
             // Service-line-specific synthetic readings.
             if (svcLine.containsIgnoreCase('Termite')) {

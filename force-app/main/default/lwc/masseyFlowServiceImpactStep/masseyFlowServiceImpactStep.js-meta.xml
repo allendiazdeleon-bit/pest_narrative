@@ -3,7 +3,7 @@
     <apiVersion>62.0</apiVersion>
     <isExposed>true</isExposed>
     <masterLabel>Massey Flow Service Impact Step</masterLabel>
-    <description>Service Impact step. Surfaces route-level cluster events — elevated pest pressure patterns, mosquito hotspots, termite Sentricon hits — and lets the tech link the visit, capture the pest finding, and draft cluster notifications. Quick Action on Work Order.</description>
+    <description>Service Impact step. Surfaces route-level cluster events (pest pressure, mosquito hotspots, Sentricon hits) and lets the tech link visit, capture finding, draft notifications.</description>
     <targets>
         <target>lightning__RecordAction</target>
         <target>lightning__RecordPage</target>

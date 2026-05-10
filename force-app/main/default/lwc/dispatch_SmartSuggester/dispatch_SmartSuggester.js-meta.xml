@@ -3,7 +3,7 @@
     <apiVersion>62.0</apiVersion>
     <isExposed>true</isExposed>
     <masterLabel>AI Dispatch Order</masterLabel>
-    <description>AI-suggested dispatch order for today's open Service Appointments on the branch operations console. Ranks SAs by SLA risk, retention risk, route cluster, and active-cluster-event linkage (e.g., pulling a termite team to a mosquito surge response). Backed by SmartDispatchSuggester (mock-AI Apex).</description>
+    <description>AI-suggested dispatch order for today's open SAs. Ranks by SLA risk, retention risk, route cluster, and active-cluster-event linkage. Backed by SmartDispatchSuggester.</description>
     <targets>
         <target>lightning__AppPage</target>
         <target>lightning__HomePage</target>

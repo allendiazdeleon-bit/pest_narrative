@@ -50,7 +50,7 @@ public with sharing class RiskBriefingService {
                        Asset.Id, Asset.Name, Asset.Service_Line__c,
                        Asset.Service_Group__c,
                        Asset.Is_Pest_Pressure_Candidate__c,
-                       Asset.Last_Sensor_Reading__c
+                       Asset.Last_Treatment_DateTime__c
                 FROM WorkOrder WHERE Id = :workOrderId
                 WITH SECURITY_ENFORCED
                 LIMIT 1
@@ -80,7 +80,7 @@ public with sharing class RiskBriefingService {
 
         // ---- Property history risk ----
         Boolean candidate = wo.Asset != null && safeGet(wo.Asset, 'Is_Pest_Pressure_Candidate__c') == true;
-        DateTime lastSensor = wo.Asset != null ? (DateTime) safeGet(wo.Asset, 'Last_Sensor_Reading__c') : null;
+        DateTime lastSensor = wo.Asset != null ? (DateTime) safeGet(wo.Asset, 'Last_Treatment_DateTime__c') : null;
         Integer staleDays = daysSince(lastSensor);
         if (candidate && staleDays > 7) {
             rb.assetHistoryRisk = 'High';

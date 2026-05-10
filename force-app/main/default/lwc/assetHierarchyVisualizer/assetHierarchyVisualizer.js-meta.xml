@@ -3,7 +3,7 @@
     <apiVersion>62.0</apiVersion>
     <isExposed>true</isExposed>
     <masterLabel>Property Treatment Hierarchy Visualizer</masterLabel>
-    <description>Pure-SVG horizontal tree of the treatment area around a Property Asset (Property to Sentricon stations / mosquito-system nozzles / treatment perimeters / interior traps). Color and icon coded by Service_Line__c; Bait_Station_State__c = Heavy_Activity nodes render red. Click a node to fire a nodeselect event.</description>
+    <description>SVG tree of treatment area around a Property Asset. Color/icon by Service_Line__c; Heavy_Activity bait stations render red. Click a node to fire nodeselect.</description>
     <targets>
         <target>lightning__RecordPage</target>
         <target>lightning__AppPage</target>

@@ -59,6 +59,15 @@
         <modifyAllRecords>false</modifyAllRecords>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
+    <objectPermissions>
+        <object>OperatingHours</object>
+        <allowRead>true</allowRead>
+        <allowCreate>false</allowCreate>
+        <allowEdit>false</allowEdit>
+        <allowDelete>false</allowDelete>
+        <modifyAllRecords>false</modifyAllRecords>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
 
     <!-- Read+Edit (FSL operational records the tech updates) -->
     <objectPermissions>

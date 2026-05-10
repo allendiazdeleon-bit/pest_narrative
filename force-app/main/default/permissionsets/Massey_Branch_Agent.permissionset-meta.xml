@@ -233,11 +233,7 @@
         <editable>true</editable><readable>true</readable>
     </fieldPermissions>
 
-    <!-- Asset custom fields — Read -->
-    <fieldPermissions>
-        <field>Asset.Service_Line__c</field>
-        <editable>false</editable><readable>true</readable>
-    </fieldPermissions>
+    <!-- Asset custom fields — Read (Service_Line__c omitted; required field, FLS implicit) -->
     <fieldPermissions>
         <field>Asset.Equipment_Type__c</field>
         <editable>false</editable><readable>true</readable>

@@ -58,13 +58,13 @@ public with sharing class PredictiveFailureForecaster {
                 SELECT Id, Name, AccountId, Account.Name,
                        Service_Line__c,
                        Pest_Pressure_Score__c, Bait_Station_Hits_30d__c,
-                       Is_Pest_Pressure_Candidate__c, Last_Sensor_Reading__c,
+                       Is_Pest_Pressure_Candidate__c, Last_Treatment_DateTime__c,
                        Soil_Temp_F__c, Conducive_Conditions__c
                 FROM Asset
                 WHERE Is_Pest_Pressure_Candidate__c = true
                    OR Pest_Pressure_Score__c > :PRESSURE_SCORE_LIMIT
                    OR Bait_Station_Hits_30d__c > :STATION_HITS_THRESHOLD
-                   OR Last_Sensor_Reading__c < :staleCutoff
+                   OR Last_Treatment_DateTime__c < :staleCutoff
                 WITH SECURITY_ENFORCED
                 ORDER BY Is_Pest_Pressure_Candidate__c DESC NULLS LAST,
                          Pest_Pressure_Score__c DESC NULLS LAST
@@ -110,7 +110,7 @@ public with sharing class PredictiveFailureForecaster {
                 SELECT Id, Name, AccountId, Account.Name,
                        Service_Line__c,
                        Pest_Pressure_Score__c, Bait_Station_Hits_30d__c,
-                       Is_Pest_Pressure_Candidate__c, Last_Sensor_Reading__c,
+                       Is_Pest_Pressure_Candidate__c, Last_Treatment_DateTime__c,
                        Soil_Temp_F__c, Conducive_Conditions__c
                 FROM Asset
                 WHERE Id = :assetId
@@ -155,7 +155,7 @@ public with sharing class PredictiveFailureForecaster {
             f.contributingSignals.add('Bait station hits at '
                 + hits.setScale(0) + ' over 30 days (threshold ' + STATION_HITS_THRESHOLD + ').');
         }
-        DateTime lastSensor = (DateTime) safeGet(a, 'Last_Sensor_Reading__c');
+        DateTime lastSensor = (DateTime) safeGet(a, 'Last_Treatment_DateTime__c');
         Integer daysSince = daysSinceReading(lastSensor);
         if (daysSince > SENSOR_STALE_DAYS) {
             score += 15;

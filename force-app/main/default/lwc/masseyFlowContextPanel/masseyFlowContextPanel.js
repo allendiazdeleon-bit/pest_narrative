@@ -8,8 +8,7 @@ import ASSET_INSTALL_DATE_FIELD from '@salesforce/schema/Asset.InstallDate';
 import ASSET_LATITUDE_FIELD from '@salesforce/schema/Asset.Latitude';
 import ASSET_LONGITUDE_FIELD from '@salesforce/schema/Asset.Longitude';
 import ASSET_SERVICE_LINE_FIELD from '@salesforce/schema/Asset.Service_Line__c';
-import ASSET_ROUTE_FIELD from '@salesforce/schema/Asset.Route__c';
-import ASSET_BRANCH_FIELD from '@salesforce/schema/Asset.Branch__c';
+import ASSET_SERVICE_GROUP_FIELD from '@salesforce/schema/Asset.Service_Group__c';
 import ASSET_NFC_TAG_FIELD from '@salesforce/schema/Asset.NFC_Tag_Id__c';
 
 const ASSET_FIELDS = [
@@ -20,8 +19,7 @@ const ASSET_FIELDS = [
   ASSET_LATITUDE_FIELD,
   ASSET_LONGITUDE_FIELD,
   ASSET_SERVICE_LINE_FIELD,
-  ASSET_ROUTE_FIELD,
-  ASSET_BRANCH_FIELD,
+  ASSET_SERVICE_GROUP_FIELD,
   ASSET_NFC_TAG_FIELD
 ];
 
@@ -87,8 +85,8 @@ export default class MasseyFlowContextPanel extends LightningElement {
       latitude: data.fields.Latitude?.value || '',
       longitude: data.fields.Longitude?.value || '',
       serviceLine: data.fields.Service_Line__c?.value || '',
-      route: data.fields.Route__c?.value || '',
-      branch: data.fields.Branch__c?.value || '',
+      route: data.fields.Service_Group__c?.value || '',
+      branch: '',
       nfcTagId: data.fields.NFC_Tag_Id__c?.value || ''
     };
   }
