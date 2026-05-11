@@ -7,6 +7,7 @@
 .sfdx/
 .localdevserver/
 deploy-options.json
+.scratch-retrieve/
 
 # LWC VSCode autocomplete
 **/lwc/jsconfig.json
@@ -48,3 +49,6 @@ $RECYCLE.BIN/
 **/venv/
 
 .vscode/
+
+# Agent REST driver secrets
+scripts/.env
