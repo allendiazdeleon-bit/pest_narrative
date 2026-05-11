@@ -1,6 +1,7 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import { updateRecord, createRecord } from 'lightning/uiRecordApi';
 import { getRelatedListRecords } from 'lightning/uiRelatedListApi';
+import getStepsForWorkOrder from '@salesforce/apex/WorkStepService.getStepsForWorkOrder';
 import briefForWorkOrder from '@salesforce/apex/RiskBriefingService.briefForWorkOrder';
 import WS_ID from '@salesforce/schema/WorkStep.Id';
 import WS_COMPLETED_AT from '@salesforce/schema/WorkStep.Completed_At__c';
@@ -45,9 +46,12 @@ export default class MasseyFlowSafetyStep extends LightningElement {
 
     @api
     get workSteps() {
-        return this._externalWorkSteps.length > 0
-            ? this._externalWorkSteps
-            : this._selfWiredWorkSteps;
+        // Preference order: orchestrator-provided > related-list wire >
+        // Apex SOQL fallback. Apex path is what makes this work on mobile
+        // without a briefcase rule covering WorkPlan -> WorkStep.
+        if (this._externalWorkSteps.length > 0) return this._externalWorkSteps;
+        if (this._selfWiredWorkSteps.length > 0) return this._selfWiredWorkSteps;
+        return this._apexWorkSteps;
     }
     set workSteps(value) { this._externalWorkSteps = value || []; }
 
@@ -89,6 +93,33 @@ export default class MasseyFlowSafetyStep extends LightningElement {
             this._selfWiredWorkSteps = (data.records || []).map(r => this._flattenRecord(r));
         } else if (error) {
             console.error('[SafetyStep] Error loading WorkSteps:', JSON.stringify(error));
+        }
+    }
+
+    // Apex fallback — direct SOQL across WorkPlan -> WorkStep. Works on
+    // FSL Mobile even when briefcase priming for the WorkPlan/WorkStep
+    // related lists isn't configured. Cacheable, so Komaci primes the
+    // result on first online call and serves it offline thereafter.
+    @track _apexWorkSteps = [];
+    @wire(getStepsForWorkOrder, { workOrderId: '$recordId' })
+    wiredApexSteps({ data, error }) {
+        if (data) {
+            // DTO uses camelCase (Apex bans __c in identifier names). Re-key
+            // to the WorkStep SObject field names so the existing filter
+            // logic (step.Step_Category__c === 'Safety_Critical') still works.
+            this._apexWorkSteps = data.map(d => ({
+                Id: d.wsId,
+                Name: d.name,
+                Description: d.description,
+                Step_Category__c: d.stepCategory,
+                Is_Critical__c: d.isCritical,
+                Completed_At__c: d.completedAt,
+                Completed_By__c: d.completedBy,
+                Sort_Order__c: d.sortOrder,
+                Status: d.status
+            }));
+        } else if (error) {
+            console.error('[SafetyStep] Error loading Apex steps:', JSON.stringify(error));
         }
     }
 

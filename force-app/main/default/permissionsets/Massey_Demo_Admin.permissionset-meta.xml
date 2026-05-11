@@ -261,6 +261,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>WorkStepService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>AppointmentCanceler</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -350,10 +354,6 @@
     </classAccesses>
     <classAccesses>
         <apexClass>PhotoAnalysisService</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>PlanChangeService</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
